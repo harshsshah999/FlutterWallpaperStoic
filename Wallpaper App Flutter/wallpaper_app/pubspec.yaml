@@ -1,0 +1,94 @@
+name: wallpaper_app
+description: A new Flutter application.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.4+5
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  paginate_firestore: ^0.1.1+1
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.3
+  path_provider: ^1.6.8
+  permission_handler: ^5.0.0+hotfix.6
+  intl: ^0.16.1
+  ext_storage: ^1.0.3
+  flutter_downloader: ^1.4.4
+  cloud_firestore: ^0.13.5
+  font_awesome_flutter: ^8.5.0
+  dots_indicator: ^1.1.0
+  carousel_slider: ^1.3.1
+  sliding_up_panel: ^0.3.6
+  flutter_staggered_grid_view: ^0.3.0
+  provider: ^4.3.1
+  shared_preferences: ^0.5.4+3
+  google_sign_in: ^4.4.6
+  firebase_auth: ^0.16.0
+  connectivity: ^0.4.5+3
+  cached_network_image: ^2.2.0+1
+  launch_review: ^2.0.0
+  awesome_dialog: ^0.1.4
+  onesignal_flutter: ^2.4.1
+  firebase_analytics: ^5.0.2
+  firebase_core: 0.4.5
+  shimmer: ^1.1.1
+  firebase_admob: ^0.9.3+2
+  # facebook_audience_network: ^0.5.0
+  fzwallpaper: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_launcher_icons: "^0.7.3"
+  flutter_native_splash: ^0.1.9
+
+
+  
+flutter_icons:
+  android: "launcher_icon" 
+  ios: true
+  image_path: "assets/images/icon.png"
+
+
+flutter_native_splash:
+  image: assets/images/splash.png
+  color: "ffffff"
+
+
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    
+    - assets/images/icon.png
+    - assets/images/splash.png
+ 
+  fonts:
+
+
+
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Light.ttf
+          weight: 400
+        - asset: assets/fonts/Poppins-Regular.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 800

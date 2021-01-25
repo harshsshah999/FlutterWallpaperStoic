@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "502349033379",
+    "project_id": "stoicwall-79c94",
+    "storage_bucket": "stoicwall-79c94.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502349033379:android:150b002eb274e1009af416",
+        "android_client_info": {
+          "package_name": "com.cillyfox.stoicwallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "502349033379-hqjgpp66j0jtc4h6ctos46un7s64h37i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cillyfox.stoicwallpaper",
+            "certificate_hash": "088ebc71e517e4565f88f458a439bf8d6c3a6e72"
+          }
+        },
+        {
+          "client_id": "502349033379-chu0ru598e1ceesgkvtqcatdokchpuka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJjDinogigbt8XRSd_D6MrHgiBkGorRr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "502349033379-chu0ru598e1ceesgkvtqcatdokchpuka.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
