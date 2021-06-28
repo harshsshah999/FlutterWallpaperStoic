@@ -17,6 +17,7 @@ class Config {
  //-- admob ads --
  final String admobAppId = 'ca-app-pub-8872829619482545~4099838010';
  final String admobInterstitialAdId = 'ca-app-pub-8872829619482545/6090387160';
+ final String admobBannerAdId = 'ca-app-pub-8872829619482545/8371156210';
 
 
   //-- facebook ads--
