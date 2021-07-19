@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:launch_review/launch_review.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
 import '../models/config.dart';
 import '../pages/bookmark.dart';
@@ -20,11 +21,9 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-
   final FirebaseAuth auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   var textCtrl = TextEditingController();
-  
 
   final List title = [
     'Categories',
@@ -35,9 +34,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     'Logout'
   ];
 
-
-
-
   final List icons = [
     FontAwesomeIcons.dashcube,
     FontAwesomeIcons.solidCompass,
@@ -47,60 +43,55 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     FontAwesomeIcons.signOutAlt
   ];
 
-
-
-  
-
-  
-
-
-
-  Future openLogoutDialog(context1) async{
-    showDialog(
-      context: context1,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Text('Logout?', style: TextStyle(
-            fontWeight: FontWeight.w600
-          ),),
-          content: Text('Do you really want to Logout?'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Yes'),
-              onPressed: () async {
-                final sb = context.read<SignInBloc>();
-                if(sb.guestUser == false) {
-                  Navigator.pop(context);
-                  await sb.userSignout().then((_) => nextScreenCloseOthers(context, SignInPage()));
-                  
-
-                } else {
-                  Navigator.pop(context);
-                  await sb.guestSignout().then((_) => nextScreenCloseOthers(context, SignInPage()));
-
-                }
-                
-
-              },
-            ),
-            FlatButton(
-              child: Text('No'),
-              onPressed: (){
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
+  Future<void> _launchInsta() async {
+    if (await canLaunch('https://www.instagram.com/stoic.kings/')) {
+      final bool nativeAppLaunchSucceed = await launch(
+          'https://www.instagram.com/stoic.kings/',
+          forceWebView: false,
+          universalLinksOnly: true);
+      if (!nativeAppLaunchSucceed) {
+        await launch('https://www.instagram.com/stoic.kings/',
+            forceWebView: true);
       }
-    );
-
+    }
   }
 
-
-  
-
-
-  
+  Future openLogoutDialog(context1) async {
+    showDialog(
+        context: context1,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Logout?',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            content: Text('Do you really want to Logout?'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Yes'),
+                onPressed: () async {
+                  final sb = context.read<SignInBloc>();
+                  if (sb.guestUser == false) {
+                    Navigator.pop(context);
+                    await sb.userSignout().then(
+                        (_) => nextScreenCloseOthers(context, SignInPage()));
+                  } else {
+                    Navigator.pop(context);
+                    await sb.guestSignout().then(
+                        (_) => nextScreenCloseOthers(context, SignInPage()));
+                  }
+                },
+              ),
+              FlatButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
 
   aboutAppDialog() {
     showDialog(
@@ -119,19 +110,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         });
   }
 
-
-  void handleRating () {
+  void handleRating() {
     LaunchReview.launch(
-      androidAppId: Config().packageName,
-      iOSAppId: null,
-      writeReview: true
-    );
+        androidAppId: Config().packageName, iOSAppId: null, writeReview: true);
   }
 
-  
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
       child: Padding(
           padding: const EdgeInsets.only(left: 15),
@@ -176,18 +161,17 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       onTap: () {
                         Navigator.pop(context);
                         if (index == 0) {
-                            nextScreeniOS(context, CatagoryPage());
+                          nextScreeniOS(context, CatagoryPage());
                         } else if (index == 1) {
-                            nextScreeniOS(context, ExplorePage());
+                          nextScreeniOS(context, ExplorePage());
                         } else if (index == 2) {
-                          
-                            nextScreeniOS(context, BookmarkPage());
+                          nextScreeniOS(context, BookmarkPage());
                         } else if (index == 3) {
-                            aboutAppDialog();
-                        } else if (index == 4){
-                            handleRating();
-                        } else if (index == 5){
-                            openLogoutDialog(context);
+                          aboutAppDialog();
+                        } else if (index == 4) {
+                          handleRating();
+                        } else if (index == 5) {
+                          openLogoutDialog(context);
                         }
                       },
                     );
@@ -196,7 +180,15 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     return Divider();
                   },
                 ),
-              )
+              ),
+              Row(
+                children: [
+                  Text("Follow us on:"),
+                  IconButton(
+                      icon: new Image.asset('assets/images/insta.png'),
+                      onPressed: _launchInsta)
+                ],
+              ),
             ],
           )),
     );
