@@ -1,8 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wallpaper_app/blocs/ads_bloc.dart';
+import 'package:wallpaper_app/models/providermodel.dart';
 import './blocs/bookmark_bloc.dart';
 import './blocs/data_bloc.dart';
 import './blocs/internet_bloc.dart';
@@ -12,13 +15,30 @@ import './pages/home.dart';
 import './pages/sign_in_page.dart';
 import 'package:flutter/services.dart';
 
+
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(
     debug: false 
   );
-  runApp(MyApp());
   
+  
+  await AndroidAlarmManager.initialize();
+  var prefs = await SharedPreferences.getInstance();
+
+  InAppPurchaseConnection.enablePendingPurchases();
+
+  if(prefs.getBool("isAlarmOn") == null){
+    prefs.setBool("isAlarmOn", false);
+    print("WATCH THIS: initial check called");
+  }else{
+    print("WATCH THIS: initial check not called");
+  }
+  runApp(MyApp());
   
 }
 
@@ -52,6 +72,10 @@ class MyApp extends StatelessWidget {
 
           ChangeNotifierProvider<AdsBloc>(
             create: (context) => AdsBloc(),
+          ),
+
+          ChangeNotifierProvider(
+            create: (context) => ProviderModel(),
           ),
 
         ],

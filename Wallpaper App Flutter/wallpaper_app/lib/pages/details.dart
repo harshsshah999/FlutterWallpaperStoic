@@ -1,7 +1,8 @@
 // details page
 
 import 'dart:io';
-
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,11 +23,14 @@ import '../models/config.dart';
 import '../models/icon_data.dart';
 import '../utils/circular_button.dart';
 
+
 class DetailsPage extends StatefulWidget {
   final String tag;
   final String imageUrl;
   final String catagory;
   final String timestamp;
+  ReceivePort _port = ReceivePort();
+
 
   DetailsPage(
       {Key key,
@@ -39,6 +43,8 @@ class DetailsPage extends StatefulWidget {
   @override
   _DetailsPageState createState() =>
       _DetailsPageState(this.tag, this.imageUrl, this.catagory, this.timestamp);
+
+
 }
 
 class _DetailsPageState extends State<DetailsPage> {
@@ -50,6 +56,33 @@ class _DetailsPageState extends State<DetailsPage> {
   String timestamp;
   _DetailsPageState(this.tag, this.imageUrl, this.catagory, this.timestamp);
 
+  ReceivePort _port = ReceivePort();
+
+  @override
+  void initState() {
+    super.initState();
+
+    IsolateNameServer.registerPortWithName(_port.sendPort, 'downloader_send_port');
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+      setState((){ });
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    super.dispose();
+  }
+
+  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {
+    final SendPort send = IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
+  }
 
 
 
