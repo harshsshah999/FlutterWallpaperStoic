@@ -3,7 +3,7 @@ description: A new Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 2.0.6+13
+version: 2.0.7+14
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -22,8 +22,8 @@ dependencies:
   ##
   flutter_cache_manager:
   wallpaper_manager:
-  android_alarm_manager_plus: 
-  in_app_purchase: 
+  android_alarm_manager_plus:
+  in_app_purchase:
   url_launcher:
   ##
   flutter_local_notifications: 4.0.1+2
@@ -51,6 +51,8 @@ dependencies:
   firebase_admob: ^0.9.3+2
   # facebook_audience_network: ^0.5.0
   fzwallpaper: ^1.0.2
+  image_downloader: ^0.30.0
+  open_file: ^3.2.1
 
 dev_dependencies:
   flutter_test:
@@ -60,9 +62,9 @@ dev_dependencies:
   flutter_native_splash: ^0.1.9
 
 
-  
+
 flutter_icons:
-  android: "launcher_icon" 
+  android: "launcher_icon"
   ios: true
   image_path: "assets/images/icon.png"
 
@@ -80,11 +82,11 @@ flutter:
   uses-material-design: true
 
   assets:
-    
+
     - assets/images/icon.png
     - assets/images/splash.png
     - assets/images/insta.png
- 
+
   fonts:
 
 

@@ -3,6 +3,11 @@
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:open_file/open_file.dart';
+
+import 'package:image_downloader/image_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +27,10 @@ import '../blocs/userdata_bloc.dart';
 import '../models/config.dart';
 import '../models/icon_data.dart';
 import '../utils/circular_button.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 
 class DetailsPage extends StatefulWidget {
@@ -34,10 +43,10 @@ class DetailsPage extends StatefulWidget {
 
   DetailsPage(
       {Key key,
-      @required this.tag,
-      this.imageUrl,
-      this.catagory,
-      this.timestamp})
+        @required this.tag,
+        this.imageUrl,
+        this.catagory,
+        this.timestamp})
       : super(key: key);
 
   @override
@@ -48,12 +57,13 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  
-  
+
+
   String tag;
   String imageUrl;
   String catagory;
   String timestamp;
+  int _progress = 0;
   _DetailsPageState(this.tag, this.imageUrl, this.catagory, this.timestamp);
 
   ReceivePort _port = ReceivePort();
@@ -61,6 +71,13 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
+
+    ImageDownloader.callback(onProgressUpdate: (String imageId, int progress) {
+      setState(() {
+        _progress = progress;
+
+      });
+    });
 
     IsolateNameServer.registerPortWithName(_port.sendPort, 'downloader_send_port');
     _port.listen((dynamic data) {
@@ -71,6 +88,29 @@ class _DetailsPageState extends State<DetailsPage> {
     });
 
     FlutterDownloader.registerCallback(downloadCallback);
+
+
+  }
+
+  void initializeSetting() async {
+    var initializeAndroid = AndroidInitializationSettings('icon_stoic');
+    var initializeSetting = InitializationSettings(android: initializeAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializeSetting,onSelectNotification: selectNotification);
+  }
+
+  Future<void> displayNotification(String title, String body, String imagePath) async {
+    flutterLocalNotificationsPlugin.show(0, title, body,  NotificationDetails(
+      android: AndroidNotificationDetails(
+          'channel id', 'channel name', 'channel description',priority: Priority.high),
+    ),payload:imagePath );
+  }
+
+  Future selectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: $payload');
+      OpenFile.open(payload);
+    }
+
   }
 
   @override
@@ -103,7 +143,7 @@ class _DetailsPageState extends State<DetailsPage> {
         return SimpleDialog(
           title: Text('SET AS'),
           contentPadding:
-              EdgeInsets.only(left: 30, top: 40, bottom: 20, right: 40),
+          EdgeInsets.only(left: 30, top: 40, bottom: 20, right: 40),
           children: <Widget>[
             ListTile(
               contentPadding: EdgeInsets.all(0),
@@ -153,8 +193,8 @@ class _DetailsPageState extends State<DetailsPage> {
   _setLockScreen() {
     Platform.isIOS
         ? setState(() {
-            progress = 'iOS is not supported';
-          })
+      progress = 'iOS is not supported';
+    })
         : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
     progressString.listen((data) {
       setState(() {
@@ -182,8 +222,8 @@ class _DetailsPageState extends State<DetailsPage> {
   _setHomeScreen() {
     Platform.isIOS
         ? setState(() {
-            progress = 'iOS is not supported';
-          })
+      progress = 'iOS is not supported';
+    })
         : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
     progressString.listen((data) {
       setState(() {
@@ -212,8 +252,8 @@ class _DetailsPageState extends State<DetailsPage> {
   _setBoth() {
     Platform.isIOS
         ? setState(() {
-            progress = 'iOS is not supported';
-          })
+      progress = 'iOS is not supported';
+    })
         : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
     progressString.listen((data) {
       setState(() {
@@ -245,7 +285,6 @@ class _DetailsPageState extends State<DetailsPage> {
   handleStoragePermission() async {
     await Permission.storage.request().then((_) async {
       if (await Permission.storage.status == PermissionStatus.granted) {
-
         await handleDownload();
 
       } else if (await Permission.storage.status == PermissionStatus.denied) {
@@ -279,7 +318,7 @@ class _DetailsPageState extends State<DetailsPage> {
         btnOkOnPress: () {
           context.read<AdsBloc>().showAdmobInterstitialAd();        //-------admob--------
           //context.read<AdsBloc>().showFbAdd();                        //-------fb--------
-          
+
         }).show();
   }
 
@@ -292,7 +331,7 @@ class _DetailsPageState extends State<DetailsPage> {
             content: Text(
                 'You have to allow storage permission to download any wallpaper fro this app'),
             contentTextStyle:
-                TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+            TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
             actions: [
               FlatButton(
                 child: Text('Open Settins'),
@@ -312,12 +351,42 @@ class _DetailsPageState extends State<DetailsPage> {
         });
   }
 
+
   Future handleDownload() async {
+
+
+    initializeSetting();
     final ib = context.read<InternetBloc>();
     await context.read<InternetBloc>().checkInternet();
     if(ib.hasInternet == true){
+
       var path = await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_PICTURES);
-      await FlutterDownloader.enqueue(
+
+      try {
+
+        setState(() {
+          progress="Downloading...";
+        });
+        // Saved with this method.
+        var imageId = await ImageDownloader.downloadImage(imageUrl);
+        if (imageId == null) {
+          return;
+        }
+
+
+        // Below is a method of obtaining saved image information.
+        var fileName = await ImageDownloader.findName(imageId);
+        var path2 = await ImageDownloader.findPath(imageId);
+        await displayNotification("Wallpaper Downloaded Successfully!", "Tap to open",path2);
+        var size = await ImageDownloader.findByteSize(imageId);
+        var mimeType = await ImageDownloader.findMimeType(imageId);
+
+
+      } catch(e){
+        print(e);
+      }
+
+      /*   var outcome= await FlutterDownloader.enqueue(
       url: imageUrl,
       savedDir: path,
       fileName: '${Config().appName}-$catagory$timestamp',
@@ -325,17 +394,21 @@ class _DetailsPageState extends State<DetailsPage> {
       openFileFromNotification: true, // click on notification to open downloaded file (for Android)
     );
 
-    setState(() {
-      progress = 'Download Complete!\nCheck Your Status Bar';
-    });
+    print("outcome"+outcome.toString());*/
 
-    await Future.delayed(Duration(seconds: 2));
-    openCompleteDialog();
-      
+
+      setState(() {
+        progress = 'Download Complete!\nCheck Your Status Bar';
+      });
+
+      await Future.delayed(Duration(seconds: 2));
+      openCompleteDialog();
+
+
     } else{
       setState(() {
-      progress = 'Check your internet connection!';
-    });
+        progress = 'Check your internet connection!';
+      });
     }
   }
 
@@ -484,7 +557,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         } else{
                           openSetDialog();
                         }
-                        
+
                       },
                     ),
                     SizedBox(
@@ -614,7 +687,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 height: 40,
                 width: 40,
                 decoration:
-                    BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                 child: _buildLoveIcon(ub.uid)),
             onTap: () {
               _loveIconPressed();
@@ -629,7 +702,7 @@ class _DetailsPageState extends State<DetailsPage> {
               height: 40,
               width: 40,
               decoration:
-                  BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+              BoxDecoration(color: Colors.white, shape: BoxShape.circle),
               child: Icon(
                 Icons.close,
                 size: 25,
@@ -649,7 +722,7 @@ class _DetailsPageState extends State<DetailsPage> {
     if (sb.guestUser == false) {
       return StreamBuilder(
         stream:
-            Firestore.instance.collection('users').document(uid).snapshots(),
+        Firestore.instance.collection('users').document(uid).snapshots(),
         builder: (context, snap) {
           if (!snap.hasData) return LoveIcon().greyIcon;
           List d = snap.data['loved items'];
