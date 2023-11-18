@@ -27,57 +27,57 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  android_alarm_manager_plus: ^2.0.5
+  android_alarm_manager_plus: ^3.0.3
   android_power_manager: null
-  app_settings: ^4.1.6
-  awesome_dialog: ^2.1.1
+  app_settings: ^5.1.1
+  awesome_dialog: ^3.1.0
   build_runner: ^2.1.8
   cached_network_image: ^3.1.0
   carousel_slider: ^4.0.0
-  cloud_firestore: ^2.5.3
+  cloud_firestore: ^4.13.1
   connectivity: ^3.0.6
-  dio: ^4.0.6
-  dots_indicator: ^2.0.0
-  ext_storage: null
+  dio: ^5.3.3
+  dots_indicator: ^3.0.0
+  external_path: ^1.0.3
   firebase_auth: null
-  firebase_core: ^1.13.1
-  firebase_storage: ^10.2.17
+  firebase_core: ^2.22.0
+  firebase_storage: ^11.5.1
   flutter:
     sdk: flutter
   flutter_cache_manager: null
-  flutter_downloader: ^1.7.0
+  flutter_downloader: ^1.11.4
   flutter_launcher_icons: null
-  flutter_lints: ^1.0.0
-  flutter_local_notifications: any
+  flutter_lints: ^3.0.1
+  flutter_local_notifications: ^16.1.0
   flutter_native_splash: null
   flutter_staggered_grid_view: ^0.4.0
   flutter_wallpaper_manager: ^0.0.3
-  font_awesome_flutter: ^9.1.0
-  google_mobile_ads: ^0.13.4
-  google_sign_in: ^5.3.3
+  font_awesome_flutter: ^10.6.0
+  google_mobile_ads: ^3.1.0
+  google_sign_in: ^6.1.6
   hive: ^2.1.0
   hive_flutter: ^1.1.0
-  hive_generator: ^1.1.2
+  hive_generator: ^2.0.1
   image_downloader: ^0.31.0
-  image_gallery_saver: ^1.7.1
-  image_picker: ^0.8.5+3
+  image_gallery_saver: ^2.0.3
+  image_picker: ^1.0.4
   in_app_purchase: 0.5.2
-  intl: ^0.17.0
+  intl: ^0.18.1
   launch_review: ^3.0.1
   onesignal_flutter:
     git:
       url: https://github.com/luis901101/OneSignal-Flutter-SDK.git
       ref: migrate_android_embedding_v2
   open_filex: ^4.3.2
-  permission_handler: ^8.2.2
+  permission_handler: ^11.0.1
   power: ^0.5.0
   provider: ^6.0.1
   rounded_loading_button: ^2.0.9
   shared_preferences: ^2.0.13
-  shimmer: ^2.0.0
+  shimmer: ^3.0.0
   sliding_up_panel: ^2.0.0+1
   url_launcher: ^6.1.1
-  uuid: ^3.0.6
+  uuid: ^4.2.1
   wallpaper: ^1.0.7
 
 flutter_icons:
