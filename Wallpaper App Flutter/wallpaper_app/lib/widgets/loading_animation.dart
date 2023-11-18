@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({Key key}) : super(key: key);
+  const LoadingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class LoadingWidget extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 50),
+              margin: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 50),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.black12,
@@ -24,7 +24,7 @@ class LoadingWidget extends StatelessWidget {
                   Flexible(
                     flex: 2,
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: Colors.black12,
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
@@ -50,7 +50,7 @@ class LoadingWidget extends StatelessWidget {
                                     color: Colors.black12,
                                     borderRadius: BorderRadius.circular(25)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               Container(
@@ -62,7 +62,7 @@ class LoadingWidget extends StatelessWidget {
                               ),
                             ],
                           ),
-                          CircleAvatar(
+                          const CircleAvatar(
                             radius: 18,
                             backgroundColor: Colors.black26,
                           )
@@ -79,7 +79,7 @@ class LoadingWidget extends StatelessWidget {
 }
 
 class LoadingWidget1 extends StatelessWidget {
-  const LoadingWidget1({Key key}) : super(key: key);
+  const LoadingWidget1({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +99,7 @@ class LoadingWidget1 extends StatelessWidget {
                   Flexible(
                     flex: 5,
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: Colors.black12,
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10),
@@ -109,7 +109,7 @@ class LoadingWidget1 extends StatelessWidget {
                   Flexible(
                     flex: 2,
                     child: Container(
-                      margin: EdgeInsets.only(top: 10),
+                      margin: const EdgeInsets.only(top: 10),
                     ),
                   ),
                 ],

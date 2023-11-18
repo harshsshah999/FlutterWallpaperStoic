@@ -15,7 +15,7 @@ void openSnacbar(_scaffoldKey, snacMessage){
     ),
     action: SnackBarAction(
       label: 'Ok',
-      textColor: Colors.black54,
+      textColor: Colors.blueAccent,
       onPressed: () {},
     ),
   )

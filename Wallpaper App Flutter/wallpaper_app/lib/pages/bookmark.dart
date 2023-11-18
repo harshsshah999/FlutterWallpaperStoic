@@ -1,61 +1,155 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/src/provider.dart';
 import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
 import 'package:wallpaper_app/models/config.dart';
 import 'package:wallpaper_app/pages/details.dart';
 import 'package:wallpaper_app/pages/empty_page.dart';
 import 'package:wallpaper_app/widgets/cached_image.dart';
-import '../blocs/bookmark_bloc.dart';
 
-class BookmarkPage extends StatelessWidget {
-  const BookmarkPage({Key key}) : super(key: key);
+class FavouritePage extends StatefulWidget {
+  FavouritePage({Key? key, required this.userUID}) : super(key: key);
+  final String? userUID;
+
+  @override
+  _FavouritePageState createState() => _FavouritePageState();
+}
+
+class _FavouritePageState extends State<FavouritePage> {
+  
+  
+  
+
+
+  Future<List> _getData (List bookmarkedList)async {
+    print('main list: ${bookmarkedList.length}]');
+
+    List d = [];
+    if(bookmarkedList.length <= 10){
+      await FirebaseFirestore.instance
+        .collection('contents')
+        .where('timestamp', whereIn: bookmarkedList)
+        .get()
+        .then((QuerySnapshot snap) {
+          d.addAll(snap.docs);
+      });
+
+    }else if(bookmarkedList.length > 10){
+
+      int size = 10;
+      var chunks = [];
+
+      for(var i = 0; i< bookmarkedList.length; i+= size){    
+        var end = (i+size<bookmarkedList.length)?i+size:bookmarkedList.length;
+        chunks.add(bookmarkedList.sublist(i,end));
+      }
+
+      await FirebaseFirestore.instance
+        .collection('contents')
+        .where('timestamp', whereIn: chunks[0])
+        .get()
+        .then((QuerySnapshot snap) {
+          d.addAll(snap.docs);
+      }).then((value)async{
+        await FirebaseFirestore.instance
+        .collection('contents')
+        .where('timestamp', whereIn: chunks[1])
+        .get()
+        .then((QuerySnapshot snap) {
+          d.addAll(snap.docs);
+        });
+      });
+
+    }else if(bookmarkedList.length > 20){
+
+      int size = 10;
+      var chunks = [];
+
+      for(var i = 0; i< bookmarkedList.length; i+= size){    
+        var end = (i+size<bookmarkedList.length)?i+size:bookmarkedList.length;
+        chunks.add(bookmarkedList.sublist(i,end));
+      }
+
+      await FirebaseFirestore.instance
+        .collection('contents')
+        .where('timestamp', whereIn: chunks[0])
+        .get()
+        .then((QuerySnapshot snap) {
+          d.addAll(snap.docs);
+      }).then((value)async{
+        await FirebaseFirestore.instance
+        .collection('contents')
+        .where('timestamp', whereIn: chunks[1])
+        .get()
+        .then((QuerySnapshot snap) {
+          d.addAll(snap.docs);
+        });
+      }).then((value)async{
+        await FirebaseFirestore.instance
+        .collection('contents')
+        .where('timestamp', whereIn: chunks[2])
+        .get()
+        .then((QuerySnapshot snap) {
+          d.addAll(snap.docs);
+        });
+      });
+
+    }
+    
+    return d;
+    
+  }
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
-    final sb = context.watch<SignInBloc>();
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await context.read<BookmarkBloc>().getData();
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          centerTitle: false,
-          title: Text('Saved Items'),
-        ),
-        body: sb.guestUser == true
-            ? EmptyPage(
-                icon: FontAwesomeIcons.heart,
-                title: 'No wallpapers found.\n Sign in to access this feature',
-              )
-            : FutureBuilder(
-                future: context.watch<BookmarkBloc>().getData(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data.length == 0)
-                      return EmptyPage(
-                        icon: FontAwesomeIcons.heart,
-                        title: 'No wallpapers found',
-                      );
-                    return _buildList(snapshot);
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(snapshot.error),
-                    );
-                  }
+    final String _collectionName = 'users';
+    final String _snapText = 'loved items';
 
-                  return Center(
-                    child: CupertinoActivityIndicator(),
-                  );
-                },
-              ),
-      ),
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Saved Items')),
+      body: 
+      
+      context.read<SignInBloc>().guestUser == true || widget.userUID == null
+      ? EmptyPage(
+          icon: FontAwesomeIcons.heart,
+          title: 'No wallpapers found.\n Sign in to access this feature',
+        ) 
+      : StreamBuilder(
+          stream: FirebaseFirestore.instance.collection(_collectionName).doc(widget.userUID!).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot snap) {
+            if (!snap.hasData) return CircularProgressIndicator();
+            
+            List bookamrkedList = snap.data[_snapText];
+            return FutureBuilder(
+              future: _getData(bookamrkedList),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if(!snapshot.hasData){
+                  return Center(child: CircularProgressIndicator());
+                }else if (snapshot.hasError){
+                  return Center(child: Text('Error'),);
+                }else if (snapshot.hasData && snapshot.data.length == 0){
+                  return EmptyPage(icon: FontAwesomeIcons.heart,title: 'No wallpapers found',);
+                }else{
+                  return _buildList(snapshot);
+                } 
+                  
+              });
+            },
+        
+          ),
     );
   }
+
+
 
   Widget _buildList(snapshot) {
     return StaggeredGridView.countBuilder(
@@ -119,8 +213,7 @@ class BookmarkPage extends StatelessWidget {
           },
         );
       },
-      staggeredTileBuilder: (int index) =>
-          new StaggeredTile.count(2, index.isEven ? 4 : 3),
+      staggeredTileBuilder: (int index) => new StaggeredTile.count(2, index.isEven ? 4 : 3),
       mainAxisSpacing: 10,
       crossAxisSpacing: 10,
       padding: EdgeInsets.all(15),

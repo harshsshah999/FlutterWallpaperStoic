@@ -4,26 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wallpaper_app/models/config.dart';
 import 'package:wallpaper_app/pages/details.dart';
+import 'package:wallpaper_app/utils/snacbar.dart';
 import 'package:wallpaper_app/widgets/cached_image.dart';
 
 class NewItems extends StatefulWidget {
-  NewItems({Key key}) : super(key: key);
+  NewItems({Key? key, required this.scaffoldKey}) : super(key: key);
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
   _NewItemsState createState() => _NewItemsState();
 }
 
-class _NewItemsState extends State<NewItems> {
+class _NewItemsState extends State<NewItems> with AutomaticKeepAliveClientMixin {
 
 
 
-  final Firestore firestore = Firestore.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  ScrollController controller;
-  DocumentSnapshot _lastVisible;
-  bool _isLoading;
-  List<DocumentSnapshot> _data = new List<DocumentSnapshot>();
-  final scaffoldKey = GlobalKey<ScaffoldState>();
+  ScrollController? controller;
+  DocumentSnapshot? _lastVisible;
+  late bool _isLoading;
+  List<DocumentSnapshot> _data = [];
 
   @override
   void initState() {
@@ -40,37 +41,33 @@ class _NewItemsState extends State<NewItems> {
           .collection('contents')
           .orderBy('timestamp', descending: true)
           .limit(10)
-          .getDocuments();
+          .get();
     else
       data = await firestore
           .collection('contents')
           .orderBy('timestamp', descending: true)
-          .startAfter([_lastVisible['timestamp']])
+          .startAfter([_lastVisible!['timestamp']])
           .limit(10)
-          .getDocuments();
+          .get();
 
-    if (data != null && data.documents.length > 0) {
-      _lastVisible = data.documents[data.documents.length - 1];
+    if (data.docs.length > 0) {
+      _lastVisible = data.docs[data.docs.length - 1];
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _data.addAll(data.documents);
+          _data.addAll(data.docs);
         });
       }
     } else {
       setState(() => _isLoading = false);
-      scaffoldKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Text('No more posts!'),
-        ),
-      );
+      openSnacbar(widget.scaffoldKey, 'No more contents!');
     }
     return null;
   }
 
   @override
   void dispose() {
-    controller.removeListener(_scrollListener);
+    controller!.removeListener(_scrollListener);
     super.dispose();
   }
 
@@ -78,7 +75,7 @@ class _NewItemsState extends State<NewItems> {
 
   void _scrollListener() {
     if (!_isLoading) {
-      if (controller.position.pixels == controller.position.maxScrollExtent) {
+      if (controller!.position.pixels == controller!.position.maxScrollExtent) {
         setState(() => _isLoading = true);
         _getData();
       }
@@ -88,6 +85,7 @@ class _NewItemsState extends State<NewItems> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         Expanded(
@@ -103,7 +101,7 @@ class _NewItemsState extends State<NewItems> {
               child: Stack(
                 children: <Widget>[
                   Hero(
-                      tag: 'popular$index',
+                      tag: 'new$index',
                       child: cachedImage(d['image url'])),
                   Positioned(
                     bottom: 30,
@@ -146,7 +144,7 @@ class _NewItemsState extends State<NewItems> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => DetailsPage(
-                              tag: 'popular$index',
+                              tag: 'new$index',
                               imageUrl: d['image url'],
                               catagory: d['category'],
                               timestamp: d['timestamp'],
@@ -177,4 +175,11 @@ class _NewItemsState extends State<NewItems> {
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
+
+
+
+  
 }

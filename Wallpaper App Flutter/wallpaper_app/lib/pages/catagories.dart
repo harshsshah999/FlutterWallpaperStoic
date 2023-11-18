@@ -5,7 +5,7 @@ import '../blocs/data_bloc.dart';
 import '../pages/catagory_items.dart';
 
 class CatagoryPage extends StatefulWidget {
-  CatagoryPage({Key key}) : super(key: key);
+  CatagoryPage({Key? key}) : super(key: key);
 
   @override
   _CatagoryPageState createState() => _CatagoryPageState();
@@ -59,6 +59,7 @@ class _CatagoryPageState extends State<CatagoryPage> {
                     ),
                   ),
                   onTap: () {
+                    print("hi ");
                     Navigator.push(
                         context,
                         MaterialPageRoute(

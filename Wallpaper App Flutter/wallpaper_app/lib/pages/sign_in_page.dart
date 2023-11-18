@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:wallpaper_app/blocs/userdata_bloc.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../blocs/internet_bloc.dart';
 import '../blocs/sign_in_bloc.dart';
-import'../models/config.dart';
+import '../models/config.dart';
 import '../pages/home.dart';
 import '../utils/next_screen.dart';
 import '../utils/snacbar.dart';
 
 class SignInPage extends StatefulWidget {
-  SignInPage({Key key}) : super(key: key);
+  
+  SignInPage({Key? key, this.closeDialog}) : super(key: key);
+
+  final bool? closeDialog;
 
   @override
   _SignInPageState createState() => _SignInPageState();
@@ -18,132 +21,107 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
 
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  bool signInStartGoogle = false;
-  double leftPaddingGoogle = 20;
-  double rightPaddingGoogle = 20;
-  bool signInCompleteGoogle = false;
-
-
-  handleAnimationGoogle(){
-    setState(() {
-      leftPaddingGoogle = 10;
-      rightPaddingGoogle = 10;
-      signInStartGoogle = true;
-    });
-    
-  }
-
-
-  handleReverseAnimationGoogle (){
-    setState(() {
-      leftPaddingGoogle = 20;
-      rightPaddingGoogle = 20;
-      signInStartGoogle = false;
-    });
-  }
+  final RoundedLoadingButtonController _buttonController = RoundedLoadingButtonController();
 
 
 
-  handleGuestUser ()async{
+
+  handleGuestUser() async {
     final sb = context.read<SignInBloc>();
-    final ub = context.read<UserBloc>();
-    await sb.setGuestUser();
-    await sb.saveGuestUserData();
-    await ub.getUserData().then((_) => nextScreenReplace(context, HomePage()));
-
-    
-
+    await sb.setGuestUser().then((_){
+      if(widget.closeDialog == null || widget.closeDialog == false){
+        Future.delayed(const Duration(milliseconds: 500))
+        .then((value) => nextScreenReplace(context, const HomePage()));
+      }else{
+        Navigator.pop(context);
+      }
+    });
   }
 
 
-  
-  
 
-
-
-  handleGoogleSignIn() async{
+  Future handleGoogleSignIn() async {
     final sb = context.read<SignInBloc>();
     final ib = context.read<InternetBloc>();
     await ib.checkInternet();
-    if(ib.hasInternet == false){
+    if (ib.hasInternet == false) {
       openSnacbar(_scaffoldKey, 'Check your internet connection!');
-      
-    }else{
-      
-      handleAnimationGoogle();
-      await sb.signInWithGoogle().then((_){
-        if(sb.hasError == true){
+    } else {
+      await sb.signInWithGoogle().then((_) {
+        if (sb.hasError == true) {
           openSnacbar(_scaffoldKey, 'Something is wrong. Please try again.');
-          setState(() {signInStartGoogle = false;});
-          handleReverseAnimationGoogle();
-
-        }else {
-          sb.checkUserExists().then((value){
-          if(sb.userExists == true){
-            sb.getUserData(sb.uid)
-            .then((value) => sb.saveDataToSP()
-            .then((value) => sb.setSignIn()
-            .then((value){
-              setState(()=> signInCompleteGoogle = true);
-              handleAfterSignupGoogle();
-            })));
-          } else{
-            sb.getTimestamp()
-            .then((value) => sb.saveDataToSP()
-            .then((value) => sb.saveToFirebase()
-            .then((value) => sb.setSignIn()
-            .then((value){
-              setState(()=> signInCompleteGoogle = true);
-              handleAfterSignupGoogle();
+          _buttonController.reset();
+        } else {
+          sb.checkUserExists().then((isUserExisted) async {
+            if (isUserExisted) {
+              await sb.getUserDataFromFirebase(sb.uid)
+              .then((value) => sb.guestSignout())
+              .then((value) => sb.saveDataToSP()
+              .then((value) => sb.setSignIn()
+              .then((value) {
+                _buttonController.success();
+                handleAfterSignupGoogle();
+              })));
+            } else {
+              sb.getTimestamp()
+              .then((value) => sb.saveToFirebase()
+              .then((value) => sb.increaseUserCount())
+              .then((value) => sb.guestSignout())
+              .then((value) => sb.saveDataToSP()
+              .then((value) => sb.setSignIn()
+              .then((value) {
+                _buttonController.success();
+                handleAfterSignupGoogle();
             }))));
-          }
-            });
-          
+            }
+          });
         }
       });
     }
   }
 
 
-  handleAfterSignupGoogle (){
-    setState(() {
-      leftPaddingGoogle = 20;
-      rightPaddingGoogle = 20;
-      Future.delayed(Duration(milliseconds: 1000)).then((f){
-      nextScreenReplace(context, HomePage());
-    });
+
+  handleAfterSignupGoogle() {
+    Future.delayed(const Duration(milliseconds: 1000)).then((f) {
+      if(widget.closeDialog == null || widget.closeDialog == false){
+        nextScreenReplace(context, const HomePage());
+      }else{
+        Navigator.pop(context);
+      }
     });
   }
-
-
+  
 
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        actions: [
-          FlatButton(
-            onPressed: (){
-              handleGuestUser();
-            }, 
-            child: Text('Skip'))
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 90, left: 40, right: 40, bottom:20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Flexible(
+        key: _scaffoldKey,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          actions: [
+
+            widget.closeDialog == null || widget.closeDialog == false ?
+            TextButton(
+                onPressed: () {
+                  handleGuestUser();
+                },
+                child: const Text('Skip'))
+            : Container()
+          ],
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 90, left: 40, right: 40, bottom: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Flexible(
                   flex: 2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,102 +131,70 @@ class _SignInPageState extends State<SignInPage> {
                         height: 80,
                         width: 80,
                       ),
-
-                      SizedBox(height: 40,),
-
-                      Text('Welcome to ${Config().appName}!', 
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w600
-                        ),
-                      
+                      const SizedBox(
+                        height: 40,
                       ),
-
-                      SizedBox(height: 8,),
-
-                      Text('Explore hundreds of free stoic wallpapers for your phone and set them as your Lockscreen or HomeScreen anytime you want.',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey[600]
+                      Text(
+                        'Welcome to ${Config().appName}!',
+                        style: const TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.w600),
                       ),
-                      
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        'Explore hundreds of free stoic wallpapers for your phone and set them as your Lockscreen or HomeScreen anytime you want.',
+                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
                       )
                     ],
                   ),
                 ),
-
-                
-
-
-            Flexible(
-              flex: 2,
-              child: Column(
-                //crossAxisAlignment: cr,
-                children: <Widget>[
-                  Container(
-                        margin: EdgeInsets.only(top: 80),
-                        height: 45,
-                        decoration: BoxDecoration(
+                Flexible(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 45,
+                          width: MediaQuery.of(context).size.width * 0.70,
+                          child: RoundedLoadingButton(
+                            child: Wrap(
+                              children: [
+                                const Icon(
+                                  FontAwesomeIcons.google,
+                                  size: 25,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                const Text(
+                                  'Sign In with Google',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white),
+                                )
+                              ],
+                            ),
+                            controller: _buttonController,
+                            onPressed: () => handleGoogleSignIn(),
+                            width: MediaQuery.of(context).size.width * 0.80,
                             color: Colors.blueAccent,
-                            borderRadius: BorderRadius.circular(25)),
-                        child: AnimatedPadding(
-                            padding: EdgeInsets.only(left: leftPaddingGoogle, right: rightPaddingGoogle, ),
-                            duration: Duration(milliseconds: 1000),
-                            child: AnimatedCrossFade(
-                              
-                              duration: Duration(milliseconds: 400),
-                              firstChild: _firstChildGoogle(),
-                              secondChild: signInCompleteGoogle == false ? _secondChildGoogle() : _firstChildGoogle(),
-                              crossFadeState: signInStartGoogle == false 
-                              ? CrossFadeState.showFirst
-                              : CrossFadeState.showSecond,
-                            ))),
-                ],
-              )
-              )
+                            elevation: 0,
+                            borderRadius: 25,
+                          ),
+                        ),
 
 
-              
-            ],
+
+                      ],
+                    ))
+              ],
+            ),
           ),
-        ),
-      )
-    );
+        ));
   }
 
-
-    Widget _firstChildGoogle() {
-    return FlatButton.icon(
-      icon: signInCompleteGoogle == false ?
-      Icon(FontAwesomeIcons.google, size: 22, color: Colors.white,):
-      Icon(Icons.done, size: 25, color: Colors.white,),
-
-
-      label: signInCompleteGoogle == false ? 
-      Text(' Continue with Google', style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white
-                  ),) :
-      Text(' Completed', style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white
-                  ),),
-      onPressed: () {
-        handleGoogleSignIn();
-      },
-    );
-  }
-
-  Widget _secondChildGoogle(){
-    return Container(
-      padding: EdgeInsets.all(10),
-      height: 45,
-      width: 45,
-      child: CircularProgressIndicator(
-        strokeWidth: 3,
-        backgroundColor: Colors.white,
-      ));
-  }
+  
 }
