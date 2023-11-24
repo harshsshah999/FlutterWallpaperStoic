@@ -552,7 +552,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   static void downloadCallback(
-      String id, int status, int progress) {
+      String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('downloader_send_port')!;
     send.send([id, status, progress]);
@@ -832,7 +832,7 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(12),
                           child: DotsIndicator(
                             dotsCount: 5,
-                            position: listIndex,
+                            position: listIndex.toDouble(),
                             decorator: DotsDecorator(
                               activeColor: Colors.black,
                               color: Colors.black,

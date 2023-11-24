@@ -11,7 +11,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:external_path/external_path.dart';
+import 'package:ext_storage/ext_storage.dart';
 
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:flutter/material.dart';
@@ -335,8 +335,7 @@ class _DetailsPageState extends State<DetailsPage> {
     var initializeAndroid = const AndroidInitializationSettings('icon_stoic');
     var initializeSetting = InitializationSettings(android: initializeAndroid);
     await flutterLocalNotificationsPlugin.initialize(initializeSetting,
-        onDidReceiveNotificationResponse: selectNotification);
-        
+        onSelectNotification: selectNotification as void Function(String?)?);
   }
 
   Future<void> displayNotification(
@@ -352,18 +351,20 @@ class _DetailsPageState extends State<DetailsPage> {
         payload: imagePath);
   }
 
-  Future selectNotification(NotificationResponse notificationResponse) async {
-    debugPrint('notification payload: $notificationResponse');
-    OpenFilex.open(notificationResponse.payload);
+  Future selectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: $payload');
+      OpenFilex.open(payload);
     }
+  }
 
   Future handleDownload() async {
     initializeSetting();
     final ib = context.read<InternetBloc>();
     await context.read<InternetBloc>().checkInternet();
     if (ib.hasInternet == true) {
-      var path = await ExternalPath.getExternalStoragePublicDirectory(
-          ExternalPath.DIRECTORY_PICTURES);
+      var path = await ExtStorage.getExternalStoragePublicDirectory(
+          ExtStorage.DIRECTORY_PICTURES);
 
       try {
         setState(() {
