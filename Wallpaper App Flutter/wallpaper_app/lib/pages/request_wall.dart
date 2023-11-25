@@ -121,8 +121,10 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                     Container(
                       height: 50,
                       // ignore: deprecated_member_use
-                      child: RaisedButton(
-                        color: Colors.black,
+                      child: ElevatedButton(
+                        style:ElevatedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                        ),
                         onPressed: () {
                           saveDataToDB();
                         },
@@ -189,7 +191,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                 'Please enter a topic or description',
               ),
               actions: [
-                FlatButton(
+                TextButton(
                   child: const Text('OK'),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -248,7 +250,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                   'Your request has been sent successfully',
                 ),
                 actions: [
-                  FlatButton(
+                  TextButton(
                     child: const Text('OK'),
                     onPressed: () {
                       Navigator.of(context).pop();

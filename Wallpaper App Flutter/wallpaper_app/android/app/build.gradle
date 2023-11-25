@@ -65,7 +65,7 @@ android {
     lintOptions {
         abortOnError false
     }
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 31
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

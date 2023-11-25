@@ -154,7 +154,7 @@ packages:
       name: characters
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   charcode:
     dependency: transitive
     description:
@@ -273,7 +273,7 @@ packages:
       name: dbus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.1"
+    version: "0.5.4"
   dio:
     dependency: "direct main"
     description:
@@ -288,10 +288,10 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  ext_storage:
+  external_path:
     dependency: "direct main"
     description:
-      name: ext_storage
+      name: external_path
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
@@ -301,7 +301,7 @@ packages:
       name: ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.2"
+    version: "1.2.1"
   file:
     dependency: transitive
     description:
@@ -432,14 +432,14 @@ packages:
       name: flutter_local_notifications
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "9.4.0"
+    version: "9.1.4"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
       name: flutter_local_notifications_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.2"
+    version: "0.3.0"
   flutter_local_notifications_platform_interface:
     dependency: transitive
     description:
@@ -724,14 +724,14 @@ packages:
       name: material_color_utilities
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   meta:
     dependency: transitive
     description:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.0"
+    version: "1.8.0"
   mime:
     dependency: transitive
     description:
@@ -762,13 +762,13 @@ packages:
       url: "https://github.com/luis901101/OneSignal-Flutter-SDK.git"
     source: git
     version: "3.2.3"
-  open_file:
+  open_file_safe:
     dependency: "direct main"
     description:
-      name: open_file
+      name: open_file_safe
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.1"
+    version: "3.2.3"
   package_config:
     dependency: transitive
     description:
@@ -810,7 +810,7 @@ packages:
       name: path_provider_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.5"
+    version: "2.1.11"
   path_provider_macos:
     dependency: transitive
     description:
@@ -831,7 +831,7 @@ packages:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.5"
+    version: "2.0.7"
   pedantic:
     dependency: transitive
     description:
@@ -1235,7 +1235,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.2"
+    version: "2.6.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -1258,5 +1258,5 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.17.0 <3.0.0"
-  flutter: ">=3.0.0"
+  dart: ">=2.18.0 <3.0.0"
+  flutter: ">=3.3.0"

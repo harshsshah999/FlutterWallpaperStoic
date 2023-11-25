@@ -11,13 +11,12 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:ext_storage/ext_storage.dart';
-
+import 'package:external_path/external_path.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:open_file_safe/open_file_safe.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -354,7 +353,7 @@ class _DetailsPageState extends State<DetailsPage> {
   Future selectNotification(String payload) async {
     if (payload != null) {
       debugPrint('notification payload: $payload');
-      OpenFilex.open(payload);
+      OpenFile.open(payload);
     }
   }
 
@@ -363,8 +362,8 @@ class _DetailsPageState extends State<DetailsPage> {
     final ib = context.read<InternetBloc>();
     await context.read<InternetBloc>().checkInternet();
     if (ib.hasInternet == true) {
-      var path = await ExtStorage.getExternalStoragePublicDirectory(
-          ExtStorage.DIRECTORY_PICTURES);
+      var path = await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_PICTURES);
 
       try {
         setState(() {
