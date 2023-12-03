@@ -133,7 +133,7 @@ class _DetailsPageState extends State<DetailsPage> {
         ? setState(() {
             progress = 'iOS is not supported';
           })
-        : progressString = Wallpaper.imageDownloadProgress(imageUrl!);
+        : progressString = Wallpaper.ImageDownloadProgress(imageUrl!);
     progressString.listen((data) {
       setState(() {
         downloading = true;
@@ -162,7 +162,7 @@ class _DetailsPageState extends State<DetailsPage> {
         ? setState(() {
             progress = 'iOS is not supported';
           })
-        : progressString = Wallpaper.imageDownloadProgress(imageUrl!);
+        : progressString = Wallpaper.ImageDownloadProgress(imageUrl!);
     progressString.listen((data) {
       setState(() {
         //res = data;
@@ -192,7 +192,7 @@ class _DetailsPageState extends State<DetailsPage> {
         ? setState(() {
             progress = 'iOS is not supported';
           })
-        : progressString = Wallpaper.imageDownloadProgress(imageUrl!);
+        : progressString = Wallpaper.ImageDownloadProgress(imageUrl!);
     progressString.listen((data) {
       setState(() {
         downloading = true;
