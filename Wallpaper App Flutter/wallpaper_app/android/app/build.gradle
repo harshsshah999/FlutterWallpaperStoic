@@ -65,7 +65,7 @@ android {
     lintOptions {
         abortOnError false
     }
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

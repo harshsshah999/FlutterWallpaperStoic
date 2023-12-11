@@ -93,10 +93,7 @@ Future<void> displayNotification(String title, String body) async {
     0,
     title,
     body,
-    const NotificationDetails(
-      android: AndroidNotificationDetails('channel id', 'channel name',
-          priority: Priority.high),
-    ),
+    const NotificationDetails(android: AndroidNotificationDetails('channel id', 'channel name', 'channel description', priority: Priority.high))
   );
 }
 

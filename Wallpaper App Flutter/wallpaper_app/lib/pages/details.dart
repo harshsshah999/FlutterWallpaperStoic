@@ -334,7 +334,7 @@ class _DetailsPageState extends State<DetailsPage> {
     var initializeAndroid = const AndroidInitializationSettings('icon_stoic');
     var initializeSetting = InitializationSettings(android: initializeAndroid);
     await flutterLocalNotificationsPlugin.initialize(initializeSetting,
-        onSelectNotification: selectNotification as void Function(String?)?);
+        onSelectNotification: selectNotification as Future<dynamic> Function(String?)?);
   }
 
   Future<void> displayNotification(
@@ -344,7 +344,7 @@ class _DetailsPageState extends State<DetailsPage> {
         title,
         body,
         const NotificationDetails(
-          android: AndroidNotificationDetails('channel id', 'channel name',
+          android: AndroidNotificationDetails('channel id', 'channel name', 'channel description',
               priority: Priority.max),
         ),
         payload: imagePath);
