@@ -4,8 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
-import 'package:wallpaper_app/pages/request_wall.dart';
+import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
+import 'package:stoicwallpaper/pages/request_wall.dart';
 import '../models/config.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../pages/bookmark.dart';
@@ -16,7 +16,7 @@ import '../utils/next_screen.dart';
 import 'package:provider/provider.dart';
 
 class DrawerWidget extends StatefulWidget {
-  DrawerWidget({Key? key}) : super(key: key);
+  const DrawerWidget({super.key});
 
   @override
   _DrawerWidgetState createState() => _DrawerWidgetState();
@@ -64,24 +64,24 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         context: context1,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               'Logout?',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
-            content: Text('Do you really want to Logout?'),
+            content: const Text('Do you really want to Logout?'),
             actions: <Widget>[
               TextButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () async {
                   final sb = context.read<SignInBloc>();
                   Navigator.pop(context);
                   await sb
                       .userSignout()
-                      .then((_) => nextScreenReplace(context, SignInPage()));
+                      .then((_) => nextScreenReplace(context, const SignInPage()));
                 },
               ),
               TextButton(
-                child: Text('No'),
+                child: const Text('No'),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -121,12 +121,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           child: Column(
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 50, left: 0),
+                padding: const EdgeInsets.only(top: 50, left: 0),
                 alignment: Alignment.center,
                 height: 150,
                 child: Text(
                   Config().hashTag.toUpperCase(),
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
               ),
               Expanded(
@@ -134,7 +134,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   itemCount: title.length,
                   itemBuilder: (BuildContext context, int index) {
                     return InkWell(
-                      child: Container(
+                      child: SizedBox(
                         height: 45,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 15),
@@ -145,11 +145,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                 color: Colors.grey,
                                 size: 22,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                               ),
                               Text(title[index],
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500))
                             ],
@@ -159,16 +159,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       onTap: () {
                         Navigator.pop(context);
                         if (index == 0) {
-                          nextScreeniOS(context, CatagoryPage());
+                          nextScreeniOS(context, const CatagoryPage());
                         } else if (index == 1) {
-                          nextScreeniOS(context, ExplorePage());
+                          nextScreeniOS(context, const ExplorePage());
                         } else if (index == 2) {
                           nextScreeniOS(
                               context,
                               FavouritePage(
                                   userUID: context.read<SignInBloc>().uid));
                         } else if (index == 3) {
-                          nextScreeniOS(context, RequestWallpaper());
+                          nextScreeniOS(context, const RequestWallpaper());
                         } else if (index == 4) {
                           aboutAppDialog();
                         } else {
@@ -178,16 +178,18 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return Divider();
+                    return const Divider();
                   },
                 ),
               ),
               Row(
                 children: [
-                  Text("Follow us on:"),
+                  const Text("Follow us on:"),
                   IconButton(
-                      icon: new Image.asset('assets/images/insta.png'),
-                      onPressed: _launchInsta)
+                      icon: Image.asset('assets/images/insta.png'),
+                      onPressed: _launchInsta,
+                      iconSize: 5,
+                  )
                 ],
               ),
               Column(
@@ -196,12 +198,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       ? Container()
                       : Column(
                           children: [
-                            Divider(),
+                            const Divider(),
                             InkWell(
-                              child: Container(
+                              child: const SizedBox(
                                 height: 45,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 15),
+                                  padding: EdgeInsets.only(left: 15),
                                   child: Row(
                                     children: <Widget>[
                                       Icon(

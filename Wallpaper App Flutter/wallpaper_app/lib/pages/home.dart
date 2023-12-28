@@ -21,21 +21,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:wallpaper_app/blocs/ads_bloc.dart';
-import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
-import 'package:wallpaper_app/main.dart';
-import 'package:wallpaper_app/models/providermodel.dart';
-import 'package:wallpaper_app/utils/dialog.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
+import 'package:stoicwallpaper/main.dart';
+import 'package:stoicwallpaper/models/providermodel.dart';
+import 'package:stoicwallpaper/utils/dialog.dart';
 import '../blocs/data_bloc.dart';
 
 import '../blocs/internet_bloc.dart';
-import 'package:power/power.dart';
+// import 'package:power/power.dart';
 import 'dart:io';
 import '../models/config.dart';
 import '../pages/bookmark.dart';
@@ -64,7 +63,7 @@ List DocList = [];
 FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 final userRef = FirebaseFirestore.instance.collection('users');
 
-final int helloAlarmID = 0;
+const int helloAlarmID = 0;
 
 String? _alarmDuration;
 const Durations = [
@@ -93,7 +92,7 @@ Future<void> displayNotification(String title, String body) async {
     0,
     title,
     body,
-    const NotificationDetails(android: AndroidNotificationDetails('channel id', 'channel name', 'channel description', priority: Priority.high))
+    const NotificationDetails(android: AndroidNotificationDetails('channel id', 'channel name', priority: Priority.high))
   );
 }
 
@@ -118,19 +117,19 @@ getUsers() async {
   await Hive.initFlutter();
   box = await Hive.openBox('box');
   _wallpapers = box.get("_wallpapers") as String?;
-  debugPrint("hello " + _wallpapers.toString());
+  debugPrint("hello $_wallpapers");
   if (_wallpapers.toString() == "Random" && internetConnected) {
     debugPrint("random block");
     contentRef.get().then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((DocumentSnapshot documentSnapshot) {
+      for (var documentSnapshot in querySnapshot.docs) {
         DocList.add(documentSnapshot.id);
-      });
+      }
       Random random = Random();
       int num = random.nextInt(DocList.length);
       debugPrint(DocList.elementAt(num));
       contentRef.doc(DocList.elementAt(num)).get().then((snapshot) async {
         URL = snapshot.data()!['image url'].toString();
-        debugPrint(URL! + " : " + DateTime.now().toString());
+        debugPrint("${URL!} : ${DateTime.now()}");
         int? location;
         _locationToSet = box.get("_location") as String?;
         // _locationToSet = prefs.get("_location") as String?;
@@ -161,7 +160,7 @@ getUsers() async {
       contentRef.doc(savedList.elementAt(num)).get().then((snapshot) async {
         debugPrint(savedList.elementAt(num));
         URL = snapshot.data()!['image url'].toString();
-        debugPrint(URL! + " : " + DateTime.now().toString());
+        debugPrint("${URL!} : ${DateTime.now()}");
         int? location;
         _locationToSet = box.get("_location") as String?;
         // _locationToSet = prefs.get("_location") as String?;
@@ -180,7 +179,7 @@ getUsers() async {
   }
 }
 
-void printHello(bool isSet, var _scaffoldKey) async {
+void printHello(bool isSet, var scaffoldKey) async {
   await AndroidAlarmManager.initialize();
   final prefs = await SharedPreferences.getInstance();
   if (isSet) {
@@ -188,39 +187,39 @@ void printHello(bool isSet, var _scaffoldKey) async {
       await AndroidAlarmManager.periodic(
           const Duration(minutes: 15), helloAlarmID, getUsers,
           exact: true, allowWhileIdle: true, rescheduleOnReboot: true);
-      openSnacbar(_scaffoldKey, 'Auto Wallpaper On, Interval: 15 minutes');
+      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 minutes');
     } else if (_alarmDuration == "15 seconds") {
       await AndroidAlarmManager.periodic(
           const Duration(seconds: 15), helloAlarmID, getUsers);
-      openSnacbar(_scaffoldKey, 'Auto Wallpaper On, Interval: 15 seconds');
+      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 seconds');
     } else if (_alarmDuration == "30 minutes") {
       await AndroidAlarmManager.periodic(
         const Duration(minutes: 30),
         helloAlarmID,
         getUsers,
       );
-      openSnacbar(_scaffoldKey, 'Auto Wallpaper On, Interval: 30 minutes');
+      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 30 minutes');
     } else if (_alarmDuration == "60 minutes") {
       await AndroidAlarmManager.periodic(
         const Duration(minutes: 60),
         helloAlarmID,
         getUsers,
       );
-      openSnacbar(_scaffoldKey, 'Auto Wallpaper On, Interval: 60 minutes');
+      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 60 minutes');
     } else if (_alarmDuration == "12 hours") {
       await AndroidAlarmManager.periodic(
         const Duration(hours: 12),
         helloAlarmID,
         getUsers,
       );
-      openSnacbar(_scaffoldKey, 'Auto Wallpaper On, Interval: 12 hours');
+      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 12 hours');
     } else {
       await AndroidAlarmManager.periodic(
         const Duration(hours: 24),
         helloAlarmID,
         getUsers,
       );
-      openSnacbar(_scaffoldKey, 'Auto Wallpaper On, Interval: 24 hours');
+      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 24 hours');
     }
     getUsers();
     prefs.setBool("isAlarmOn", true);
@@ -233,7 +232,7 @@ void printHello(bool isSet, var _scaffoldKey) async {
 //NEW ADDED
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -253,7 +252,7 @@ class _HomePageState extends State<HomePage> {
     bool lowPowerMode;
 
     try {
-      lowPowerMode = await Power.isLowPowerMode;
+      lowPowerMode = true;
     } on PlatformException {
       lowPowerMode = false;
     }
@@ -344,11 +343,11 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  Future<void> ChangerAlert(var _scaffoldKey) async {
+  Future<void> ChangerAlert(var scaffoldKey) async {
     var prefs = await SharedPreferences.getInstance();
     User? firebaseUser = _firebaseAuth.currentUser;
     if (firebaseUser == null) {
-      openSnacbar(_scaffoldKey, "Please login to use this feature");
+      openSnacbar(scaffoldKey, "Please login to use this feature");
     } else {
       if (prefs.getBool("isAlarmOn") == null) {
         prefs.setBool("isAlarmOn", false);
@@ -364,7 +363,7 @@ class _HomePageState extends State<HomePage> {
                 actions: [
                   TextButton(
                       onPressed: () {
-                        printHello(false, _scaffoldKey);
+                        printHello(false, scaffoldKey);
                         Navigator.pop(context);
                       },
                       child: const Text("Yes")),
@@ -541,7 +540,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   initOnesignal() {
-    OneSignal.shared.setAppId(Config().onesignalAppId);
+    // OneSignal.shared.setAppId(Config().onesignalAppId);
   }
 
   initDownloader() {
@@ -549,7 +548,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
+      String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('downloader_send_port')!;
     send.send([id, status, progress]);
@@ -591,7 +590,7 @@ class _HomePageState extends State<HomePage> {
         : Scaffold(
             key: _scaffoldKey,
             backgroundColor: Colors.white,
-            endDrawer: DrawerWidget(),
+            endDrawer: const DrawerWidget(),
             body: SafeArea(
               child: Column(
                 children: <Widget>[
@@ -670,7 +669,7 @@ class _HomePageState extends State<HomePage> {
                             onPageChanged: (int index, reason) {
                               setState(() => listIndex = index);
                             }),
-                        items: db.alldata.length == 0
+                        items: db.alldata.isEmpty
                             ? [0, 1]
                                 .take(1)
                                 .map((f) => const LoadingWidget())
@@ -816,7 +815,7 @@ class _HomePageState extends State<HomePage> {
                         left: w * 0.23,
                         child: const Text(
                           'WALL OF THE DAY',
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: Colors.white,
                               fontSize: 25,
                               fontWeight: FontWeight.bold),
@@ -829,7 +828,7 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(12),
                           child: DotsIndicator(
                             dotsCount: 5,
-                            position: listIndex.toDouble(),
+                            position: listIndex,
                             decorator: DotsDecorator(
                               activeColor: Colors.black,
                               color: Colors.black,
@@ -861,7 +860,7 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => CatagoryPage()));
+                                    builder: (context) => const CatagoryPage()));
                           },
                         ),
                         IconButton(
@@ -871,7 +870,7 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ExplorePage()));
+                                    builder: (context) => const ExplorePage()));
                           },
                         ),
                         IconButton(
@@ -893,12 +892,8 @@ class _HomePageState extends State<HomePage> {
                             print(context.read<SignInBloc>().uid);
                             for (var prod in pm.products) {
                               debugPrint("prod.id: ${prod.id}");
-                              if (pm.hasPurchased(prod.id) != null) {
-                                ChangerAlert(_scaffoldKey);
-                              } else {
-                                OpenAlert(prod);
-                              }
-                            }
+                              ChangerAlert(_scaffoldKey);
+                                                        }
                           },
                         )
                       ],

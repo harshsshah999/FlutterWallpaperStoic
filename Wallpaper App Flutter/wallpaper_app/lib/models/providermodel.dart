@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 class ProviderModel with ChangeNotifier {
-  InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+  final InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
   bool available = true;
   StreamSubscription? subsription;
   final String myProductID = 'stoic_autochange';
@@ -47,7 +47,7 @@ class ProviderModel with ChangeNotifier {
   void verifyPurchase() {
     PurchaseDetails purchase = hasPurchased(myProductID);
 
-    if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+    if (purchase.status == PurchaseStatus.purchased) {
       if (purchase.pendingCompletePurchase) {
         _iap.completePurchase(purchase);
         isPurchased = true;
@@ -61,7 +61,7 @@ class ProviderModel with ChangeNotifier {
   }
 
   Future<void> _getProducts() async {
-    Set<String> ids = Set.from([myProductID]);
+    Set<String> ids = {myProductID};
     ProductDetailsResponse response = await _iap.queryProductDetails(ids);
     products = response.productDetails;
   }

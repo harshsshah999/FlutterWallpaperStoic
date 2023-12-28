@@ -7,9 +7,9 @@ class BookmarkBloc extends ChangeNotifier {
 
   Future<List> getData() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    String? _uid = sp.getString('uid');
+    String? uid = sp.getString('uid');
 
-    final DocumentReference ref = firestore.collection('users').doc(_uid);
+    final DocumentReference ref = firestore.collection('users').doc(uid);
     DocumentSnapshot snap = await ref.get();
     List d = snap['loved items'];
     List filteredData = [];

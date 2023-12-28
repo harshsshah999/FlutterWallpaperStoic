@@ -11,11 +11,11 @@ Widget cachedImage(imageUrl) {
           borderRadius: BorderRadius.circular(10),
           boxShadow: <BoxShadow>[
             BoxShadow(
-                color: Colors.grey[400]!, blurRadius: 2, offset: Offset(2, 2))
+                color: Colors.grey[400]!, blurRadius: 2, offset: const Offset(2, 2))
           ],
           image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
     ),
-    placeholder: (context, url) => LoadingWidget1(),
-    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+    placeholder: (context, url) => const LoadingWidget1(),
+    errorWidget: (context, url, error) => const Center(child: Icon(Icons.error)),
   );
 }

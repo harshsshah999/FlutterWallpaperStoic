@@ -14,19 +14,19 @@ class UserBloc extends ChangeNotifier {
     DocumentSnapshot snap = await ref.get();
     DocumentSnapshot snap1 = await ref1.get();
     List d = snap['loved items'];
-    int? _loves = snap1['loves'];
+    int? loves = snap1['loves'];
 
     if (d.contains(timestamp)) {
 
       List a = [timestamp];
       await ref.update({'loved items': FieldValue.arrayRemove(a)});
-      ref1.update({'loves': _loves! - 1});
+      ref1.update({'loves': loves! - 1});
 
     } else {
 
       d.add(timestamp);
       await ref.update({'loved items': FieldValue.arrayUnion(d)});
-      ref1.update({'loves': _loves! + 1});
+      ref1.update({'loves': loves! + 1});
 
     }
 

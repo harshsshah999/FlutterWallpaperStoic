@@ -8,8 +8,8 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:wallpaper_app/blocs/ads_bloc.dart';
-import 'package:wallpaper_app/models/providermodel.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+import 'package:stoicwallpaper/models/providermodel.dart';
 
 // import 'package:workmanager/workmanager.dart';
 import './blocs/bookmark_bloc.dart';
@@ -27,7 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 late Box box;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: const FirebaseOptions(apiKey:'AIzaSyDJjDinogigbt8XRSd_D6MrHgiBkGorRr8',appId:'1:502349033379:android:2c92114ca4d7a92d9af416',messagingSenderId:'502349033379',projectId:'stoicwall-79c94'));
   await Hive.initFlutter();
   box = await Hive.openBox('box');
   await FlutterDownloader.initialize(debug: true);
@@ -61,7 +61,7 @@ void initializeSetting() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               textTheme: const TextTheme(
-                  headline6: TextStyle(
+                  titleLarge: TextStyle(
                 color: Colors.black,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
@@ -122,13 +122,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyApp1 extends StatelessWidget {
-  const MyApp1({Key? key}) : super(key: key);
+  const MyApp1({super.key});
 
   @override
   Widget build(BuildContext context) {
     final sb = context.watch<SignInBloc>();
     return sb.isSignedIn == false && sb.guestUser == false
-        ? SignInPage()
+        ? const SignInPage()
         : const HomePage();
   }
 }

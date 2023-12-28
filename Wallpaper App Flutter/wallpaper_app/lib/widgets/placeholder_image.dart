@@ -7,7 +7,7 @@ Widget placeHolderImage(imageUrl) {
         borderRadius: BorderRadius.circular(10),
         boxShadow: <BoxShadow>[
           BoxShadow(
-              color: Colors.grey[400]!, blurRadius: 2, offset: Offset(2, 2))
+              color: Colors.grey[400]!, blurRadius: 2, offset: const Offset(2, 2))
         ],
         image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover)),
     child: Center(child: Icon(Icons.image, size: 35, color: Colors.grey[500])),

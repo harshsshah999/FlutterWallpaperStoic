@@ -109,8 +109,8 @@ class SignInBloc extends ChangeNotifier {
 
   Future getTimestamp() async {
     DateTime now = DateTime.now();
-    String _timestamp = DateFormat('yyyyMMddHHmmss').format(now);
-    timestamp = _timestamp;
+    String timestamp = DateFormat('yyyyMMddHHmmss').format(now);
+    timestamp = timestamp;
   }
 
   Future saveDataToSP() async {
@@ -141,10 +141,10 @@ class SignInBloc extends ChangeNotifier {
         .doc(uid)
         .get()
         .then((DocumentSnapshot snap) {
-      this._uid = snap['uid'];
-      this._name = snap['name'];
-      this._email = snap['email'];
-      this._imageUrl = snap['image url'];
+      _uid = snap['uid'];
+      _name = snap['name'];
+      _email = snap['email'];
+      _imageUrl = snap['image url'];
       debugPrint("name: $_name, Image Url: $imageUrl ");
     });
     notifyListeners();
@@ -203,7 +203,7 @@ class SignInBloc extends ChangeNotifier {
 
 
   Future<int> getTotalUsersCount () async {
-    final String fieldName = 'count';
+    const String fieldName = 'count';
     final DocumentReference ref = firestore.collection('item_count').doc('users_count');
       DocumentSnapshot snap = await ref.get();
       if(snap.exists == true){

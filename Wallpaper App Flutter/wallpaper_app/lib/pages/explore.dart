@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/widgets/new_items.dart';
-import 'package:wallpaper_app/widgets/popular_items.dart';
+import 'package:stoicwallpaper/widgets/new_items.dart';
+import 'package:stoicwallpaper/widgets/popular_items.dart';
 
 class ExplorePage extends StatefulWidget {
-  ExplorePage({Key? key}) : super(key: key);
+  const ExplorePage({super.key});
 
   @override
   _ExplorePageState createState() => _ExplorePageState();

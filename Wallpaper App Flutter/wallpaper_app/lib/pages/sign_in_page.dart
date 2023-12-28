@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../blocs/internet_bloc.dart';
 import '../blocs/sign_in_bloc.dart';
 import '../models/config.dart';
@@ -11,7 +10,7 @@ import '../utils/snacbar.dart';
 
 class SignInPage extends StatefulWidget {
   
-  SignInPage({Key? key, this.closeDialog}) : super(key: key);
+  const SignInPage({super.key, this.closeDialog});
 
   final bool? closeDialog;
 
@@ -22,7 +21,6 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final RoundedLoadingButtonController _buttonController = RoundedLoadingButtonController();
 
 
 
@@ -51,7 +49,6 @@ class _SignInPageState extends State<SignInPage> {
       await sb.signInWithGoogle().then((_) {
         if (sb.hasError == true) {
           openSnacbar(_scaffoldKey, 'Something is wrong. Please try again.');
-          _buttonController.reset();
         } else {
           sb.checkUserExists().then((isUserExisted) async {
             if (isUserExisted) {
@@ -60,7 +57,6 @@ class _SignInPageState extends State<SignInPage> {
               .then((value) => sb.saveDataToSP()
               .then((value) => sb.setSignIn()
               .then((value) {
-                _buttonController.success();
                 handleAfterSignupGoogle();
               })));
             } else {
@@ -71,7 +67,6 @@ class _SignInPageState extends State<SignInPage> {
               .then((value) => sb.saveDataToSP()
               .then((value) => sb.setSignIn()
               .then((value) {
-                _buttonController.success();
                 handleAfterSignupGoogle();
             }))));
             }
@@ -154,21 +149,21 @@ class _SignInPageState extends State<SignInPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Container(
+                        SizedBox(
                           height: 45,
                           width: MediaQuery.of(context).size.width * 0.70,
-                          child: RoundedLoadingButton(
-                            child: Wrap(
+                          child: ElevatedButton(
+                            child: const Wrap(
                               children: [
-                                const Icon(
+                                Icon(
                                   FontAwesomeIcons.google,
                                   size: 25,
                                   color: Colors.white,
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   width: 15,
                                 ),
-                                const Text(
+                                Text(
                                   'Sign In with Google',
                                   style: TextStyle(
                                       fontSize: 16,
@@ -177,12 +172,7 @@ class _SignInPageState extends State<SignInPage> {
                                 )
                               ],
                             ),
-                            controller: _buttonController,
                             onPressed: () => handleGoogleSignIn(),
-                            width: MediaQuery.of(context).size.width * 0.80,
-                            color: Colors.blueAccent,
-                            elevation: 0,
-                            borderRadius: 25,
                           ),
                         ),
 

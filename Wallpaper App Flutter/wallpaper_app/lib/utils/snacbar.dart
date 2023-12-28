@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-void openSnacbar(_scaffoldKey, snacMessage){
-    _scaffoldKey.currentState.showSnackBar(
+void openSnacbar(scaffoldKey, snacMessage){
+    scaffoldKey.currentState.showSnackBar(
       SnackBar(
     content: Container(
       alignment: Alignment.centerLeft,
       height: 60,
       child: Text(
         snacMessage,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 14,
         ),
       ),
@@ -24,8 +24,8 @@ void openSnacbar(_scaffoldKey, snacMessage){
 }
 
 
-void openDownloadingSnacbar(_scaffoldKey, snacMessage){
-    _scaffoldKey.currentState.showSnackBar(
+void openDownloadingSnacbar(scaffoldKey, snacMessage){
+    scaffoldKey.currentState.showSnackBar(
       SnackBar(
     content: Container(
       alignment: Alignment.centerLeft,
@@ -33,9 +33,9 @@ void openDownloadingSnacbar(_scaffoldKey, snacMessage){
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          CircularProgressIndicator(),
-          SizedBox(width: 15,),
-          Text(snacMessage,style: TextStyle(fontSize: 14,)),
+          const CircularProgressIndicator(),
+          const SizedBox(width: 15,),
+          Text(snacMessage,style: const TextStyle(fontSize: 14,)),
           
         ],
       )

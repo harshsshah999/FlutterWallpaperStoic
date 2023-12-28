@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:wallpaper_app/models/config.dart';
+import 'package:stoicwallpaper/models/config.dart';
 
 class AdsBloc extends ChangeNotifier {
   @override

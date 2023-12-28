@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/src/provider.dart';
-import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
-import 'package:wallpaper_app/models/config.dart';
-import 'package:wallpaper_app/pages/details.dart';
-import 'package:wallpaper_app/pages/empty_page.dart';
-import 'package:wallpaper_app/widgets/cached_image.dart';
+import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
+import 'package:stoicwallpaper/models/config.dart';
+import 'package:stoicwallpaper/pages/details.dart';
+import 'package:stoicwallpaper/pages/empty_page.dart';
+import 'package:stoicwallpaper/widgets/cached_image.dart';
 
 class FavouritePage extends StatefulWidget {
-  FavouritePage({Key? key, required this.userUID}) : super(key: key);
+  const FavouritePage({super.key, required this.userUID});
   final String? userUID;
 
   @override
@@ -110,34 +110,34 @@ class _FavouritePageState extends State<FavouritePage> {
   @override
   Widget build(BuildContext context) {
 
-    final String _collectionName = 'users';
-    final String _snapText = 'loved items';
+    const String collectionName = 'users';
+    const String snapText = 'loved items';
 
 
     return Scaffold(
-      appBar: AppBar(title: Text('Saved Items')),
+      appBar: AppBar(title: const Text('Saved Items')),
       body: 
       
       context.read<SignInBloc>().guestUser == true || widget.userUID == null
-      ? EmptyPage(
+      ? const EmptyPage(
           icon: FontAwesomeIcons.heart,
           title: 'No wallpapers found.\n Sign in to access this feature',
         ) 
       : StreamBuilder(
-          stream: FirebaseFirestore.instance.collection(_collectionName).doc(widget.userUID!).snapshots(),
+          stream: FirebaseFirestore.instance.collection(collectionName).doc(widget.userUID!).snapshots(),
           builder: (BuildContext context, AsyncSnapshot snap) {
-            if (!snap.hasData) return CircularProgressIndicator();
+            if (!snap.hasData) return const CircularProgressIndicator();
             
-            List bookamrkedList = snap.data[_snapText];
+            List bookamrkedList = snap.data[snapText];
             return FutureBuilder(
               future: _getData(bookamrkedList),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if(!snapshot.hasData){
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }else if (snapshot.hasError){
-                  return Center(child: Text('Error'),);
+                  return const Center(child: Text('Error'),);
                 }else if (snapshot.hasData && snapshot.data.length == 0){
-                  return EmptyPage(icon: FontAwesomeIcons.heart,title: 'No wallpapers found',);
+                  return const EmptyPage(icon: FontAwesomeIcons.heart,title: 'No wallpapers found',);
                 }else{
                   return _buildList(snapshot);
                 } 
@@ -172,11 +172,11 @@ class _FavouritePageState extends State<FavouritePage> {
                   children: <Widget>[
                     Text(
                       Config().hashTag,
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                     Text(
                       d[index]['category'],
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: const TextStyle(color: Colors.white, fontSize: 18),
                     )
                   ],
                 ),
@@ -213,10 +213,10 @@ class _FavouritePageState extends State<FavouritePage> {
           },
         );
       },
-      staggeredTileBuilder: (int index) => new StaggeredTile.count(2, index.isEven ? 4 : 3),
+      staggeredTileBuilder: (int index) => StaggeredTile.count(2, index.isEven ? 4 : 3),
       mainAxisSpacing: 10,
       crossAxisSpacing: 10,
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
     );
   }
 }

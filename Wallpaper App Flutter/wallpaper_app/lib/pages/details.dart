@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,9 +20,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:wallpaper/wallpaper.dart';
-import 'package:wallpaper_app/blocs/ads_bloc.dart';
-import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
-import 'package:wallpaper_app/utils/dialog.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
+import 'package:stoicwallpaper/utils/dialog.dart';
 import '../blocs/data_bloc.dart';
 import '../blocs/internet_bloc.dart';
 import '../blocs/userdata_bloc.dart';
@@ -41,13 +40,12 @@ class DetailsPage extends StatefulWidget {
   final String? catagory;
   final String? timestamp;
 
-  DetailsPage(
-      {Key? key,
+  const DetailsPage(
+      {super.key,
       required this.tag,
       this.imageUrl,
       this.catagory,
-      this.timestamp})
-      : super(key: key);
+      this.timestamp});
 
   @override
   _DetailsPageState createState() =>
@@ -133,13 +131,13 @@ class _DetailsPageState extends State<DetailsPage> {
         ? setState(() {
             progress = 'iOS is not supported';
           })
-        : progressString = Wallpaper.ImageDownloadProgress(imageUrl!);
+        : progressString = Wallpaper.imageDownloadProgress(imageUrl!);
     progressString.listen((data) {
       setState(() {
         downloading = true;
         progress = 'Setting Your Lock Screen\nProgress: $data';
       });
-      print("DataReceived: " + data);
+      print("DataReceived: $data");
     }, onDone: () async {
       progress = await Wallpaper.lockScreen();
       setState(() {
@@ -162,14 +160,14 @@ class _DetailsPageState extends State<DetailsPage> {
         ? setState(() {
             progress = 'iOS is not supported';
           })
-        : progressString = Wallpaper.ImageDownloadProgress(imageUrl!);
+        : progressString = Wallpaper.imageDownloadProgress(imageUrl!);
     progressString.listen((data) {
       setState(() {
         //res = data;
         downloading = true;
         progress = 'Setting Your Home Screen\nProgress: $data';
       });
-      print("DataReceived: " + data);
+      print("DataReceived: $data");
     }, onDone: () async {
       progress = await Wallpaper.homeScreen();
       setState(() {
@@ -192,13 +190,13 @@ class _DetailsPageState extends State<DetailsPage> {
         ? setState(() {
             progress = 'iOS is not supported';
           })
-        : progressString = Wallpaper.ImageDownloadProgress(imageUrl!);
+        : progressString = Wallpaper.imageDownloadProgress(imageUrl!);
     progressString.listen((data) {
       setState(() {
         downloading = true;
         progress = 'Setting your Both Home & Lock Screen\nProgress: $data';
       });
-      print("DataReceived: " + data);
+      print("DataReceived: $data");
     }, onDone: () async {
       progress = await Wallpaper.bothScreen();
       setState(() {
@@ -334,7 +332,7 @@ class _DetailsPageState extends State<DetailsPage> {
     var initializeAndroid = const AndroidInitializationSettings('icon_stoic');
     var initializeSetting = InitializationSettings(android: initializeAndroid);
     await flutterLocalNotificationsPlugin.initialize(initializeSetting,
-        onSelectNotification: selectNotification as Future<dynamic> Function(String?)?);
+        onDidReceiveNotificationResponse: selectNotification as void Function(NotificationResponse?));
   }
 
   Future<void> displayNotification(
@@ -344,18 +342,16 @@ class _DetailsPageState extends State<DetailsPage> {
         title,
         body,
         const NotificationDetails(
-          android: AndroidNotificationDetails('channel id', 'channel name', 'channel description',
+          android: AndroidNotificationDetails('channel id', 'channel name',
               priority: Priority.max),
         ),
         payload: imagePath);
   }
 
-  Future selectNotification(String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: $payload');
-      OpenFile.open(payload);
+  Future selectNotification(NotificationResponse payload) async {
+    debugPrint('notification payload: ${payload.toString()}');
+    OpenFile.open(payload.toString());
     }
-  }
 
   Future handleDownload() async {
     initializeSetting();

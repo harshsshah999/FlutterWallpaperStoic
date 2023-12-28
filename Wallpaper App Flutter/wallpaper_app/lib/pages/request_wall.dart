@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+// import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class RequestWallpaper extends StatefulWidget {
-  const RequestWallpaper({Key? key}) : super(key: key);
+  const RequestWallpaper({super.key});
 
   @override
   State<RequestWallpaper> createState() => _RequestWallpaperState();
@@ -36,7 +36,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
           backgroundColor: Colors.white,
         ),
         body: isLoading == true
-            ? Center(
+            ? const Center(
                 child: CupertinoActivityIndicator(),
               )
             : Padding(
@@ -60,7 +60,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                     image == null
                         ? const Text(
                             "Do you want to send us a sample image?",
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16),
                           )
                         : GestureDetector(
                             onTap: () {
@@ -70,7 +70,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                             },
                             child: const Text(
                               "Remove sample image",
-                              style: const TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                     const SizedBox(
@@ -100,9 +100,9 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                                 // border side color balck
                                 border: Border.all(color: Colors.black),
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Text('Select Image',
                                       style: TextStyle(
                                           color: Colors.black, fontSize: 18)),
@@ -118,7 +118,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Container(
+                    SizedBox(
                       height: 50,
                       // ignore: deprecated_member_use
                       child: ElevatedButton(
@@ -128,9 +128,9 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                         onPressed: () {
                           saveDataToDB();
                         },
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Text('Submit',
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20)),
@@ -205,8 +205,8 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
         setState(() {
           isLoading = true;
         });
-        final id = Uuid().v1();
-        final id2 = Uuid().v4();
+        final id = const Uuid().v1();
+        final id2 = const Uuid().v4();
 
         // Image Upload to Firebase Storage
 
@@ -218,8 +218,8 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
 
         // Generating user Token For Send Notification
 
-        var status = await OneSignal.shared.getDeviceState();
-        String? tokenId = status!.userId;
+        // var status = await OneSignal.shared.getDeviceState();
+        // String? tokenId = status!.userId;
 
         // Save Data to Firebase Database
         FirebaseFirestore.instance
@@ -234,7 +234,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
           'processed': false,
           "UserID": FirebaseAuth.instance.currentUser!.uid,
           'id': id2,
-          'token': tokenId,
+          'token': "",
         }).then((value) {
           setState(() {
             isLoading = false;

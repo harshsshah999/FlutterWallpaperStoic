@@ -2,11 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
-import 'package:wallpaper_app/blocs/ads_bloc.dart';
-import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
-import 'package:wallpaper_app/models/config.dart';
-import 'package:wallpaper_app/pages/sign_in_page.dart';
-import 'package:wallpaper_app/utils/next_screen.dart';
+import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
+import 'package:stoicwallpaper/models/config.dart';
+import 'package:stoicwallpaper/pages/sign_in_page.dart';
+import 'package:stoicwallpaper/utils/next_screen.dart';
 
 void openDialog(context, title, message) {
   showDialog(
@@ -33,7 +32,7 @@ showUserInfo(context, name, email, imageUrl) {
         return AlertDialog(
           contentPadding:
               const EdgeInsets.only(left: 0, right: 0, top: 40, bottom: 0),
-          content: Container(
+          content: SizedBox(
               height: 300,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -101,7 +100,7 @@ showGuestUserInfo(context) {
         return AlertDialog(
           contentPadding:
               const EdgeInsets.only(left: 0, right: 0, top: 40, bottom: 0),
-          content: Container(
+          content: SizedBox(
               height: 350,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,7 +125,7 @@ showGuestUserInfo(context) {
                   ),
                   const Text(
                     'Hi there,',
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
@@ -157,7 +156,7 @@ showGuestUserInfo(context) {
                             color: Colors.blueAccent,
                             child: const Text(
                               'Yes, Now',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                               ),
                             ),
@@ -166,7 +165,7 @@ showGuestUserInfo(context) {
                             Navigator.pop(context);
                             nextScreenPopup(
                                 context,
-                                SignInPage(
+                                const SignInPage(
                                   closeDialog: true,
                                 ));
                           },
