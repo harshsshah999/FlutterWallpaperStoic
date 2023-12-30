@@ -186,9 +186,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 children: [
                   const Text("Follow us on:"),
                   IconButton(
-                      icon: Image.asset('assets/images/insta.png'),
+                      icon: const ImageIcon(
+                        AssetImage('assets/images/insta.png'),
+                        size: 30,
+                      ),
                       onPressed: _launchInsta,
-                      iconSize: 5,
                   )
                 ],
               ),
