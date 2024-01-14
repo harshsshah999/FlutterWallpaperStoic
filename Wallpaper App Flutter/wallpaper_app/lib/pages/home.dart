@@ -96,7 +96,7 @@ Future<void> displayNotification(String title, String body) async {
   );
 }
 
-getUsers() async {
+checkInternetConnected() async {
   bool internetConnected = true;
   initializeSetting();
   await Firebase.initializeApp();
@@ -152,7 +152,7 @@ getUsers() async {
     var savedList = (documentSnapshot.data() as dynamic)['loved items'];
     if (savedList.length == 0) {
       _wallpapers = "Random";
-      getUsers();
+      checkInternetConnected();
     } else if (internetConnected) {
       debugPrint("default block");
       Random random = Random();
@@ -179,49 +179,49 @@ getUsers() async {
   }
 }
 
-void printHello(bool isSet, var scaffoldKey) async {
+void setPeriodicWallpaperChange(bool isSet, var scaffoldKey) async {
   await AndroidAlarmManager.initialize();
   final prefs = await SharedPreferences.getInstance();
   if (isSet) {
     if (_alarmDuration == "15 minutes") {
       await AndroidAlarmManager.periodic(
-          const Duration(minutes: 15), helloAlarmID, getUsers,
+          const Duration(minutes: 1), helloAlarmID, checkInternetConnected,
           exact: true, allowWhileIdle: true, rescheduleOnReboot: true);
       openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 minutes');
     } else if (_alarmDuration == "15 seconds") {
       await AndroidAlarmManager.periodic(
-          const Duration(seconds: 15), helloAlarmID, getUsers);
+          const Duration(seconds: 15), helloAlarmID, checkInternetConnected);
       openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 seconds');
     } else if (_alarmDuration == "30 minutes") {
       await AndroidAlarmManager.periodic(
         const Duration(minutes: 30),
         helloAlarmID,
-        getUsers,
+        checkInternetConnected,
       );
       openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 30 minutes');
     } else if (_alarmDuration == "60 minutes") {
       await AndroidAlarmManager.periodic(
         const Duration(minutes: 60),
         helloAlarmID,
-        getUsers,
+        checkInternetConnected,
       );
       openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 60 minutes');
     } else if (_alarmDuration == "12 hours") {
       await AndroidAlarmManager.periodic(
         const Duration(hours: 12),
         helloAlarmID,
-        getUsers,
+        checkInternetConnected,
       );
       openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 12 hours');
     } else {
       await AndroidAlarmManager.periodic(
         const Duration(hours: 24),
         helloAlarmID,
-        getUsers,
+        checkInternetConnected,
       );
       openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 24 hours');
     }
-    getUsers();
+    checkInternetConnected();
     prefs.setBool("isAlarmOn", true);
   } else if (!isSet) {
     prefs.setBool("isAlarmOn", false);
@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> {
           _wallpapers == null) {
         print("null");
       } else {
-        printHello(true, _scaffoldKey);
+        setPeriodicWallpaperChange(true, _scaffoldKey);
         Navigator.pop(context);
       }
     } else {
@@ -343,7 +343,7 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  Future<void> ChangerAlert(var scaffoldKey) async {
+  Future<void> changerAlert(var scaffoldKey) async {
     var prefs = await SharedPreferences.getInstance();
     User? firebaseUser = _firebaseAuth.currentUser;
     if (firebaseUser == null) {
@@ -363,7 +363,7 @@ class _HomePageState extends State<HomePage> {
                 actions: [
                   TextButton(
                       onPressed: () {
-                        printHello(false, scaffoldKey);
+                        setPeriodicWallpaperChange(false, scaffoldKey);
                         Navigator.pop(context);
                       },
                       child: const Text("Yes")),
@@ -890,10 +890,11 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.grey[600], size: 20),
                           onPressed: () {
                             print(context.read<SignInBloc>().uid);
-                            for (var prod in pm.products) {
-                              debugPrint("prod.id: ${prod.id}");
-                              ChangerAlert(_scaffoldKey);
-                                                        }
+                            // for (var prod in pm.products) {
+                            //   debugPrint("prod.id: ${prod.id}");
+                            //   changerAlert(_scaffoldKey);
+                            // }
+                            changerAlert(_scaffoldKey);
                           },
                         )
                       ],

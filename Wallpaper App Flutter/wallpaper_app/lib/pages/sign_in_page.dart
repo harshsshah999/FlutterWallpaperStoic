@@ -22,9 +22,6 @@ class _SignInPageState extends State<SignInPage> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-
-
   handleGuestUser() async {
     final sb = context.read<SignInBloc>();
     await sb.setGuestUser().then((_){
@@ -153,6 +150,7 @@ class _SignInPageState extends State<SignInPage> {
                           height: 45,
                           width: MediaQuery.of(context).size.width * 0.70,
                           child: ElevatedButton(
+                            onPressed: () => handleGoogleSignIn(),
                             child: const Wrap(
                               children: [
                                 Icon(
@@ -172,7 +170,6 @@ class _SignInPageState extends State<SignInPage> {
                                 )
                               ],
                             ),
-                            onPressed: () => handleGoogleSignIn(),
                           ),
                         ),
 
