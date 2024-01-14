@@ -185,7 +185,7 @@ void setPeriodicWallpaperChange(bool isSet, var scaffoldKey) async {
   if (isSet) {
     if (_alarmDuration == "15 minutes") {
       await AndroidAlarmManager.periodic(
-          const Duration(minutes: 1), helloAlarmID, checkInternetConnected,
+          const Duration(minutes: 15), helloAlarmID, checkInternetConnected,
           exact: true, allowWhileIdle: true, rescheduleOnReboot: true);
       openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 minutes');
     } else if (_alarmDuration == "15 seconds") {
