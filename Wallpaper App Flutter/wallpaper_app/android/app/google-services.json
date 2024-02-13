@@ -14,11 +14,80 @@
       },
       "oauth_client": [
         {
+          "client_id": "502349033379-43gst2eg5onbnig5u8epc6jb2sk13en0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cillyfox.stoicwallpaper",
+            "certificate_hash": "bb023dda7968ffa17e9f21fa053193d2e525d484"
+          }
+        },
+        {
           "client_id": "502349033379-hqjgpp66j0jtc4h6ctos46un7s64h37i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.cillyfox.stoicwallpaper",
             "certificate_hash": "088ebc71e517e4565f88f458a439bf8d6c3a6e72"
+          }
+        },
+        {
+          "client_id": "502349033379-i471hubpuosv8qf73os4flmo3mr0lhip.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cillyfox.stoicwallpaper",
+            "certificate_hash": "16d25abd24810f3a30dd5f9cd02f3d868c798432"
+          }
+        },
+        {
+          "client_id": "502349033379-ifihhq2t8832hq601n8785ssjqdvsm8b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cillyfox.stoicwallpaper",
+            "certificate_hash": "8d4ab7806fe267f161d2ba14f17f86c25a795dcd"
+          }
+        },
+        {
+          "client_id": "502349033379-ndsc7g2hgf9d4ap0567t8epr7mqt1q41.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cillyfox.stoicwallpaper",
+            "certificate_hash": "4c70291ce1d57fff506eda5ef3dd90e44ff00417"
+          }
+        },
+        {
+          "client_id": "502349033379-chu0ru598e1ceesgkvtqcatdokchpuka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJjDinogigbt8XRSd_D6MrHgiBkGorRr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "502349033379-chu0ru598e1ceesgkvtqcatdokchpuka.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502349033379:android:2c92114ca4d7a92d9af416",
+        "android_client_info": {
+          "package_name": "com.example.wall_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "502349033379-bp2rbqrrvabgfrhlune12old3058am5f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wall_admin",
+            "certificate_hash": "e21a58a938ac597f1ce8b4c898938aeb94bb59ee"
           }
         },
         {
