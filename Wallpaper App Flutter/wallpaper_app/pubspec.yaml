@@ -41,7 +41,7 @@ dependencies:
   firebase_analytics: ^10.0.0
   firebase_core: ^2.2.0
   shimmer: ^3.0.0
-  firebase_admob: 0.11.2 #google_mobile_ads can be used as alternative
+  # firebase_admob: 0.11.2 #google_mobile_ads can be used as alternative
   # facebook_audience_network: ^0.5.0
   # fzwallpaper: ^1.0.3 //using async wallpaper because fzwallpaper 
   async_wallpaper: ^2.0.3

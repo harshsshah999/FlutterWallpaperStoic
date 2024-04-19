@@ -14,7 +14,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:wallpaper_app/blocs/ads_bloc.dart';
+// import 'package:wallpaper_app/blocs/ads_bloc.dart';
 import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
 import 'package:wallpaper_app/utils/dialog.dart';
 import '../blocs/data_bloc.dart';
@@ -306,9 +306,9 @@ class _DetailsPageState extends State<DetailsPage> {
         btnOkText: 'Ok',
         dismissOnTouchOutside: false,
         btnOkOnPress: () {
-          context
-              .read<AdsBloc>()
-              .showAdmobInterstitialAd(); //-------admob--------
+          // context
+          //     .read<AdsBloc>()
+          //     .showAdmobInterstitialAd(); //-------admob-------- //depreciated
           //context.read<AdsBloc>().showFbAdd();                        //-------fb--------
         }).show();
   }

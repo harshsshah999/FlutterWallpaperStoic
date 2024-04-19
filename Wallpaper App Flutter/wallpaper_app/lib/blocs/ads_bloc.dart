@@ -1,61 +1,79 @@
-import 'package:firebase_admob/firebase_admob.dart';
-import 'package:flutter/foundation.dart';
-import 'package:wallpaper_app/models/config.dart';
+// // import 'package:firebase_admob/firebase_admob.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:wallpaper_app/models/config.dart';
 
-class AdsBloc extends ChangeNotifier {
+// class AdsBloc extends ChangeNotifier {
 
 
   //admob Ads -------Start--------
 
-  bool _admobInterstialAdClosed = false;
-  bool get admobInterStitialAdClosed => _admobInterstialAdClosed;
+  // bool _admobInterstialAdClosed = false;
+  // bool get admobInterStitialAdClosed => _admobInterstialAdClosed;
 
-  late InterstitialAd _admobInterstitialAd;
-  InterstitialAd get admobInterstitialAd => _admobInterstitialAd;
+  // late InterstitialAd _admobInterstitialAd;
+  // InterstitialAd get admobInterstitialAd => _admobInterstitialAd;
 
-  MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    testDevices: [],
-    //keywords: <String>['photo', 'image', 'wallpaper'],
-    //contentUrl: '',
-    childDirected: false,
-    nonPersonalizedAds: true,
-  );
+  // MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+  //   testDevices: [],
+  //   //keywords: <String>['photo', 'image', 'wallpaper'],
+  //   //contentUrl: '',
+  //   childDirected: false,
+  //   nonPersonalizedAds: true,
+  // );
 
-  InterstitialAd createAdmobInterstitialAd() {
-    return InterstitialAd(
-      adUnitId: Config().admobInterstitialAdId,
-      targetingInfo: targetingInfo,
-      listener: (MobileAdEvent event) {
-        print("InterstitialAd event $event");
-        if (event == MobileAdEvent.closed) {
-          loadAdmobInterstitialAd();
-        } else if (event == MobileAdEvent.failedToLoad) {
-          disposeAdmobInterstitialAd().then((_) {
-            loadAdmobInterstitialAd();
-          });
-        }
-        notifyListeners();
-      },
-    );
-  }
+  // InterstitialAd createAdmobInterstitialAd() {
+  //   return InterstitialAd(
+  //     adUnitId: Config().admobInterstitialAdId,
+  //     targetingInfo: targetingInfo,
+  //     listener: (MobileAdEvent event) {
+  //       print("InterstitialAd event $event");
+  //       if (event == MobileAdEvent.closed) {
+  //         loadAdmobInterstitialAd();
+  //       } else if (event == MobileAdEvent.failedToLoad) {
+  //         disposeAdmobInterstitialAd().then((_) {
+  //           loadAdmobInterstitialAd();
+  //         });
+  //       }
+  //       notifyListeners();
+  //     },
+  //   );
+  // }
 
-  Future loadAdmobInterstitialAd() async {
-    await _admobInterstitialAd.dispose();
-    _admobInterstitialAd = createAdmobInterstitialAd()..load();
-    notifyListeners();
-  }
+  // Future loadAdmobInterstitialAd() async {
+  //   await _admobInterstitialAd.dispose();
+  //   _admobInterstitialAd = createAdmobInterstitialAd()..load();
+  //   notifyListeners();
+  // }
 
-  Future disposeAdmobInterstitialAd() async {
-    _admobInterstitialAd.dispose();
-    notifyListeners();
-  }
+  // Future disposeAdmobInterstitialAd() async {
+  //   _admobInterstitialAd.dispose();
+  //   notifyListeners();
+  // }
 
-  showAdmobInterstitialAd() {
-    _admobInterstitialAd.show();
-    notifyListeners();
-  }
+  // showAdmobInterstitialAd() {
+  //   _admobInterstitialAd.show();
+  //   notifyListeners();
+  // }
 
   // admob ads --------- end --------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -120,10 +138,12 @@ class AdsBloc extends ChangeNotifier {
 
 
 
-  @override
-  void dispose() {
-    disposeAdmobInterstitialAd();      //admob
-    //destroyFbAd();                       //fb
-    super.dispose();                     
-  }
-}
+
+
+//   @override
+//   void dispose() {
+//     disposeAdmobInterstitialAd();      //admob
+//     //destroyFbAd();                       //fb
+//     super.dispose();                     
+//   }
+// }

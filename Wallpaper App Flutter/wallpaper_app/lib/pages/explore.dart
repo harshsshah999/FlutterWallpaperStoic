@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:firebase_admob/firebase_admob.dart';
+// import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaper_app/widgets/new_items.dart';
 import 'package:wallpaper_app/widgets/popular_items.dart';
@@ -14,26 +14,26 @@ class ExplorePage extends StatefulWidget {
 
 class _ExplorePageState extends State<ExplorePage> {
   
-  BannerAd? _bannerAd;
+  // BannerAd? _bannerAd;
 
 
   ScrollController scrollController=ScrollController();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  BannerAd createBannerAd(){
-    return BannerAd(
-    adUnitId: 'ca-app-pub-8872829619482545/8371156210',
-    size: AdSize.banner,
-    listener: (MobileAdEvent event){
-      print('Banner event $event');
-    }  
-    );
-  }
+  // BannerAd createBannerAd(){
+  //   return BannerAd(
+  //   adUnitId: 'ca-app-pub-8872829619482545/8371156210',
+  //   size: AdSize.banner,
+  //   listener: (MobileAdEvent event){
+  //     print('Banner event $event');
+  //   }  
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     Timer(Duration(seconds: 3), (){
-      _bannerAd!.show();
+      // _bannerAd!.show();
     });
     return DefaultTabController(
         length: 2,
@@ -105,15 +105,15 @@ class _ExplorePageState extends State<ExplorePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    FirebaseAdMob.instance.initialize(appId: 'ca-app-pub-8872829619482545~4099838010');
-    _bannerAd = createBannerAd()..load();
+    // FirebaseAdMob.instance.initialize(appId: 'ca-app-pub-8872829619482545~4099838010');
+    // _bannerAd = createBannerAd()..load();
   }
 
 @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _bannerAd!.dispose();
+    // _bannerAd!.dispose();
   }
 
 }

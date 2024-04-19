@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
-import 'package:firebase_admob/firebase_admob.dart';
+// import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -41,10 +41,10 @@ class _HomePageState extends State<HomePage> {
 
   //-------admob--------
 
-  initAdmobAd (){
-    FirebaseAdMob.instance.initialize(appId: Config().admobAppId);
-    context.read<AdsBloc>().loadAdmobInterstitialAd();
-  }
+  // initAdmobAd (){
+  //   FirebaseAdMob.instance.initialize(appId: Config().admobAppId);
+  //   context.read<AdsBloc>().loadAdmobInterstitialAd();
+  // }
 
 
 
@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
       final ub = context.read<UserBloc>();
       ub.getUserData();
     });
-    initAdmobAd();          //-------admob--------
+    // initAdmobAd();          //-------admob--------
     //initFbAd();              //-------fb--------
     OneSignal.initialize(Config().onesignalAppId);      
     super.initState();

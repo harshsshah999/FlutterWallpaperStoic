@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
-import 'package:wallpaper_app/blocs/ads_bloc.dart';
+// import 'package:wallpaper_app/blocs/ads_bloc.dart';
 import './blocs/bookmark_bloc.dart';
 import './blocs/data_bloc.dart';
 import './blocs/internet_bloc.dart';
@@ -43,9 +43,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<InternetBloc>(
             create: (context) => InternetBloc(),
           ),
-          ChangeNotifierProvider<AdsBloc>(
-            create: (context) => AdsBloc(),
-          ),
+          // ChangeNotifierProvider<AdsBloc>(
+          //   create: (context) => AdsBloc(),
+          // ),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
