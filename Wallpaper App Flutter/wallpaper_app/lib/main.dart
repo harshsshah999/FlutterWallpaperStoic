@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
@@ -14,16 +13,12 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize(
-    debug: false 
-  );
+  await FlutterDownloader.initialize(debug: false);
   runApp(MyApp());
-  
-  
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,36 +40,41 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<BookmarkBloc>(
             create: (context) => BookmarkBloc(),
           ),
-          
           ChangeNotifierProvider<InternetBloc>(
             create: (context) => InternetBloc(),
           ),
-
           ChangeNotifierProvider<AdsBloc>(
             create: (context) => AdsBloc(),
           ),
-
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               fontFamily: 'Poppins',
               appBarTheme: AppBarTheme(
-                brightness: Brightness.dark,
+                // brightness: Brightness.light,
                 color: Colors.white,
-                textTheme: TextTheme(
-                    headline6: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600)),
+                // textTheme: TextTheme(
+                //     titleLarge: TextStyle(
+                //         color: Colors.black,
+                //         fontSize: 18,
+                //         fontFamily: 'Poppins',
+                //         fontWeight: FontWeight.w600)),
+                titleTextStyle: TextStyle(
+                  // Use titleTextStyle instead of textTheme.titleLarge
+                  color: Colors.black,
+                  fontSize: 18.0, // Use floating point for font size
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                ),
                 elevation: 0,
                 iconTheme: IconThemeData(
                   color: Colors.black,
                 ),
               ),
+              primaryTextTheme: TextTheme(),
               textTheme: TextTheme(
-                  headline6: TextStyle(
+                  titleLarge: TextStyle(
                 color: Colors.black,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
@@ -86,12 +86,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyApp1 extends StatelessWidget {
-  const MyApp1({Key key}) : super(key: key);
+  const MyApp1({super.key});
 
   @override
   Widget build(BuildContext context) {
     final sb = context.watch<SignInBloc>();
     return sb.isSignedIn == false && sb.guestUser == false
-    ? SignInPage() : HomePage();
+        ? SignInPage()
+        : HomePage();
   }
 }

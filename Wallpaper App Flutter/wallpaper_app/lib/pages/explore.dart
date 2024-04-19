@@ -6,7 +6,7 @@ import 'package:wallpaper_app/widgets/new_items.dart';
 import 'package:wallpaper_app/widgets/popular_items.dart';
 class ExplorePage extends StatefulWidget {
 
-  ExplorePage({Key key}) : super(key: key);
+  ExplorePage({Key? key}) : super(key: key);
 
   @override
   _ExplorePageState createState() => _ExplorePageState();
@@ -14,10 +14,10 @@ class ExplorePage extends StatefulWidget {
 
 class _ExplorePageState extends State<ExplorePage> {
   
-  BannerAd _bannerAd;
+  BannerAd? _bannerAd;
 
 
-  ScrollController scrollController;
+  ScrollController scrollController=ScrollController();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   BannerAd createBannerAd(){
@@ -33,7 +33,7 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     Timer(Duration(seconds: 3), (){
-      _bannerAd.show();
+      _bannerAd!.show();
     });
     return DefaultTabController(
         length: 2,
@@ -113,7 +113,7 @@ class _ExplorePageState extends State<ExplorePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _bannerAd.dispose();
+    _bannerAd!.dispose();
   }
 
 }

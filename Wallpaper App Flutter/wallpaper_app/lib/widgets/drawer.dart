@@ -13,7 +13,7 @@ import '../utils/next_screen.dart';
 import 'package:provider/provider.dart';
 
 class DrawerWidget extends StatefulWidget {
-  DrawerWidget({Key key}) : super(key: key);
+  DrawerWidget({Key? key}) : super(key: key);
 
   @override
   _DrawerWidgetState createState() => _DrawerWidgetState();
@@ -44,7 +44,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     FontAwesomeIcons.solidHeart,
     FontAwesomeIcons.info,
     FontAwesomeIcons.star,
-    FontAwesomeIcons.signOutAlt
+    FontAwesomeIcons.rightFromBracket
   ];
 
 
@@ -65,7 +65,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ),),
           content: Text('Do you really want to Logout?'),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Yes'),
               onPressed: () async {
                 final sb = context.read<SignInBloc>();
@@ -83,7 +83,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text('No'),
               onPressed: (){
                 Navigator.pop(context);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({Key key}) : super(key: key);
+  const LoadingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +79,7 @@ class LoadingWidget extends StatelessWidget {
 }
 
 class LoadingWidget1 extends StatelessWidget {
-  const LoadingWidget1({Key key}) : super(key: key);
+  const LoadingWidget1({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

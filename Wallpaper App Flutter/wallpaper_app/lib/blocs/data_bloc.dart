@@ -17,7 +17,7 @@ class DataBloc extends ChangeNotifier {
   }
 
   getData() async {
-    QuerySnapshot snap = await Firestore.instance.collection('contents').getDocuments();
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection('contents').get();
     //  QuerySnapshot snap = await Firestore.instance.collection('contents')
     //  .where("timestamp", isLessThanOrEqualTo: ['timestamp'])
     //  .orderBy('timestamp', descending: true)
@@ -25,7 +25,7 @@ class DataBloc extends ChangeNotifier {
 
 
 
-    List x = snap.documents;
+    List x = snap.docs;
     x.shuffle();
     _alldata.clear();
     x.take(5).forEach((f) {
@@ -36,8 +36,8 @@ class DataBloc extends ChangeNotifier {
 
 
   Future getCategories ()async{
-    QuerySnapshot snap = await Firestore.instance.collection('categories').getDocuments();
-    var x = snap.documents;
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection('categories').get();
+    var x = snap.docs;
     
     _categories.clear();
 

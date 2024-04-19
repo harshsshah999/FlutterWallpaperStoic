@@ -2,13 +2,15 @@
 
 import 'dart:io';
 
+import 'package:async_wallpaper/async_wallpaper.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ext_storage/ext_storage.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:fzwallpaper/fzwallpaper.dart';
+// import 'package:fzwallpaper/fzwallpaper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -29,11 +31,11 @@ class DetailsPage extends StatefulWidget {
   final String timestamp;
 
   DetailsPage(
-      {Key key,
-      @required this.tag,
-      this.imageUrl,
-      this.catagory,
-      this.timestamp})
+      {Key? key,
+      required this.tag,
+      required this.imageUrl,
+      required this.catagory,
+      required this.timestamp})
       : super(key: key);
 
   @override
@@ -42,26 +44,21 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  
-  
   String tag;
   String imageUrl;
   String catagory;
   String timestamp;
   _DetailsPageState(this.tag, this.imageUrl, this.catagory, this.timestamp);
 
-
-
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String progress = 'Set as Wallpaper or Download';
   bool downloading = false;
-  Stream<String> progressString;
+  late Stream<String> progressString;
   Icon dropIcon = Icon(Icons.arrow_upward);
   Icon upIcon = Icon(Icons.arrow_upward);
   Icon downIcon = Icon(Icons.arrow_downward);
   PanelController pc = PanelController();
-  PermissionStatus status;
+  late PermissionStatus status;
 
   void openSetDialog() async {
     showDialog(
@@ -103,7 +100,7 @@ class _DetailsPageState extends State<DetailsPage> {
               height: 40,
             ),
             Center(
-              child: FlatButton(
+              child: TextButton(
                 child: Text('Cancel'),
                 onPressed: () {
                   Navigator.pop(context);
@@ -117,120 +114,185 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   //lock screen procedure
-  _setLockScreen() {
+  _setLockScreen() async {
     Platform.isIOS
         ? setState(() {
-            progress = 'iOS is not supported';
+            progress = 'Setting lock screen on iOS is not supported';
           })
-        : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
-    progressString.listen((data) {
-      setState(() {
-        downloading = true;
-        progress = 'Setting Your Lock Screen\nProgress: $data';
-      });
-      print("DataReceived: " + data);
-    }, onDone: () async {
-      progress = await Fzwallpaper.lockScreen();
-      setState(() {
-        downloading = false;
-        progress = progress;
-      });
+          : progress = "Loading";
+          try {
+      progress = await AsyncWallpaper.setWallpaper(
+        url: imageUrl,
+        wallpaperLocation: AsyncWallpaper.LOCK_SCREEN,
+        goToHome: true,
+        toastDetails: ToastDetails.success(),
+        errorToastDetails: ToastDetails.error(),
+      )
+          ? 'Wallpaper set'
+          : 'Failed to get wallpaper.';
+    } on PlatformException {
+      progress = 'Failed to get wallpaper.';
+    }
 
-      openCompleteDialog();
-    }, onError: (error) {
-      setState(() {
-        downloading = false;
-      });
-      print("Some Error");
-    });
+    if (!mounted) return;
+          
   }
+
+  //   _setLockScreen() {
+  //   Platform.isIOS
+  //       ? setState(() {
+  //           progress = 'Setting lock screen on iOS is not supported';
+  //         })
+  //       : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
+  //   progressString.listen((data) {
+  //     setState(() {
+  //       downloading = true;
+  //       progress = 'Setting Your Lock Screen\nProgress: $data';
+  //     });
+  //     print("DataReceived: " + data);
+  //   }, onDone: () async {
+  //     progress = await Fzwallpaper.lockScreen();
+  //     setState(() {
+  //       downloading = false;
+  //       progress = progress;
+  //     });
+
+  //     openCompleteDialog();
+  //   }, onError: (error) {
+  //     setState(() {
+  //       downloading = false;
+  //     });
+  //     print("Some Error");
+  //   });
+  // }
 
   // home screen procedure
-  _setHomeScreen() {
+
+
+   _setHomeScreen() async {
     Platform.isIOS
         ? setState(() {
-            progress = 'iOS is not supported';
+            progress = 'Setting lock screen on iOS is not supported';
           })
-        : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
-    progressString.listen((data) {
-      setState(() {
-        //res = data;
-        downloading = true;
-        progress = 'Setting Your Home Screen\nProgress: $data';
-      });
-      print("DataReceived: " + data);
-    }, onDone: () async {
-      progress = await Fzwallpaper.homeScreen();
-      setState(() {
-        downloading = false;
-        progress = progress;
-      });
+          : progress = "Loading";
+          try {
+      progress = await AsyncWallpaper.setWallpaper(
+        url: imageUrl,
+        wallpaperLocation: AsyncWallpaper.HOME_SCREEN,
+        goToHome: true,
+        toastDetails: ToastDetails.success(),
+        errorToastDetails: ToastDetails.error(),
+      )
+          ? 'Wallpaper set'
+          : 'Failed to get wallpaper.';
+    } on PlatformException {
+      progress = 'Failed to get wallpaper.';
+    }
 
-      openCompleteDialog();
-    }, onError: (error) {
-      setState(() {
-        downloading = false;
-      });
-      print("Some Error");
-    });
+    if (!mounted) return;
+          
   }
+
+
+  // _setHomeScreen() {
+  //   Platform.isIOS
+  //       ? setState(() {
+  //           progress = 'iOS is not supported';
+  //         })
+  //       : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
+  //   progressString.listen((data) {
+  //     setState(() {
+  //       //res = data;
+  //       downloading = true;
+  //       progress = 'Setting Your Home Screen\nProgress: $data';
+  //     });
+  //     print("DataReceived: " + data);
+  //   }, onDone: () async {
+  //     progress = await Fzwallpaper.homeScreen();
+  //     setState(() {
+  //       downloading = false;
+  //       progress = progress;
+  //     });
+
+  //     openCompleteDialog();
+  //   }, onError: (error) {
+  //     setState(() {
+  //       downloading = false;
+  //     });
+  //     print("Some Error");
+  //   });
+  // }
 
   // both lock screen & home screen procedure
-  _setBoth() {
+   _setBoth() async {
     Platform.isIOS
         ? setState(() {
-            progress = 'iOS is not supported';
+            progress = 'Setting lock screen on iOS is not supported';
           })
-        : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
-    progressString.listen((data) {
-      setState(() {
-        downloading = true;
-        progress = 'Setting your Both Home & Lock Screen\nProgress: $data';
-      });
-      print("DataReceived: " + data);
-    }, onDone: () async {
-      progress = await Fzwallpaper.bothScreen();
-      setState(() {
-        downloading = false;
-        progress = progress;
-      });
+          : progress = "Loading";
+          try {
+      progress = await AsyncWallpaper.setWallpaper(
+        url: imageUrl,
+        wallpaperLocation: AsyncWallpaper.BOTH_SCREENS,
+        goToHome: true,
+        toastDetails: ToastDetails.success(),
+        errorToastDetails: ToastDetails.error(),
+      )
+          ? 'Wallpaper set'
+          : 'Failed to get wallpaper.';
+    } on PlatformException {
+      progress = 'Failed to get wallpaper.';
+    }
 
-      openCompleteDialog();
-    }, onError: (error) {
-      setState(() {
-        downloading = false;
-      });
-      print("Some Error");
-    });
+    if (!mounted) return;
+          
   }
+  // _setBoth() {
+  //   Platform.isIOS
+  //       ? setState(() {
+  //           progress = 'iOS is not supported';
+  //         })
+  //       : progressString = Fzwallpaper.imageDownloadProgress(imageUrl);
+  //   progressString.listen((data) {
+  //     setState(() {
+  //       downloading = true;
+  //       progress = 'Setting your Both Home & Lock Screen\nProgress: $data';
+  //     });
+  //     print("DataReceived: " + data);
+  //   }, onDone: () async {
+  //     progress = await Fzwallpaper.bothScreen();
+  //     setState(() {
+  //       downloading = false;
+  //       progress = progress;
+  //     });
 
-
-
-
-
+  //     openCompleteDialog();
+  //   }, onError: (error) {
+  //     setState(() {
+  //       downloading = false;
+  //     });
+  //     print("Some Error");
+  //   });
+  // }
 
   handleStoragePermission() async {
     await Permission.storage.request().then((_) async {
       if (await Permission.storage.status == PermissionStatus.granted) {
-
         await handleDownload();
-
       } else if (await Permission.storage.status == PermissionStatus.denied) {
-      } else if (await Permission.storage.status == PermissionStatus.permanentlyDenied) {
+      } else if (await Permission.storage.status ==
+          PermissionStatus.permanentlyDenied) {
         askOpenSettingsDialog();
       }
     });
   }
 
-
-
-
   void openCompleteDialog() async {
     AwesomeDialog(
         context: context,
-        dialogType: DialogType.SUCCES,
-        tittle: 'Complete',
-        animType: AnimType.SCALE,
+        dialogType: DialogType.success,
+        title: 'Complete',
+        animType: AnimType.scale,
         padding: EdgeInsets.all(30),
         body: Center(
           child: Container(
@@ -244,9 +306,10 @@ class _DetailsPageState extends State<DetailsPage> {
         btnOkText: 'Ok',
         dismissOnTouchOutside: false,
         btnOkOnPress: () {
-          context.read<AdsBloc>().showAdmobInterstitialAd();        //-------admob--------
+          context
+              .read<AdsBloc>()
+              .showAdmobInterstitialAd(); //-------admob--------
           //context.read<AdsBloc>().showFbAdd();                        //-------fb--------
-          
         }).show();
   }
 
@@ -261,14 +324,14 @@ class _DetailsPageState extends State<DetailsPage> {
             contentTextStyle:
                 TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
             actions: [
-              FlatButton(
+              TextButton(
                 child: Text('Open Settins'),
                 onPressed: () async {
                   Navigator.pop(context);
                   await openAppSettings();
                 },
               ),
-              FlatButton(
+              TextButton(
                 child: Text('Close'),
                 onPressed: () async {
                   Navigator.pop(context);
@@ -282,32 +345,31 @@ class _DetailsPageState extends State<DetailsPage> {
   Future handleDownload() async {
     final ib = context.read<InternetBloc>();
     await context.read<InternetBloc>().checkInternet();
-    if(ib.hasInternet == true){
-      var path = await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_PICTURES);
+    if (ib.hasInternet == true) {
+      var path = await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_PICTURES);
       await FlutterDownloader.enqueue(
-      url: imageUrl,
-      savedDir: path,
-      fileName: '${Config().appName}-$catagory$timestamp',
-      showNotification: true, // show download progress in status bar (for Android)
-      openFileFromNotification: true, // click on notification to open downloaded file (for Android)
-    );
+        url: imageUrl,
+        savedDir: path,
+        fileName: '${Config().appName}-$catagory$timestamp',
+        showNotification:
+            true, // show download progress in status bar (for Android)
+        openFileFromNotification:
+            true, // click on notification to open downloaded file (for Android)
+      );
 
-    setState(() {
-      progress = 'Download Complete!\nCheck Your Status Bar';
-    });
-
-    await Future.delayed(Duration(seconds: 2));
-    openCompleteDialog();
-      
-    } else{
       setState(() {
-      progress = 'Check your internet connection!';
-    });
+        progress = 'Download Complete!\nCheck Your Status Bar';
+      });
+
+      await Future.delayed(Duration(seconds: 2));
+      openCompleteDialog();
+    } else {
+      setState(() {
+        progress = 'Check your internet connection!';
+      });
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -340,13 +402,9 @@ class _DetailsPageState extends State<DetailsPage> {
         ));
   }
 
-
-
-
-
   // floating ui
   Widget panelUI(db) {
-
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,7 +419,7 @@ class _DetailsPageState extends State<DetailsPage> {
               ),
             ),
             onTap: () {
-              pc.isPanelClosed() ? pc.open() : pc.close();
+              pc.isPanelClosed ? pc.open() : pc.close();
             },
           ),
           SizedBox(
@@ -396,13 +454,13 @@ class _DetailsPageState extends State<DetailsPage> {
                       size: 22,
                     ),
                     StreamBuilder(
-                      stream: Firestore.instance
+                      stream: firestore
                           .collection('contents')
-                          .document(timestamp)
+                          .doc(timestamp)
                           .snapshots(),
                       builder: (context, snap) {
                         if (!snap.hasData) return _buildLoves(0);
-                        return _buildLoves(snap.data['loves']);
+                        return _buildLoves(snap.data!['loves']);
                       },
                     ),
                   ],
@@ -432,7 +490,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             shape: BoxShape.circle,
                             boxShadow: <BoxShadow>[
                               BoxShadow(
-                                  color: Colors.grey[400],
+                                  color: Colors.grey.shade400,
                                   blurRadius: 10,
                                   offset: Offset(2, 2))
                             ]),
@@ -442,16 +500,15 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
                       ),
                       onTap: () async {
-                        final ib =  context.read<InternetBloc>();
+                        final ib = context.read<InternetBloc>();
                         await context.read<InternetBloc>().checkInternet();
                         if (ib.hasInternet == false) {
                           setState(() {
                             progress = 'Check your internet connection!';
                           });
-                        } else{
+                        } else {
                           openSetDialog();
                         }
-                        
                       },
                     ),
                     SizedBox(
@@ -481,7 +538,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             shape: BoxShape.circle,
                             boxShadow: <BoxShadow>[
                               BoxShadow(
-                                  color: Colors.grey[400],
+                                  color: Colors.grey.shade400,
                                   blurRadius: 10,
                                   offset: Offset(2, 2))
                             ]),
@@ -616,10 +673,11 @@ class _DetailsPageState extends State<DetailsPage> {
     if (sb.guestUser == false) {
       return StreamBuilder(
         stream:
-            Firestore.instance.collection('users').document(uid).snapshots(),
+            FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
         builder: (context, snap) {
           if (!snap.hasData) return LoveIcon().greyIcon;
-          List d = snap.data['loved items'];
+          List d = ((snap.data as Map)['loved items'] as Map)['loved items'];
+          // List d = snap.data['loved items'];
 
           if (d.contains(timestamp)) {
             return LoveIcon().pinkIcon;
@@ -632,9 +690,6 @@ class _DetailsPageState extends State<DetailsPage> {
       return LoveIcon().greyIcon;
     }
   }
-
-
-
 
   _loveIconPressed() async {
     final sb = context.read<SignInBloc>();

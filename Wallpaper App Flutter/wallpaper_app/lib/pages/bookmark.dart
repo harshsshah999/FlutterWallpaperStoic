@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
@@ -11,7 +11,7 @@ import 'package:wallpaper_app/widgets/cached_image.dart';
 import '../blocs/bookmark_bloc.dart';
 
 class BookmarkPage extends StatelessWidget {
-  const BookmarkPage({Key key}) : super(key: key);
+  const BookmarkPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class BookmarkPage extends StatelessWidget {
                     return _buildList(snapshot);
                   } else if (snapshot.hasError) {
                     return Center(
-                      child: Text(snapshot.error),
+                      child: Text(snapshot.error.toString()),
                     );
                   }
 
@@ -58,13 +58,18 @@ class BookmarkPage extends StatelessWidget {
   }
 
   Widget _buildList(snapshot) {
-    return StaggeredGridView.countBuilder(
+    return GridView.builder(
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 4,
-      itemCount: snapshot.data.length,
-      itemBuilder: (BuildContext context, int index) {
-        List d = snapshot.data;
-
-        return InkWell(
+      // mainAxisExtent: snapshot.data['index']['height']?.toDouble() ?? 200.0, // Adjust based on your data
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+    ),
+    itemCount: snapshot.data.length,
+    itemBuilder: (BuildContext context, int index) {
+      List d = snapshot.data;
+      // ... rest of your code within itemBuilder ...
+      return InkWell(
           child: Stack(
             children: <Widget>[
               Hero(
@@ -118,12 +123,22 @@ class BookmarkPage extends StatelessWidget {
                         )));
           },
         );
-      },
-      staggeredTileBuilder: (int index) =>
-          new StaggeredTile.count(2, index.isEven ? 4 : 3),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      padding: EdgeInsets.all(15),
-    );
+    },
+    padding: EdgeInsets.all(15),
+  );
+    // StaggeredGridView.countBuilder(
+    //   crossAxisCount: 4,
+    //   itemCount: snapshot.data.length,
+    //   itemBuilder: (BuildContext context, int index) {
+    //     List d = snapshot.data;
+
+        
+    //   },
+    //   staggeredTileBuilder: (int index) =>
+    //       new StaggeredGridTile.count(2, index.isEven ? 4 : 3),
+    //   mainAxisSpacing: 10,
+    //   crossAxisSpacing: 10,
+    //   padding: EdgeInsets.all(15),
+    // );
   }
 }

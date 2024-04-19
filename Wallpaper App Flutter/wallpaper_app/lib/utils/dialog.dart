@@ -14,7 +14,7 @@ void openDialog(context, title, message) {
           content: Text(message),
           title: Text(title),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },

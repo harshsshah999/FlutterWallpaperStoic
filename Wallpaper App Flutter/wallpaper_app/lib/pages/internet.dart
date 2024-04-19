@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../blocs/internet_bloc.dart';
 
 class NoInternetPage extends StatelessWidget {
-  const NoInternetPage({Key key}) : super(key: key);
+  const NoInternetPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +30,12 @@ class NoInternetPage extends StatelessWidget {
             ),),
 
             SizedBox(height: 30,),
-            RaisedButton(
+            ElevatedButton(
               onPressed: (){
                 ib.checkInternet();
               },
-              color: Colors.blueAccent,
+              style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blueAccent)),
+              // color: Colors.blueAccent,
               child: Text('Check Again', style: TextStyle(
                 color: Colors.white,
                 fontSize: 16

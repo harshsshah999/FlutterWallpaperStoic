@@ -7,7 +7,7 @@ Widget placeHolderImage (imageUrl) {
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                      color: Colors.grey[400],
+                      color: Colors.grey.shade400,
                       blurRadius: 2,
                       offset: Offset(2, 2))
                 ],

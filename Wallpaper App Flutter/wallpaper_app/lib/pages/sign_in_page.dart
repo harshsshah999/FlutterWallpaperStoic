@@ -10,7 +10,7 @@ import '../utils/next_screen.dart';
 import '../utils/snacbar.dart';
 
 class SignInPage extends StatefulWidget {
-  SignInPage({Key key}) : super(key: key);
+  SignInPage({Key? key}) : super(key: key);
 
   @override
   _SignInPageState createState() => _SignInPageState();
@@ -130,7 +130,7 @@ class _SignInPageState extends State<SignInPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: (){
               handleGuestUser();
             }, 
@@ -218,7 +218,7 @@ class _SignInPageState extends State<SignInPage> {
 
 
     Widget _firstChildGoogle() {
-    return FlatButton.icon(
+    return TextButton.icon(
       icon: signInCompleteGoogle == false ?
       Icon(FontAwesomeIcons.google, size: 22, color: Colors.white,):
       Icon(Icons.done, size: 25, color: Colors.white,),

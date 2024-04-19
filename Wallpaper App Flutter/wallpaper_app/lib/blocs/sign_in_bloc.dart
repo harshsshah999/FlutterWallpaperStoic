@@ -15,11 +15,12 @@ class SignInBloc extends ChangeNotifier {
     checkGuestUser();
   }
 
+  final FirebaseFirestore firestore= FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googlSignIn = new GoogleSignIn();
 
-  bool _guestUser = false;
-  bool get guestUser => _guestUser;
+  bool? _guestUser = false;
+  bool get guestUser => _guestUser ?? false;
 
   bool _isSignedIn = false;
   bool get isSignedIn => _isSignedIn;
@@ -27,25 +28,25 @@ class SignInBloc extends ChangeNotifier {
   bool _hasError = false;
   bool get hasError => _hasError;
 
-  String _errorCode;
-  String get errorCode => _errorCode;
+  String? _errorCode;
+  String get errorCode => _errorCode ?? '';
 
   bool _userExists = false;
   bool get userExists => _userExists;
 
-  String _name;
-  String get name => _name;
+  String? _name;
+  String get name => _name ?? '';
 
-  String _uid;
-  String get uid => _uid;
+  String? _uid;
+  String get uid => _uid ?? '';
 
-  String _email;
-  String get email => _email;
+  String? _email;
+  String get email => _email ?? '';
 
-  String _imageUrl;
-  String get imageUrl => _imageUrl;
+  String? _imageUrl;
+  String get imageUrl => _imageUrl ?? '';
 
-  String timestamp;
+  String? timestamp;
 
 
 
@@ -53,7 +54,9 @@ class SignInBloc extends ChangeNotifier {
   
 
   Future signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await _googlSignIn
+    User? userDetails;
+
+    final GoogleSignInAccount? googleUser = await _googlSignIn
         .signIn()
         .catchError((error) => print('error : $error'));
     if (googleUser != null) {
@@ -61,24 +64,24 @@ class SignInBloc extends ChangeNotifier {
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
 
-        final AuthCredential credential = GoogleAuthProvider.getCredential(
+        final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
 
-        FirebaseUser userDetails =
-            (await _firebaseAuth.signInWithCredential(credential)).user;
+        final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
+        userDetails = userCredential.user;
 
-        this._name = userDetails.displayName;
+        this._name = userDetails!.displayName;
         this._email = userDetails.email;
-        this._imageUrl = userDetails.photoUrl;
+        this._imageUrl = userDetails.photoURL;
         this._uid = userDetails.uid;
 
         _hasError = false;
         notifyListeners();
       } catch (e) {
         _hasError = true;
-        _errorCode = e.code;
+        _errorCode = e.toString();
         notifyListeners();
       }
     } else {
@@ -88,11 +91,11 @@ class SignInBloc extends ChangeNotifier {
   }
 
   Future checkUserExists() async {
-    await Firestore.instance
+    await firestore
         .collection('users')
-        .getDocuments()
+        .get()
         .then((QuerySnapshot snap) {
-      List values = snap.documents;
+      List values = snap.docs;
       List uids = [];
       values.forEach((element) {
         uids.add(element['uid']);
@@ -109,16 +112,21 @@ class SignInBloc extends ChangeNotifier {
   }
 
   Future saveToFirebase() async {
-    final DocumentReference ref =
-        Firestore.instance.collection('users').document(uid);
-    await ref.setData({
+    try {
+    final DocumentReference ref = firestore.collection('users').doc(uid);
+    await ref.set({
       'name': _name,
       'email': _email,
       'uid': _uid,
       'image url': _imageUrl,
       'timestamp': timestamp,
-      'loved items': []
+      'loved items': [],
     });
+    // Show success message (optional)
+  } catch (error) {
+    print(error); // Log the error for debugging
+    // Show error message to the user (optional)
+  }
   }
 
   Future getTimestamp() async {
@@ -130,25 +138,34 @@ class SignInBloc extends ChangeNotifier {
   Future saveDataToSP() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    await sharedPreferences.setString('name', _name);
-    await sharedPreferences.setString('email', _email);
-    await sharedPreferences.setString('image url', _imageUrl);
-    await sharedPreferences.setString('uid', _uid);
+    await sharedPreferences.setString('name', _name!);
+    await sharedPreferences.setString('email', _email!);
+    await sharedPreferences.setString('image url', _imageUrl!);
+    await sharedPreferences.setString('uid', _uid!);
   }
 
   Future getUserData(uid) async {
-    await Firestore.instance
+    try {
+    final DocumentSnapshot snap = await firestore
         .collection('users')
-        .document(uid)
-        .get()
-        .then((DocumentSnapshot snap) {
-      this._uid = snap.data['uid'];
-      this._name = snap.data['name'];
-      this._email = snap.data['email'];
-      this._imageUrl = snap.data['image url'];
+        .doc(uid)
+        .get();
+
+    if (snap.exists) {
+      final data=snap.data() as Map;
+      this._uid = (data['uid'] as Map)['uid'];
+      this._name = (data['name'] as Map)['name'];
+      this._email = (data['email'] as Map)['email'];
+      this._imageUrl = (data['image url']as Map)['image_url'];
       print(_name);
-    });
-    notifyListeners();
+    } else {
+      // Handle the case where the document doesn't exist
+      print("User data not found");
+    }
+  } catch (error) {
+    print(error); // Log the error for debugging
+  }
+  notifyListeners();
   }
 
   Future setSignIn() async {

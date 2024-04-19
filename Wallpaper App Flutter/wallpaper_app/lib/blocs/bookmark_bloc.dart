@@ -9,19 +9,20 @@ class BookmarkBloc extends ChangeNotifier {
   Future<List> getData () async{
     
     SharedPreferences sp = await SharedPreferences.getInstance();
-    String _uid = sp.getString('uid');
+    String? _uid = sp.getString('uid');
 
-    final DocumentReference ref = Firestore.instance.collection('users').document(_uid);
+    final DocumentReference ref = FirebaseFirestore.instance.collection('users').doc(_uid);
     DocumentSnapshot snap = await ref.get();
-    List d = snap.data['loved items'];
+    final data = snap.data();
+    List d = ((data as Map)['loved items'] as Map)['loved items'];
     List filteredData = [];
     if(d.isNotEmpty){
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection('contents')
           .where('timestamp', whereIn: d)
-          .getDocuments()
+          .get()
           .then((QuerySnapshot snap){
-            filteredData = snap.documents;
+            filteredData = snap.docs;
           });
     }
 

@@ -1,18 +1,9 @@
-apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
-
-buildscript {
-    repositories {
-        // ...
-        maven { url 'https://plugins.gradle.org/m2/' } // Gradle Plugin Portal
-    }
-    dependencies {
-        // ...
-        // OneSignal-Gradle-Plugin
-        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.10.2, 0.99.99]'
-
-    }
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
 }
-
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -22,10 +13,7 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
+
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
@@ -36,9 +24,6 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
-
-apply plugin: 'com.android.application'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 
    def keystoreProperties = new Properties()
@@ -62,6 +47,7 @@ android {
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
        signingConfigs {
@@ -86,7 +72,6 @@ flutter {
 dependencies {
     implementation 'com.google.firebase:firebase-messaging:18.0.0'
     implementation 'com.google.firebase:firebase-iid:18.0.0'
-    implementation 'com.onesignal:OneSignal:[3.11.4, 3.99.99]'
 }
 
 apply plugin: 'com.google.gms.google-services'

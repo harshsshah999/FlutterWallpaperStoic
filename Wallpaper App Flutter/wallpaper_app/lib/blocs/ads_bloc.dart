@@ -10,7 +10,7 @@ class AdsBloc extends ChangeNotifier {
   bool _admobInterstialAdClosed = false;
   bool get admobInterStitialAdClosed => _admobInterstialAdClosed;
 
-  InterstitialAd _admobInterstitialAd;
+  late InterstitialAd _admobInterstitialAd;
   InterstitialAd get admobInterstitialAd => _admobInterstitialAd;
 
   MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
@@ -40,18 +40,18 @@ class AdsBloc extends ChangeNotifier {
   }
 
   Future loadAdmobInterstitialAd() async {
-    await _admobInterstitialAd?.dispose();
+    await _admobInterstitialAd.dispose();
     _admobInterstitialAd = createAdmobInterstitialAd()..load();
     notifyListeners();
   }
 
   Future disposeAdmobInterstitialAd() async {
-    _admobInterstitialAd?.dispose();
+    _admobInterstitialAd.dispose();
     notifyListeners();
   }
 
   showAdmobInterstitialAd() {
-    _admobInterstitialAd?.show();
+    _admobInterstitialAd.show();
     notifyListeners();
   }
 

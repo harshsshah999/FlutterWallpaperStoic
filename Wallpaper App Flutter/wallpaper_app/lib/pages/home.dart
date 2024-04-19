@@ -25,7 +25,7 @@ import '../widgets/loading_animation.dart';
 
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
     });
     initAdmobAd();          //-------admob--------
     //initFbAd();              //-------fb--------
-    OneSignal.shared.init(Config().onesignalAppId);      
+    OneSignal.initialize(Config().onesignalAppId);      
     super.initState();
   }
 
@@ -134,12 +134,12 @@ class _HomePageState extends State<HomePage> {
                         ),
                         IconButton(
                           icon: Icon(
-                            FontAwesomeIcons.stream,
+                            FontAwesomeIcons.barsStaggered,
                             size: 20,
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            _scaffoldKey.currentState.openEndDrawer();
+                            _scaffoldKey.currentState?.openEndDrawer();
                           },
                         )
                       ],
@@ -147,17 +147,6 @@ class _HomePageState extends State<HomePage> {
                 Stack(
                   children: <Widget>[
                     CarouselSlider(
-                      realPage: 0,
-                      initialPage: 0,
-                      enableInfiniteScroll: false,
-                      onPageChanged: (index) {
-                        setState(() {
-                          listIndex = index;
-                        });
-                      },
-                      height: h * 0.70,
-                      enlargeCenterPage: true,
-                      viewportFraction: 0.90,
                       items: db.alldata.length == 0
                           ? [0, 1].take(1).map((f) => LoadingWidget()).toList()
                           : db.alldata.map((i) {
@@ -185,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                                                       BorderRadius.circular(20),
                                                   boxShadow: <BoxShadow>[
                                                     BoxShadow(
-                                                        color: Colors.grey[300],
+                                                        color: Colors.grey.shade300,
                                                         blurRadius: 30,
                                                         offset: Offset(5, 20))
                                                   ],
@@ -283,6 +272,15 @@ class _HomePageState extends State<HomePage> {
                                 },
                               );
                             }).toList(),
+                            options: CarouselOptions(
+    initialPage: 0,
+    enableInfiniteScroll: false,
+    onPageChanged: (index,reason) => setState(() => listIndex = index),
+    height: h * 0.70, // Optional, remove if using aspectRatio
+    enlargeCenterPage: true,
+    viewportFraction: 0.90,
+    // aspectRatio: desiredAspectRatio, // Replace with your desired aspect ratio value (e.g., 16/9)
+  ),
                     ),
                     Positioned(
                       top: 40,
@@ -302,7 +300,7 @@ class _HomePageState extends State<HomePage> {
                         padding: EdgeInsets.all(12),
                         child: DotsIndicator(
                           dotsCount: 5,
-                          position: listIndex.toDouble(),
+                          position: listIndex,
                           decorator: DotsDecorator(
                             activeColor: Colors.black,
                             color: Colors.black,
@@ -365,6 +363,6 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
             ),
-          );
+          );       
   }
 }
