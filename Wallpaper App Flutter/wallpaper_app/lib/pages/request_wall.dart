@@ -95,7 +95,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                               ),
                             )
                           : Container(
-                              height: 50,
+                              height: 100,
                               decoration: BoxDecoration(
                                 // border side color balck
                                 border: Border.all(color: Colors.black),
@@ -122,9 +122,8 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
                       height: 50,
                       // ignore: deprecated_member_use
                       child: ElevatedButton(
-                        style:ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                        ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent),
                         onPressed: () {
                           saveDataToDB();
                         },
