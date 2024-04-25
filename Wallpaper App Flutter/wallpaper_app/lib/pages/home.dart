@@ -14,6 +14,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'package:flutter_wallpaper_manager/flutter_wallpaper_manager.dart';
@@ -84,16 +85,16 @@ void initializeSetting() async {
   var initializeAndroid = const AndroidInitializationSettings('ic');
   var initializeSetting = InitializationSettings(android: initializeAndroid);
   await flutterLocalNotificationsPlugin.initialize(initializeSetting);
-
 }
 
 Future<void> displayNotification(String title, String body) async {
   flutterLocalNotificationsPlugin.show(
-    0,
-    title,
-    body,
-    const NotificationDetails(android: AndroidNotificationDetails('channel id', 'channel name', priority: Priority.high))
-  );
+      0,
+      title,
+      body,
+      const NotificationDetails(
+          android: AndroidNotificationDetails('channel id', 'channel name',
+              priority: Priority.high)));
 }
 
 checkInternetConnected() async {
@@ -140,7 +141,8 @@ checkInternetConnected() async {
         } else if (_locationToSet == 'Both') {
           location = WallpaperManager.BOTH_SCREEN;
         }
-        var file = await testing_cache.DefaultCacheManager().getSingleFile(URL!);
+        var file =
+            await testing_cache.DefaultCacheManager().getSingleFile(URL!);
         WallpaperManager.setWallpaperFromFile(file.path, location!);
       });
     });
@@ -171,7 +173,8 @@ checkInternetConnected() async {
         } else if (_locationToSet == 'Both') {
           location = WallpaperManager.BOTH_SCREEN;
         }
-        var file = await testing_cache.DefaultCacheManager().getSingleFile(URL!);
+        var file =
+            await testing_cache.DefaultCacheManager().getSingleFile(URL!);
         WallpaperManager.setWallpaperFromFile(file.path, location!);
       });
     }
@@ -304,14 +307,13 @@ class _HomePageState extends State<HomePage> {
       //         ],
       //       );
       //     });
-
     }
   }
 
   //final InAppPurchaseConnection _iap = InAppPurchaseConnection.instance; <<<------
 
   void _buyProduct(ProductDetails prod) {
-   // final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);<<<------
+    // final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);<<<------
     //_iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
@@ -392,13 +394,25 @@ class _HomePageState extends State<HomePage> {
                 ]),
                 actions: [
                   TextButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.grey.shade300)),
                       onPressed: () {
                         batterySaverPermission();
                       },
-                      child: const Text("Yes")),
+                      child: const Text(
+                        "Confirm",
+                        style: TextStyle(fontSize: 18),
+                      )),
                   TextButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.grey.shade300)),
                       onPressed: () => Navigator.pop(context),
-                      child: const Text("Cancel")),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(fontSize: 18),
+                      )),
                 ]);
           },
         );
@@ -410,6 +424,7 @@ class _HomePageState extends State<HomePage> {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
         child: FormField<String>(
           builder: (FormFieldState<String> state) {
             return InputDecorator(
@@ -445,6 +460,7 @@ class _HomePageState extends State<HomePage> {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
         child: FormField<String>(
           builder: (FormFieldState<String> state) {
             return InputDecorator(
@@ -483,6 +499,7 @@ class _HomePageState extends State<HomePage> {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
         child: FormField<String>(
           builder: (FormFieldState<String> state) {
             return InputDecorator(
@@ -548,8 +565,7 @@ class _HomePageState extends State<HomePage> {
     FlutterDownloader.registerCallback(downloadCallback);
   }
 
-  static void downloadCallback(
-      String id, int status, int progress) {
+  static void downloadCallback(String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('downloader_send_port')!;
     send.send([id, status, progress]);
@@ -647,7 +663,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           IconButton(
                             icon: const Icon(
-                              FontAwesomeIcons.stream,
+                              FontAwesomeIcons.barsStaggered,
                               size: 20,
                               color: Colors.black,
                             ),
@@ -861,7 +877,8 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const CatagoryPage()));
+                                    builder: (context) =>
+                                        const CatagoryPage()));
                           },
                         ),
                         IconButton(
@@ -887,7 +904,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                         IconButton(
-                          icon: Icon(FontAwesomeIcons.undo,
+                          icon: Icon(FontAwesomeIcons.arrowRotateLeft,
                               color: Colors.grey[600], size: 20),
                           onPressed: () {
                             print(context.read<SignInBloc>().uid);

@@ -43,19 +43,20 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     FontAwesomeIcons.diceD20,
     FontAwesomeIcons.info,
     FontAwesomeIcons.star,
-    FontAwesomeIcons.signOutAlt
+    FontAwesomeIcons.rightFromBracket,
   ];
 
   Future<void> _launchInsta() async {
-    if (await canLaunchUrlString('https://www.instagram.com/stoic.kings/')) {
-      final bool nativeAppLaunchSucceed = await launch(
-          'https://www.instagram.com/stoic.kings/',
-          forceWebView: false,
-          universalLinksOnly: true);
-      if (!nativeAppLaunchSucceed) {
-        await launch('https://www.instagram.com/stoic.kings/',
-            forceWebView: true);
-      }
+    final url = Uri.parse('https://www.instagram.com/stoic.kings/');
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            'Could not launch Instagram app. Please install it if not available.'),
+      ));
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -71,17 +72,28 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             content: const Text('Do you really want to Logout?'),
             actions: <Widget>[
               TextButton(
-                child: const Text('Yes'),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStatePropertyAll(Colors.grey.shade300)),
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(fontSize: 18),
+                ),
                 onPressed: () async {
                   final sb = context.read<SignInBloc>();
                   Navigator.pop(context);
-                  await sb
-                      .userSignout()
-                      .then((_) => nextScreenReplace(context, const SignInPage()));
+                  await sb.userSignout().then(
+                      (_) => nextScreenReplace(context, const SignInPage()));
                 },
               ),
               TextButton(
-                child: const Text('No'),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStatePropertyAll(Colors.grey.shade300)),
+                child: const Text(
+                  'No',
+                  style: TextStyle(fontSize: 18),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -186,11 +198,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 children: [
                   const Text("Follow us on:"),
                   IconButton(
-                      icon: const ImageIcon(
-                        AssetImage('assets/images/insta.png'),
-                        size: 30,
-                      ),
-                      onPressed: _launchInsta,
+                    icon: const ImageIcon(
+                      AssetImage('assets/images/insta.png'),
+                      size: 30,
+                    ),
+                    onPressed: _launchInsta,
                   )
                 ],
               ),

@@ -16,6 +16,9 @@ void openDialog(context, title, message) {
           title: Text(title),
           actions: <Widget>[
             TextButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStatePropertyAll(Colors.grey.shade300)),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -78,7 +81,7 @@ showUserInfo(context, name, email, imageUrl) {
                       color: Colors.blueAccent,
                       child: const Text(
                         'Ok, Got It',
-                        style:  TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
