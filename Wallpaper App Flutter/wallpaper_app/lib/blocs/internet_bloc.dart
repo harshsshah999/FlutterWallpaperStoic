@@ -1,5 +1,5 @@
-// import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class InternetBloc extends ChangeNotifier {
   
@@ -8,21 +8,14 @@ class InternetBloc extends ChangeNotifier {
 
 
   InternetBloc() {
-    // checkInternet();
+    //checkInternet();
   }
 
 
 
   Future checkInternet() async {
-    // var result = await (Connectivity().checkConnectivity());
-    // if (result == ConnectivityResult.none) {
-    //   _hasInternet = false;
-    // } else {
-    //   _hasInternet = true;
-    // }
-
-    //forcefully returning _hasInternet to true
-    _hasInternet=true;
+    final bool result = await InternetConnectionChecker().hasConnection;
+    _hasInternet = result;
 
     notifyListeners();
   }

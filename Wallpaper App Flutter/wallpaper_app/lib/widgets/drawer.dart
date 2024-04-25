@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:launch_review/launch_review.dart';
-import 'package:wallpaper_app/blocs/sign_in_bloc.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
+import 'package:stoicwallpaper/pages/request_wall.dart';
 import '../models/config.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../pages/bookmark.dart';
 import '../pages/catagories.dart';
 import '../pages/explore.dart';
@@ -13,101 +16,87 @@ import '../utils/next_screen.dart';
 import 'package:provider/provider.dart';
 
 class DrawerWidget extends StatefulWidget {
-  DrawerWidget({Key? key}) : super(key: key);
+  const DrawerWidget({super.key});
 
   @override
   _DrawerWidgetState createState() => _DrawerWidgetState();
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-
   final FirebaseAuth auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   var textCtrl = TextEditingController();
-  
 
   final List title = [
     'Categories',
     'Explore',
     'Saved Items',
+    "Custom Wallpaper",
     'About App',
-    'Rate & Review',
-    'Logout'
+    'Rate & Review'
   ];
-
-
-
 
   final List icons = [
     FontAwesomeIcons.dashcube,
     FontAwesomeIcons.solidCompass,
     FontAwesomeIcons.solidHeart,
+    FontAwesomeIcons.diceD20,
     FontAwesomeIcons.info,
     FontAwesomeIcons.star,
-    FontAwesomeIcons.rightFromBracket
+    FontAwesomeIcons.signOutAlt
   ];
 
-
-
-  
-
-  
-
-
-
-  Future openLogoutDialog(context1) async{
-    showDialog(
-      context: context1,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Text('Logout?', style: TextStyle(
-            fontWeight: FontWeight.w600
-          ),),
-          content: Text('Do you really want to Logout?'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Yes'),
-              onPressed: () async {
-                final sb = context.read<SignInBloc>();
-                if(sb.guestUser == false) {
-                  Navigator.pop(context);
-                  await sb.userSignout().then((_) => nextScreenCloseOthers(context, SignInPage()));
-                  
-
-                } else {
-                  Navigator.pop(context);
-                  await sb.guestSignout().then((_) => nextScreenCloseOthers(context, SignInPage()));
-
-                }
-                
-
-              },
-            ),
-            TextButton(
-              child: Text('No'),
-              onPressed: (){
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
+  Future<void> _launchInsta() async {
+    if (await canLaunchUrlString('https://www.instagram.com/stoic.kings/')) {
+      final bool nativeAppLaunchSucceed = await launch(
+          'https://www.instagram.com/stoic.kings/',
+          forceWebView: false,
+          universalLinksOnly: true);
+      if (!nativeAppLaunchSucceed) {
+        await launch('https://www.instagram.com/stoic.kings/',
+            forceWebView: true);
       }
-    );
-
+    }
   }
 
-
-  
-
-
-  
+  Future openLogoutDialog(context1) async {
+    showDialog(
+        context: context1,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Logout?',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            content: const Text('Do you really want to Logout?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () async {
+                  final sb = context.read<SignInBloc>();
+                  Navigator.pop(context);
+                  await sb
+                      .userSignout()
+                      .then((_) => nextScreenReplace(context, const SignInPage()));
+                },
+              ),
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
 
   aboutAppDialog() {
     showDialog(
         context: context,
         builder: (BuildContext coontext) {
           return AboutDialog(
-            applicationVersion: '1.0.0',
+            applicationVersion: Config().appVersion,
             applicationName: Config().appName,
             applicationIcon: Image(
               height: 40,
@@ -119,31 +108,25 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         });
   }
 
-
-  void handleRating () {
+  void handleRating() {
     LaunchReview.launch(
-      androidAppId: Config().packageName,
-      iOSAppId: null,
-      writeReview: true
-    );
+        androidAppId: Config().packageName, iOSAppId: null, writeReview: true);
   }
 
-  
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
       child: Padding(
           padding: const EdgeInsets.only(left: 15),
           child: Column(
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 50, left: 0),
+                padding: const EdgeInsets.only(top: 50, left: 0),
                 alignment: Alignment.center,
                 height: 150,
                 child: Text(
                   Config().hashTag.toUpperCase(),
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
               ),
               Expanded(
@@ -151,7 +134,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   itemCount: title.length,
                   itemBuilder: (BuildContext context, int index) {
                     return InkWell(
-                      child: Container(
+                      child: SizedBox(
                         height: 45,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 15),
@@ -162,11 +145,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                 color: Colors.grey,
                                 size: 22,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                               ),
                               Text(title[index],
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500))
                             ],
@@ -176,27 +159,80 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       onTap: () {
                         Navigator.pop(context);
                         if (index == 0) {
-                            nextScreeniOS(context, CatagoryPage());
+                          nextScreeniOS(context, const CatagoryPage());
                         } else if (index == 1) {
-                            nextScreeniOS(context, ExplorePage());
+                          nextScreeniOS(context, const ExplorePage());
                         } else if (index == 2) {
-                          
-                            nextScreeniOS(context, BookmarkPage());
+                          nextScreeniOS(
+                              context,
+                              FavouritePage(
+                                  userUID: context.read<SignInBloc>().uid));
                         } else if (index == 3) {
-                            aboutAppDialog();
-                        } else if (index == 4){
-                            handleRating();
-                        } else if (index == 5){
-                            openLogoutDialog(context);
+                          nextScreeniOS(context, const RequestWallpaper());
+                        } else if (index == 4) {
+                          aboutAppDialog();
+                        } else {
+                          handleRating();
                         }
                       },
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return Divider();
+                    return const Divider();
                   },
                 ),
-              )
+              ),
+              Row(
+                children: [
+                  const Text("Follow us on:"),
+                  IconButton(
+                      icon: const ImageIcon(
+                        AssetImage('assets/images/insta.png'),
+                        size: 30,
+                      ),
+                      onPressed: _launchInsta,
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  !context.watch<SignInBloc>().isSignedIn
+                      ? Container()
+                      : Column(
+                          children: [
+                            const Divider(),
+                            InkWell(
+                              child: const SizedBox(
+                                height: 45,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 15),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        FontAwesomeIcons.signOutAlt,
+                                        color: Colors.grey,
+                                        size: 22,
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      Text('Logout',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                openLogoutDialog(context);
+                              },
+                            ),
+                          ],
+                        ),
+                ],
+              ),
             ],
           )),
     );

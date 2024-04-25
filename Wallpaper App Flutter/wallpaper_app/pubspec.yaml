@@ -1,88 +1,78 @@
-name: wallpaper_app
-description: A new Flutter application.
+name: stoicwallpaper
+description: A new Flutter project.
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none"
 
-version: 1.0.5+6
+version: 2.3.2+40
 
 environment:
-  sdk: ">=2.19.0 <3.0.0"
+  sdk: ">=2.18.0"
 
 dependencies:
+  android_alarm_manager_plus: ^3.0.4
+  android_power_manager: ^1.0.0
+  app_settings: ^5.1.1
+  awesome_dialog: 2.0.0
+  build_runner: ^2.4.7
+  cached_network_image: ^3.3.0
+  carousel_slider: ^4.2.1
+  cloud_firestore: ^4.13.6
+  dio: ^5.4.0
+  dots_indicator: ^3.0.0
+  external_path: ^1.0.3
+  firebase_auth: 4.15.3
+  firebase_core: 2.24.2
+  firebase_storage: 11.5.6
   flutter:
     sdk: flutter
-  # paginate_firestore: ^1.0.3+1
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  # cupertino_icons: ^0.1.3
-  path_provider: ^2.0.2
-  permission_handler: ^11.3.1
+  flutter_cache_manager: ^3.3.1
+  flutter_downloader: ^1.11.6
+  flutter_launcher_icons:
+  flutter_lints: ^3.0.1
+  flutter_local_notifications: 11.0.1
+  flutter_staggered_grid_view: ^0.4.0
+  flutter_wallpaper_manager: ^0.0.4
+  font_awesome_flutter: ^10.6.0
+  google_mobile_ads: ^4.0.0
+  google_sign_in: ^5.3.3
+  hive: ^2.1.0
+  hive_flutter: 1.1.0
+  hive_generator: ^1.1.2
+  image_gallery_saver: ^2.0.3
+  image_picker: ^1.0.5
+  in_app_purchase: ^3.1.13
   intl: ^0.19.0
-  # ext_storage: ^2.0.0
-  external_path: ^1.0.3
-  flutter_downloader: ^1.4.4
-  cloud_firestore: ^4.0.0
-  font_awesome_flutter: ^10.7.0
-  dots_indicator: ^3.0.0
-  carousel_slider: ^4.2.1
-  sliding_up_panel: ^2.0.0+1
-  flutter_staggered_grid_view: ^0.7.0
-  provider: ^6.0.2
-  shared_preferences: ^2.2.3
-  google_sign_in: ^6.2.1
-  firebase_auth: ^4.17.0
-  # connectivity: ^0.4.5+3
-  cached_network_image: ^3.3.1
-  launch_review: 3.0.1
-  awesome_dialog: ^3.2.0
-  onesignal_flutter: ^5.1.4
-  firebase_analytics: ^10.0.0
-  firebase_core: ^2.2.0
+  launch_review: ^3.0.1
+  open_file_safe: ^3.2.3
+  permission_handler: ^10.1.0
+  provider: ^6.0.1
+  shared_preferences: ^2.0.13
   shimmer: ^3.0.0
-  # firebase_admob: 0.11.2 #google_mobile_ads can be used as alternative
-  # facebook_audience_network: ^0.5.0
-  # fzwallpaper: ^1.0.3 //using async wallpaper because fzwallpaper 
-  async_wallpaper: ^2.0.3
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  path: ^1.8.3
-
-  flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.0.0
-
-
-  
-flutter_icons:
-  android: "launcher_icon" 
-  ios: true
-  image_path: "assets/images/icon.png"
-
+  sliding_up_panel: ^2.0.0+1
+  url_launcher: ^6.1.1
+  uuid: ^3.0.0
+  wallpaper: ^1.0.7
+  internet_connection_checker: ^1.0.0+1
+  flutter_native_splash: ^1.0.0
 
 flutter_native_splash:
   image: assets/images/splash.png
   color: "ffffff"
+  android: true
 
+
+flutter_icons:
+  android: true
+  image_path_android: "assets/images/icon.png"
+  image_path_ios: "assets/images/icon.png"
 
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
-
   assets:
-    
-    - assets/images/icon.png
-    - assets/images/splash.png
- 
+    - assets/images/
+    - temp/
+
   fonts:
-
-
-
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins-Light.ttf
@@ -95,3 +85,4 @@ flutter:
           weight: 700
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 800
+

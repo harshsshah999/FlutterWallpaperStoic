@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../blocs/internet_bloc.dart';
 
 class NoInternetPage extends StatelessWidget {
-  const NoInternetPage({Key? key}) : super(key: key);
+  const NoInternetPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,29 +14,30 @@ class NoInternetPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.network_check, size : 100, color: Colors.blueAccent),
-            SizedBox(height: 5,),
+            const Icon(Icons.network_check, size : 100, color: Colors.blueAccent),
+            const SizedBox(height: 5,),
             Text('No Internet Connection!', style: TextStyle(
               color: Colors.grey[800],
               fontSize: 18,
               fontWeight: FontWeight.w600
 
             ),),
-            SizedBox(height: 5,),
-            Text('Enable your wifi/mobile data', style: TextStyle(
+            const SizedBox(height: 5,),
+            const Text('Enable your wifi/mobile data', style: TextStyle(
               color: Colors.grey,
               fontSize: 14,
 
             ),),
 
-            SizedBox(height: 30,),
+            const SizedBox(height: 30,),
             ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.blueAccent)
+              ),
               onPressed: (){
                 ib.checkInternet();
               },
-              style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blueAccent)),
-              // color: Colors.blueAccent,
-              child: Text('Check Again', style: TextStyle(
+              child: const Text('Check Again', style: TextStyle(
                 color: Colors.white,
                 fontSize: 16
               ),),

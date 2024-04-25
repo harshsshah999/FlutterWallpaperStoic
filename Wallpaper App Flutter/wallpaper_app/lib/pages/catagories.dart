@@ -5,7 +5,7 @@ import '../blocs/data_bloc.dart';
 import '../pages/catagory_items.dart';
 
 class CatagoryPage extends StatefulWidget {
-  CatagoryPage({Key? key}) : super(key: key);
+  const CatagoryPage({super.key});
 
   @override
   _CatagoryPageState createState() => _CatagoryPageState();
@@ -25,16 +25,16 @@ class _CatagoryPageState extends State<CatagoryPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: false,
-        title: Text('Categories',
+        title: const Text('Categories',
             style: TextStyle(
               color: Colors.black,
             )),
       ),
       body: ListView.separated(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         itemCount: db.categories.length,
         separatorBuilder: (BuildContext context, int index) {
-          return SizedBox(
+          return const SizedBox(
             height: 10,
           );
         },
@@ -52,13 +52,14 @@ class _CatagoryPageState extends State<CatagoryPage> {
                             fit: BoxFit.cover)),
                     child: Align(
                       child: Text(db.categories[index]['name'],
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 22,
                               fontWeight: FontWeight.w600)),
                     ),
                   ),
                   onTap: () {
+                    print("hi ");
                     Navigator.push(
                         context,
                         MaterialPageRoute(
