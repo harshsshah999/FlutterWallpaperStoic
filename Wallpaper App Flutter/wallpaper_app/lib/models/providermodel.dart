@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'dart:async';
-import 'dart:io';
 
 class ProviderModel with ChangeNotifier {
   final InAppPurchase _iap = InAppPurchase.instance;
@@ -32,7 +31,7 @@ class ProviderModel with ChangeNotifier {
 
   void initialize() async {
     available = await _iap.isAvailable();
-    print("available");
+    debugPrint("available");
     if (available) {
       await _getProducts();
       await _getPastPurchases();

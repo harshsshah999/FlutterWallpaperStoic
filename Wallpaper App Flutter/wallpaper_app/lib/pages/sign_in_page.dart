@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:open_settings/open_settings.dart';
+import 'package:open_settings_plus/core/open_settings_plus.dart';
+// import 'package:optimization_battery/optimization_battery.dart';
 import 'package:provider/provider.dart';
 import '../blocs/internet_bloc.dart';
 import '../blocs/sign_in_bloc.dart';
@@ -167,10 +170,20 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                       ],
-                    ))
+                    )),
+                ElevatedButton(
+                    onPressed: batterySaverPermission,
+                    child: Text("Battery Saver"))
               ],
             ),
           ),
         ));
+  }
+
+  void batterySaverPermission() {
+    // AppSettings.openAppSettings(type: AppSettingsType.batteryOptimization);
+    // OpenSettings.openVoiceControllBatterySaverModeSetting();
+    // OptimizationBattery.openBatteryOptimizationSettings();
+    OpenSettingsPlusAndroid().appSettings();
   }
 }

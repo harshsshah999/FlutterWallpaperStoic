@@ -213,6 +213,7 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
+
   handleStoragePermission() async {
     await Permission.storage.request().then((_) async {
       if (await Permission.storage.status == PermissionStatus.granted) {

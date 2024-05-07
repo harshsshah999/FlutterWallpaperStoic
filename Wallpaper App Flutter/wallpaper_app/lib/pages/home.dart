@@ -13,13 +13,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'package:flutter_wallpaper_manager/flutter_wallpaper_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -27,11 +28,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+// import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
 import 'package:stoicwallpaper/main.dart';
 import 'package:stoicwallpaper/models/providermodel.dart';
 import 'package:stoicwallpaper/utils/dialog.dart';
+import 'package:workmanager/workmanager.dart';
 import '../blocs/data_bloc.dart';
 
 import '../blocs/internet_bloc.dart';
@@ -87,6 +89,52 @@ void initializeSetting() async {
   await flutterLocalNotificationsPlugin.initialize(initializeSetting);
 }
 
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    print(
+        "Native called background task: $task"); //simpleTask will be emitted here.
+    // checkInternetConnected();
+    //
+    // if (!Firebase.apps.isNotEmpty) {
+      await Firebase.initializeApp();
+      await Hive.initFlutter();
+    // }
+    box = await Hive.openBox('box');
+    _wallpapers = box.get("_wallpapers") as String?;
+    debugPrint("hello $_wallpapers");
+    User firebaseUser = _firebaseAuth.currentUser!;
+    var uid = firebaseUser.uid;
+    DocumentSnapshot documentSnapshot = await userRef.doc(uid).get();
+    var savedList = (documentSnapshot.data() as dynamic)['loved items'];
+    debugPrint("default block");
+      Random random = Random();
+      int num = random.nextInt(savedList.length);
+       await contentRef.doc(savedList.elementAt(num)).get().then((snapshot) async {
+        debugPrint(savedList.elementAt(num));
+        URL = snapshot.data()!['image url'].toString();
+        debugPrint("${URL!} : ${DateTime.now()}");
+        int? location;
+        _locationToSet = box.get("_location") as String?;
+        // _locationToSet = prefs.get("_location") as String?;
+        if (_locationToSet == 'Home') {
+          location = WallpaperManager.HOME_SCREEN;
+        } else if (_locationToSet == 'Lock') {
+          location = WallpaperManager.LOCK_SCREEN;
+        } else if (_locationToSet == 'Both') {
+          location = WallpaperManager.BOTH_SCREEN;
+        }
+        var file =
+            await testing_cache.DefaultCacheManager().getSingleFile(URL!);
+        WallpaperManager.setWallpaperFromFile(file.path, location!);
+        debugPrint(file.toString());
+      });
+       debugPrint("end");
+    //
+    return Future.value(true);
+  });
+}
+
 Future<void> displayNotification(String title, String body) async {
   flutterLocalNotificationsPlugin.show(
       0,
@@ -98,6 +146,7 @@ Future<void> displayNotification(String title, String body) async {
 }
 
 checkInternetConnected() async {
+  print("Entering the wallpaper change code.");
   bool internetConnected = true;
   initializeSetting();
   await Firebase.initializeApp();
@@ -106,7 +155,7 @@ checkInternetConnected() async {
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
       print('connected');
       internetConnected = true;
-    } else {}
+    }
   } on SocketException catch (_) {
     print('not connected');
     internetConnected = false;
@@ -121,14 +170,14 @@ checkInternetConnected() async {
   debugPrint("hello $_wallpapers");
   if (_wallpapers.toString() == "Random" && internetConnected) {
     debugPrint("random block");
-    contentRef.get().then((QuerySnapshot querySnapshot) {
+    await contentRef.get().then((QuerySnapshot querySnapshot) async {
       for (var documentSnapshot in querySnapshot.docs) {
         DocList.add(documentSnapshot.id);
       }
       Random random = Random();
       int num = random.nextInt(DocList.length);
       debugPrint(DocList.elementAt(num));
-      contentRef.doc(DocList.elementAt(num)).get().then((snapshot) async {
+      await contentRef.doc(DocList.elementAt(num)).get().then((snapshot) async {
         URL = snapshot.data()!['image url'].toString();
         debugPrint("${URL!} : ${DateTime.now()}");
         int? location;
@@ -159,7 +208,7 @@ checkInternetConnected() async {
       debugPrint("default block");
       Random random = Random();
       int num = random.nextInt(savedList.length);
-      contentRef.doc(savedList.elementAt(num)).get().then((snapshot) async {
+      await contentRef.doc(savedList.elementAt(num)).get().then((snapshot) async {
         debugPrint(savedList.elementAt(num));
         URL = snapshot.data()!['image url'].toString();
         debugPrint("${URL!} : ${DateTime.now()}");
@@ -184,52 +233,76 @@ checkInternetConnected() async {
 
 void setPeriodicWallpaperChange(bool isSet, var scaffoldKey) async {
   print("HIYA");
-  await AndroidAlarmManager.initialize();
+  // await AndroidAlarmManager.initialize();
   final prefs = await SharedPreferences.getInstance();
   if (isSet) {
     if (_alarmDuration == "15 minutes") {
-      await AndroidAlarmManager.periodic(
-          const Duration(seconds: 15), helloAlarmID, checkInternetConnected,
-          exact: true, allowWhileIdle: true, rescheduleOnReboot: true);
-      //openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 minutes');
-    } else if (_alarmDuration == "15 seconds") {
-      await AndroidAlarmManager.periodic(
-          const Duration(seconds: 15), helloAlarmID, checkInternetConnected);
-      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 seconds');
-    } else if (_alarmDuration == "30 minutes") {
-      await AndroidAlarmManager.periodic(
-        const Duration(minutes: 30),
-        helloAlarmID,
-        checkInternetConnected,
+      Workmanager().registerPeriodicTask(
+        "periodic-task-identifier",
+        "simplePeriodicTask",
+        frequency: const Duration(minutes: 15),
       );
-      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 30 minutes');
+      // await AndroidAlarmManager.periodic(
+      //     const Duration(seconds: 15), helloAlarmID, checkInternetConnected,
+      //     exact: true, allowWhileIdle: true, rescheduleOnReboot: true);
+      // openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 minutes');
+    } 
+     else if (_alarmDuration == "30 minutes") {
+      Workmanager().registerPeriodicTask(
+        "periodic-task-identifier",
+        "simplePeriodicTask",
+        frequency: const Duration(minutes: 30),
+      );
+      // await AndroidAlarmManager.periodic(
+      //   const Duration(minutes: 30),
+      //   helloAlarmID,
+      //   checkInternetConnected,
+      // );
+      // openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 30 minutes');
     } else if (_alarmDuration == "60 minutes") {
-      await AndroidAlarmManager.periodic(
-        const Duration(minutes: 60),
-        helloAlarmID,
-        checkInternetConnected,
+      Workmanager().registerPeriodicTask(
+        "periodic-task-identifier",
+        "simplePeriodicTask",
+        frequency: const Duration(hours: 1),
       );
-      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 60 minutes');
+      // await AndroidAlarmManager.periodic(
+      //   const Duration(minutes: 60),
+      //   helloAlarmID,
+      //   checkInternetConnected,
+      // );
+      // openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 60 minutes');
     } else if (_alarmDuration == "12 hours") {
-      await AndroidAlarmManager.periodic(
-        const Duration(hours: 12),
-        helloAlarmID,
-        checkInternetConnected,
+      Workmanager().registerPeriodicTask(
+        "periodic-task-identifier",
+        "simplePeriodicTask",
+        frequency: const Duration(hours: 12),
       );
-      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 12 hours');
+      // await AndroidAlarmManager.periodic(
+      //   const Duration(hours: 12),
+      //   helloAlarmID,
+      //   checkInternetConnected,
+      // );
+      // openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 12 hours');
     } else {
-      await AndroidAlarmManager.periodic(
-        const Duration(hours: 24),
-        helloAlarmID,
-        checkInternetConnected,
+      Workmanager().registerPeriodicTask(
+        "periodic-task-identifier",
+        "simplePeriodicTask",
+        frequency: const Duration(days: 1),
       );
-      openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 24 hours');
+      // await AndroidAlarmManager.periodic(
+      //   const Duration(hours: 24),
+      //   helloAlarmID,
+      //   checkInternetConnected,
+      // );
+      // openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 24 hours');
     }
-    checkInternetConnected();
+    // checkInternetConnected();
     prefs.setBool("isAlarmOn", true);
   } else if (!isSet) {
+    print("workmanager cancelled");
+    Workmanager().cancelByUniqueName("periodic-task-identifier");
     prefs.setBool("isAlarmOn", false);
-    await AndroidAlarmManager.cancel(helloAlarmID);
+    // await AndroidAlarmManager.cancel(helloAlarmID);
   }
 }
 
@@ -317,11 +390,11 @@ class _HomePageState extends State<HomePage> {
     //_iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
-  Future initAdmobAd() async {
-    await MobileAds.instance
-        .initialize()
-        .then((value) => context.read<AdsBloc>().loadAdmobInterstitialAd());
-  }
+  // Future initAdmobAd() async {
+  //   await MobileAds.instance
+  //       .initialize()
+  //       .then((value) => context.read<AdsBloc>().loadAdmobInterstitialAd());
+  // }
 
   Future<void> OpenAlert(var prod) async {
     return showDialog(
@@ -365,14 +438,26 @@ class _HomePageState extends State<HomePage> {
                 content: const Text("Turn off auto wallpaper changer?"),
                 actions: [
                   TextButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.grey.shade300)),
                       onPressed: () {
                         setPeriodicWallpaperChange(false, scaffoldKey);
                         Navigator.pop(context);
                       },
-                      child: const Text("Yes")),
+                      child: const Text(
+                        "Yes",
+                        style: TextStyle(fontSize: 18),
+                      )),
                   TextButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.grey.shade300)),
                       onPressed: () => Navigator.pop(context),
-                      child: const Text("Cancel")),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(fontSize: 18),
+                      )),
                 ]);
           },
         );
@@ -545,7 +630,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     WidgetsFlutterBinding.ensureInitialized();
-    AndroidAlarmManager.initialize();
+    // AndroidAlarmManager.initialize();
     initDownloader();
     initPowerState();
     initOnesignal();
@@ -553,7 +638,7 @@ class _HomePageState extends State<HomePage> {
     provider.initialize();
 
     getData();
-    initAdmobAd(); //-------admob--------
+    // initAdmobAd(); //-------admob--------
     //initFbAd();             //-------fb--------
   }
 

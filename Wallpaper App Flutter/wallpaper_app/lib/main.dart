@@ -1,5 +1,4 @@
-      // ignore_for_file: unused_local_variable
-
+// ignore_for_file: unused_local_variable
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +7,9 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+// import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/models/providermodel.dart';
-
-// import 'package:workmanager/workmanager.dart';
+import 'package:workmanager/workmanager.dart';
 import './blocs/bookmark_bloc.dart';
 import './blocs/data_bloc.dart';
 import './blocs/internet_bloc.dart';
@@ -20,24 +18,45 @@ import './blocs/userdata_bloc.dart';
 import './pages/home.dart';
 import './pages/sign_in_page.dart';
 // import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+// import 'package:in_app_purchase/in_app_purchase.dart';
+// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 late Box box;
+
+// @pragma('vm:entry-point')
+//  void callbackDispatcher() {
+//    Workmanager().executeTask((taskName, inputData) {
+//     switch(taskName) {
+//       case "":
+//         print("Replace this print statement with your code that should be executed in the background here");
+//          break;
+//      }
+//      return Future.value(true);
+//    });
+//  }
+
+ 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: const FirebaseOptions(apiKey:'AIzaSyDJjDinogigbt8XRSd_D6MrHgiBkGorRr8',appId:'1:502349033379:android:2c92114ca4d7a92d9af416',messagingSenderId:'502349033379',projectId:'stoicwall-79c94'));
+   Workmanager().initialize(
+    callbackDispatcher, // The top level function, aka callbackDispatcher
+    isInDebugMode: true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  );
+  // await AndroidAlarmManager.initialize();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: 'AIzaSyDJjDinogigbt8XRSd_D6MrHgiBkGorRr8',
+          appId: '1:502349033379:android:2c92114ca4d7a92d9af416',
+          messagingSenderId: '502349033379',
+          projectId: 'stoicwall-79c94'));
   await Hive.initFlutter();
   box = await Hive.openBox('box');
   await FlutterDownloader.initialize(debug: true);
-  await AndroidAlarmManager.initialize();
   initializeSetting();
 
   var prefs = await SharedPreferences.getInstance();
   //InAppPurchaseConnection.enablePendingPurchases(); <<<------
-
- 
 
   if (prefs.getBool("isAlarmOn") == null) {
     prefs.setBool("isAlarmOn", false);
@@ -85,9 +104,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<InternetBloc>(
             create: (context) => InternetBloc(),
           ),
-          ChangeNotifierProvider<AdsBloc>(
-            create: (context) => AdsBloc(),
-          ),
+          // ChangeNotifierProvider<AdsBloc>(
+          //   create: (context) => AdsBloc(),
+          // ),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,

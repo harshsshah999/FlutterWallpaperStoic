@@ -41,14 +41,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
-  app_settings:
-    dependency: "direct main"
-    description:
-      name: app_settings
-      sha256: "09bc7fe0313a507087bec1a3baf555f0576e816a760cbb31813a88890a09d9e5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.1.1"
   archive:
     dependency: transitive
     description:
@@ -486,6 +478,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.6"
+  flutter_isolate:
+    dependency: "direct main"
+    description:
+      name: flutter_isolate
+      sha256: "994ddec596da4ca12ca52154fd59404077584643eb7e3f1008a55fda9fe0b76b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.4"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -952,6 +952,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.3"
+  open_settings_plus:
+    dependency: "direct main"
+    description:
+      name: open_settings_plus
+      sha256: "5f813700e62bc77db830e0225e09e77c6573c67784a4e7b00483f3a16341c081"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3"
   package_config:
     dependency: transitive
     description:
@@ -1541,6 +1549,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
+  workmanager:
+    dependency: "direct main"
+    description:
+      name: workmanager
+      sha256: ed13530cccd28c5c9959ad42d657cd0666274ca74c56dea0ca183ddd527d3a00
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.2"
   xdg_directories:
     dependency: transitive
     description:
