@@ -62,7 +62,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     }
   }
 
-   
+   Future<void> _showPrivacyPolicy() async {
+    final url = Uri.parse('https://cillyfox.com/stoicwall/pages/privacypolicystoic.html');
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            'Could not launch Browser. Please install it if not available.'),
+      ));
+      throw Exception('Could not launch $url');
+    }
+  }
 
   Future openLogoutDialog(context1) async {
     showDialog(
@@ -187,6 +199,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                           nextScreeniOS(context, const RequestWallpaper());
                         } else if (index == 4) {
                           aboutAppDialog();
+                        }else if( index == 5){
+                          _showPrivacyPolicy();
                         } else {
                           handleRating();
                         }
