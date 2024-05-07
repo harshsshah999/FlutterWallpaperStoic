@@ -33,6 +33,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     'Saved Items',
     "Custom Wallpaper",
     'About App',
+    'Privacy Policy',
     'Rate & Review'
   ];
 
@@ -42,6 +43,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     FontAwesomeIcons.solidHeart,
     FontAwesomeIcons.diceD20,
     FontAwesomeIcons.info,
+    FontAwesomeIcons.shieldHalved,
     FontAwesomeIcons.star,
     FontAwesomeIcons.rightFromBracket,
   ];
@@ -59,6 +61,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       throw Exception('Could not launch $url');
     }
   }
+
+   
 
   Future openLogoutDialog(context1) async {
     showDialog(

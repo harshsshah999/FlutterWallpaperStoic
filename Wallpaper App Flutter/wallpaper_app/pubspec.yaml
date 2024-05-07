@@ -15,6 +15,7 @@ dependencies:
   # open_settings: ^2.0.2
   # optimization_battery: ^0.0.7
   open_settings_plus: ^0.3.3
+  disable_battery_optimization: ^1.1.1
   awesome_dialog: 2.0.0
   build_runner: ^2.4.7
   cached_network_image: ^3.3.0

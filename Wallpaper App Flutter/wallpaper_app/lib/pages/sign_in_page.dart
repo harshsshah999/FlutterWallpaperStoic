@@ -1,7 +1,8 @@
+import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:open_settings/open_settings.dart';
-import 'package:open_settings_plus/core/open_settings_plus.dart';
+// import 'package:open_settings_plus/core/open_settings_plus.dart';
 // import 'package:optimization_battery/optimization_battery.dart';
 import 'package:provider/provider.dart';
 import '../blocs/internet_bloc.dart';
@@ -171,19 +172,32 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ],
                     )),
-                ElevatedButton(
-                    onPressed: batterySaverPermission,
-                    child: Text("Battery Saver"))
+                // ElevatedButton(
+                //     onPressed: batterySaverPermission,
+                //     child: Text("Battery Saver"))
               ],
             ),
           ),
         ));
   }
 
-  void batterySaverPermission() {
+  void batterySaverPermission() async{
     // AppSettings.openAppSettings(type: AppSettingsType.batteryOptimization);
     // OpenSettings.openVoiceControllBatterySaverModeSetting();
     // OptimizationBattery.openBatteryOptimizationSettings();
-    OpenSettingsPlusAndroid().appSettings();
+    // OpenSettingsPlusAndroid().appSettings();
+    bool? isBatteryOptimizationDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
+    bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
+    if(!isBatteryOptimizationDisabled!){
+      await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
+      
+    }
+    else if(!isManBatteryOptimizationDisabled!){
+      await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings("Your device has additional battery optimization", "Follow the steps and disable the optimizations to allow smooth functioning of this app");
+    }
+    // else{
+    //   // await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
+    //   await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings("Your device has additional battery optimization", "Follow the steps and disable the optimizations to allow smooth functioning of this app");
+    // }
   }
 }

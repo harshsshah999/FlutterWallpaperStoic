@@ -3,11 +3,12 @@
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-import 'package:android_power_manager/android_power_manager.dart';
+// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+// import 'package:android_power_manager/android_power_manager.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -94,43 +95,12 @@ void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     print(
         "Native called background task: $task"); //simpleTask will be emitted here.
-    // checkInternetConnected();
+    await checkInternetConnected();
     //
     // if (!Firebase.apps.isNotEmpty) {
-      await Firebase.initializeApp();
-      await Hive.initFlutter();
+    //   await Firebase.initializeApp();
+    //   await Hive.initFlutter();
     // }
-    box = await Hive.openBox('box');
-    _wallpapers = box.get("_wallpapers") as String?;
-    debugPrint("hello $_wallpapers");
-    User firebaseUser = _firebaseAuth.currentUser!;
-    var uid = firebaseUser.uid;
-    DocumentSnapshot documentSnapshot = await userRef.doc(uid).get();
-    var savedList = (documentSnapshot.data() as dynamic)['loved items'];
-    debugPrint("default block");
-      Random random = Random();
-      int num = random.nextInt(savedList.length);
-       await contentRef.doc(savedList.elementAt(num)).get().then((snapshot) async {
-        debugPrint(savedList.elementAt(num));
-        URL = snapshot.data()!['image url'].toString();
-        debugPrint("${URL!} : ${DateTime.now()}");
-        int? location;
-        _locationToSet = box.get("_location") as String?;
-        // _locationToSet = prefs.get("_location") as String?;
-        if (_locationToSet == 'Home') {
-          location = WallpaperManager.HOME_SCREEN;
-        } else if (_locationToSet == 'Lock') {
-          location = WallpaperManager.LOCK_SCREEN;
-        } else if (_locationToSet == 'Both') {
-          location = WallpaperManager.BOTH_SCREEN;
-        }
-        var file =
-            await testing_cache.DefaultCacheManager().getSingleFile(URL!);
-        WallpaperManager.setWallpaperFromFile(file.path, location!);
-        debugPrint(file.toString());
-      });
-       debugPrint("end");
-    //
     return Future.value(true);
   });
 }
@@ -148,7 +118,7 @@ Future<void> displayNotification(String title, String body) async {
 checkInternetConnected() async {
   print("Entering the wallpaper change code.");
   bool internetConnected = true;
-  initializeSetting();
+  // initializeSetting();
   await Firebase.initializeApp();
   try {
     final result = await InternetAddress.lookup("google.com");
@@ -343,8 +313,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   void batterySaverPermission() async {
+    // bool? isBatteryOptimizationDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
+    // bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
+    // bool status=isBatteryOptimizationDisabled!||isManBatteryOptimizationDisabled!;
+    // if(status){
+    //   setPeriodicWallpaperChange(true, _scaffoldKey);
+    //     Navigator.pop(context);
+    // }else{
+
+    // }
+
     var status = await Permission.ignoreBatteryOptimizations.status;
-    print("status: $status");
+    bool? isBatteryOptimizationDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
+    bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
+    if(!isBatteryOptimizationDisabled!){
+      await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
+      
+    }
+    else if(!isManBatteryOptimizationDisabled!){
+      await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings("Your device has additional battery optimization", "Follow the steps and disable the optimizations to allow smooth functioning of this app");
+    }
+    else{print("status: $status");
     if (status.isGranted) {
       if (_alarmDuration == null ||
           _locationToSet == null ||
@@ -354,8 +343,8 @@ class _HomePageState extends State<HomePage> {
         setPeriodicWallpaperChange(true, _scaffoldKey);
         Navigator.pop(context);
       }
-    } else {
-      AndroidPowerManager.requestIgnoreBatteryOptimizations();
+    // } else {
+    //   AndroidPowerManager.requestIgnoreBatteryOptimizations();
       // showDialog(
       //     context: context,
       //     builder: (BuildContext context) {
@@ -381,6 +370,7 @@ class _HomePageState extends State<HomePage> {
       //       );
       //     });
     }
+  }
   }
 
   //final InAppPurchaseConnection _iap = InAppPurchaseConnection.instance; <<<------
@@ -671,7 +661,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     // TODO: implement dispose
-    var provider = Provider.of<ProviderModel>(context, listen: false);
+    // var provider = Provider.of<ProviderModel>(context, listen: false);
     // provider.subscription.cancel();
     super.dispose();
   }
