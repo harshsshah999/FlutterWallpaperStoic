@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-// import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/models/providermodel.dart';
 import 'package:workmanager/workmanager.dart';
 import './blocs/bookmark_bloc.dart';
@@ -24,24 +25,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 late Box box;
 
-// @pragma('vm:entry-point')
-//  void callbackDispatcher() {
-//    Workmanager().executeTask((taskName, inputData) {
-//     switch(taskName) {
-//       case "":
-//         print("Replace this print statement with your code that should be executed in the background here");
-//          break;
-//      }
-//      return Future.value(true);
-//    });
-//  }
-
  
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
    Workmanager().initialize(
     callbackDispatcher, // The top level function, aka callbackDispatcher
-    isInDebugMode: true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+    isInDebugMode: false
   );
   // await AndroidAlarmManager.initialize();
   await Firebase.initializeApp(
@@ -104,9 +94,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<InternetBloc>(
             create: (context) => InternetBloc(),
           ),
-          // ChangeNotifierProvider<AdsBloc>(
-          //   create: (context) => AdsBloc(),
-          // ),
+          ChangeNotifierProvider<AdsBloc>(
+            create: (context) => AdsBloc(),
+          ),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,

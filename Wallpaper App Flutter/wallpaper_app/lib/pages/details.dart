@@ -213,7 +213,6 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
-
   handleStoragePermission() async {
     await Permission.storage.request().then((_) async {
       if (await Permission.storage.status == PermissionStatus.granted) {
@@ -275,29 +274,30 @@ class _DetailsPageState extends State<DetailsPage> {
 
   void openCompleteDialog() async {
     AwesomeDialog(
-        context: context,
-        dialogType: DialogType.SUCCES,
-        title: 'Complete',
-        animType: AnimType.SCALE,
-        padding: const EdgeInsets.all(30),
-        body: Center(
-          child: Container(
-              alignment: Alignment.center,
-              height: 80,
-              child: Text(
-                progress,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              )),
-        ),
-        btnOkText: 'Ok',
-        dismissOnTouchOutside: false,
-        btnOkOnPress: () {
-          context
-              .read<AdsBloc>()
-              .showInterstitialAdAdmob(); //-------admob--------
-          //context.read<AdsBloc>().showFbAdd();                        //-------fb--------
-        }).show();
+            context: context,
+            dialogType: DialogType.SUCCES,
+            title: 'Complete',
+            animType: AnimType.SCALE,
+            padding: const EdgeInsets.all(30),
+            body: Center(
+              child: Container(
+                  alignment: Alignment.center,
+                  height: 80,
+                  child: Text(
+                    progress,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  )),
+            ),
+            btnOkText: 'Ok',
+            dismissOnTouchOutside: false,
+            btnOkOnPress: () {
+              context
+                  .read<AdsBloc>()
+                  .showInterstitialAdAdmob(); //-------admob--------
+              //context.read<AdsBloc>().showFbAdd();                        //-------fb--------
+            })
+        .show();
   }
 
   askOpenSettingsDialog() {
@@ -333,7 +333,8 @@ class _DetailsPageState extends State<DetailsPage> {
     var initializeAndroid = const AndroidInitializationSettings('icon_stoic');
     var initializeSetting = InitializationSettings(android: initializeAndroid);
     await flutterLocalNotificationsPlugin.initialize(initializeSetting,
-        onDidReceiveNotificationResponse: selectNotification as void Function(NotificationResponse?));
+        onDidReceiveNotificationResponse:
+            selectNotification as void Function(NotificationResponse?));
   }
 
   Future<void> displayNotification(
@@ -352,7 +353,7 @@ class _DetailsPageState extends State<DetailsPage> {
   Future selectNotification(NotificationResponse payload) async {
     debugPrint('notification payload: ${payload.toString()}');
     OpenFile.open(payload.toString());
-    }
+  }
 
   Future handleDownload() async {
     initializeSetting();
@@ -496,6 +497,7 @@ class _DetailsPageState extends State<DetailsPage> {
   void initState() {
     super.initState();
     loadRewardAd();
+    context.read<AdsBloc>().loadAdmobInterstitialAd();
   }
 
   @override

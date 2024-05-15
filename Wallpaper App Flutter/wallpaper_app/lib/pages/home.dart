@@ -1,5 +1,3 @@
-// ignore_for_file: unrelated_type_equality_checks, avoid_print
-
 import 'dart:isolate';
 import 'dart:ui';
 
@@ -14,14 +12,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-
 import 'package:flutter_wallpaper_manager/flutter_wallpaper_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -29,7 +24,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-// import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
 import 'package:stoicwallpaper/main.dart';
 import 'package:stoicwallpaper/models/providermodel.dart';
@@ -84,6 +79,8 @@ const Locations = ['Home', 'Lock', 'Both'];
 String? _wallpapers;
 const Wallpapers = ['Random', 'Saved'];
 
+bool _isbannerAdLoaded = false;
+
 void initializeSetting() async {
   var initializeAndroid = const AndroidInitializationSettings('ic');
   var initializeSetting = InitializationSettings(android: initializeAndroid);
@@ -93,14 +90,8 @@ void initializeSetting() async {
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    print(
-        "Native called background task: $task"); //simpleTask will be emitted here.
+    print("Native called background task: $task");
     await checkInternetConnected();
-    //
-    // if (!Firebase.apps.isNotEmpty) {
-    //   await Firebase.initializeApp();
-    //   await Hive.initFlutter();
-    // }
     return Future.value(true);
   });
 }
@@ -132,8 +123,6 @@ checkInternetConnected() async {
     await displayNotification(
         "No internet connection!", "Could not change wallpaper");
   }
-
-  // final prefs = await SharedPreferences.getInstance();
   await Hive.initFlutter();
   box = await Hive.openBox('box');
   _wallpapers = box.get("_wallpapers") as String?;
@@ -152,7 +141,6 @@ checkInternetConnected() async {
         debugPrint("${URL!} : ${DateTime.now()}");
         int? location;
         _locationToSet = box.get("_location") as String?;
-        // _locationToSet = prefs.get("_location") as String?;
         if (_locationToSet == 'Home') {
           location = WallpaperManager.HOME_SCREEN;
         } else if (_locationToSet == 'Lock') {
@@ -178,13 +166,15 @@ checkInternetConnected() async {
       debugPrint("default block");
       Random random = Random();
       int num = random.nextInt(savedList.length);
-      await contentRef.doc(savedList.elementAt(num)).get().then((snapshot) async {
+      await contentRef
+          .doc(savedList.elementAt(num))
+          .get()
+          .then((snapshot) async {
         debugPrint(savedList.elementAt(num));
         URL = snapshot.data()!['image url'].toString();
         debugPrint("${URL!} : ${DateTime.now()}");
         int? location;
         _locationToSet = box.get("_location") as String?;
-        // _locationToSet = prefs.get("_location") as String?;
         if (_locationToSet == 'Home') {
           location = WallpaperManager.HOME_SCREEN;
         } else if (_locationToSet == 'Lock') {
@@ -202,7 +192,7 @@ checkInternetConnected() async {
 }
 
 void setPeriodicWallpaperChange(bool isSet, var scaffoldKey) async {
-  print("HIYA");
+  debugPrint("HIYA");
   // await AndroidAlarmManager.initialize();
   final prefs = await SharedPreferences.getInstance();
   if (isSet) {
@@ -216,8 +206,7 @@ void setPeriodicWallpaperChange(bool isSet, var scaffoldKey) async {
       //     const Duration(seconds: 15), helloAlarmID, checkInternetConnected,
       //     exact: true, allowWhileIdle: true, rescheduleOnReboot: true);
       // openSnacbar(scaffoldKey, 'Auto Wallpaper On, Interval: 15 minutes');
-    } 
-     else if (_alarmDuration == "30 minutes") {
+    } else if (_alarmDuration == "30 minutes") {
       Workmanager().registerPeriodicTask(
         "periodic-task-identifier",
         "simplePeriodicTask",
@@ -295,6 +284,8 @@ class _HomePageState extends State<HomePage> {
 
   bool _lowPowerMode = false;
 
+  BannerAd? banner;
+
   Future<void> initPowerState() async {
     bool lowPowerMode;
 
@@ -308,69 +299,36 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       _lowPowerMode = lowPowerMode;
-      print("low power mode: $_lowPowerMode");
+      debugPrint("low power mode: $_lowPowerMode");
     });
   }
 
   void batterySaverPermission() async {
-    // bool? isBatteryOptimizationDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
-    // bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
-    // bool status=isBatteryOptimizationDisabled!||isManBatteryOptimizationDisabled!;
-    // if(status){
-    //   setPeriodicWallpaperChange(true, _scaffoldKey);
-    //     Navigator.pop(context);
-    // }else{
-
-    // }
-
     var status = await Permission.ignoreBatteryOptimizations.status;
-    bool? isBatteryOptimizationDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
-    bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
-    if(!isBatteryOptimizationDisabled!){
+    bool? isBatteryOptimizationDisabled =
+        await DisableBatteryOptimization.isBatteryOptimizationDisabled;
+    bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization
+        .isManufacturerBatteryOptimizationDisabled;
+    if (!isBatteryOptimizationDisabled!) {
       await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
-      
-    }
-    else if(!isManBatteryOptimizationDisabled!){
-      await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings("Your device has additional battery optimization", "Follow the steps and disable the optimizations to allow smooth functioning of this app");
-    }
-    else{print("status: $status");
-    if (status.isGranted) {
-      if (_alarmDuration == null ||
-          _locationToSet == null ||
-          _wallpapers == null) {
-        print("null");
-      } else {
-        setPeriodicWallpaperChange(true, _scaffoldKey);
-        Navigator.pop(context);
+    } else if (!isManBatteryOptimizationDisabled!) {
+      await DisableBatteryOptimization
+          .showDisableManufacturerBatteryOptimizationSettings(
+              "Your device has additional battery optimization",
+              "Follow the steps and disable the optimizations to allow smooth functioning of this app");
+    } else {
+      print("status: $status");
+      if (status.isGranted) {
+        if (_alarmDuration == null ||
+            _locationToSet == null ||
+            _wallpapers == null) {
+          print("null");
+        } else {
+          setPeriodicWallpaperChange(true, _scaffoldKey);
+          Navigator.pop(context);
+        }
       }
-    // } else {
-    //   AndroidPowerManager.requestIgnoreBatteryOptimizations();
-      // showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) {
-      //       return AlertDialog(
-      //         title: const Text("Permission"),
-      //         content: const Text(
-      //             "Please allow the app in battery optimization mode to continue"),
-      //         actions: [
-      //           TextButton(
-      //               onPressed: () {
-      //                 // please turn off battery saver and battery optimizer
-      //                 OpenSettings.openIgnoreBatteryOptimizationSetting();
-
-      //                 if (kDebugMode) {
-      //                   print("open battery saver");
-      //                 }
-      //               },
-      //               child: const Text("Open Settings")),
-      //           TextButton(
-      //               onPressed: () => Navigator.pop(context),
-      //               child: const Text("Ok")),
-      //         ],
-      //       );
-      //     });
     }
-  }
   }
 
   //final InAppPurchaseConnection _iap = InAppPurchaseConnection.instance; <<<------
@@ -380,11 +338,14 @@ class _HomePageState extends State<HomePage> {
     //_iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
-  // Future initAdmobAd() async {
-  //   await MobileAds.instance
-  //       .initialize()
-  //       .then((value) => context.read<AdsBloc>().loadAdmobInterstitialAd());
-  // }
+  Future initAdmobAd() async {
+    print("Entering admob");
+    await MobileAds.instance.initialize().then((value) {
+      context.read<AdsBloc>().loadAdmobInterstitialAd();});
+    //   context.read<AdsBloc>().loadAdmobBannerAd();
+    // });
+    print("Exiting admob");
+  }
 
   Future<void> OpenAlert(var prod) async {
     return showDialog(
@@ -463,7 +424,6 @@ class _HomePageState extends State<HomePage> {
                   durationDropdown(),
                   locationDropdown(),
                   wallpaperDropdown(),
-                  //disbale battery saver
                   const Text(
                       "Please Note:\nThat this feature requires internet & battery saver must be disabled"),
                 ]),
@@ -473,6 +433,7 @@ class _HomePageState extends State<HomePage> {
                           backgroundColor:
                               MaterialStatePropertyAll(Colors.grey.shade300)),
                       onPressed: () {
+                        //disbale battery saver
                         batterySaverPermission();
                       },
                       child: const Text(
@@ -623,18 +584,18 @@ class _HomePageState extends State<HomePage> {
     // AndroidAlarmManager.initialize();
     initDownloader();
     initPowerState();
-    initOnesignal();
+    // initOnesignal();
     var provider = Provider.of<ProviderModel>(context, listen: false);
     provider.initialize();
 
     getData();
-    // initAdmobAd(); //-------admob--------
+    initAdmobAd(); //-------admob--------
     //initFbAd();             //-------fb--------
   }
 
-  initOnesignal() {
-    // OneSignal.shared.setAppId(Config().onesignalAppId);
-  }
+  // initOnesignal() {
+  //   // OneSignal.shared.setAppId(Config().onesignalAppId);
+  // }
 
   initDownloader() {
     FlutterDownloader.registerCallback(downloadCallback);
@@ -660,7 +621,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     // var provider = Provider.of<ProviderModel>(context, listen: false);
     // provider.subscription.cancel();
     super.dispose();
@@ -675,7 +635,7 @@ class _HomePageState extends State<HomePage> {
     final db = context.watch<DataBloc>();
     final ib = context.watch<InternetBloc>();
     final sb = context.watch<SignInBloc>();
-    final pm = Provider.of<ProviderModel>(context);
+    // final pm = Provider.of<ProviderModel>(context);
 
     return ib.hasInternet == false
         ? const NoInternetPage()
@@ -981,7 +941,9 @@ class _HomePageState extends State<HomePage> {
                         IconButton(
                           icon: Icon(FontAwesomeIcons.arrowRotateLeft,
                               color: Colors.grey[600], size: 20),
-                          onPressed: () {
+                          onPressed: () async {
+                            // await changerAlert(_scaffoldKey);
+                            // context.read<AdsBloc>().showInterstitialAdAdmob();
                             print(context.read<SignInBloc>().uid);
                             // for (var prod in pm.products) {
                             //   debugPrint("prod.id: ${prod.id}");

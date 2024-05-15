@@ -22,11 +22,27 @@
           }
         },
         {
+          "client_id": "502349033379-6eei5o0b9oglvfdvbrui8see7lfss1l4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cillyfox.stoicwallpaper",
+            "certificate_hash": "8b32d651124c4aba0252112e53511f0c977e69bc"
+          }
+        },
+        {
           "client_id": "502349033379-7t8fnplj0f49doif3pda2u953act0aei.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.cillyfox.stoicwallpaper",
             "certificate_hash": "88b8022f5ed339d1610341620cc88f1d6f661973"
+          }
+        },
+        {
+          "client_id": "502349033379-bbisue6rht0s2dvmfr814dltaf5ltma5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cillyfox.stoicwallpaper",
+            "certificate_hash": "61e3e88ccd088727bec87492c817dbcf9ca57145"
           }
         },
         {

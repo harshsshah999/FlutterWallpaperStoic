@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:stoicwallpaper/models/config.dart';
@@ -21,6 +23,11 @@ class AdsBloc extends ChangeNotifier {
   bool _admobAdLoaded = false;
   bool get admobAdLoaded => _admobAdLoaded;
 
+  bool isbannerAdLoaded = false;
+  bool get bannerAdLoaded => isbannerAdLoaded;
+
+  BannerAd? bannerAd;
+
   InterstitialAd? interstitialAdAdmob;
 
   void createAdmobInterstitialAd() {
@@ -29,13 +36,23 @@ class AdsBloc extends ChangeNotifier {
         request: const AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (InterstitialAd ad) {
-            debugPrint('$ad loaded');
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              onAdDismissedFullScreenContent: (ad) {
+                print('$ad onAdDismissedFullScreenContent.');
+                ad.dispose();
+                interstitialAdAdmob = null;
+                _admobAdLoaded = false;
+                notifyListeners();
+                loadAdmobInterstitialAd();
+              },
+            );
+            print('$ad loadedf with me');
             interstitialAdAdmob = ad;
             _admobAdLoaded = true;
             notifyListeners();
           },
           onAdFailedToLoad: (LoadAdError error) {
-            debugPrint('InterstitialAd failed to load: $error.');
+            print('InterstitialAd failed to load: $error.');
             interstitialAdAdmob = null;
             _admobAdLoaded = false;
             notifyListeners();
@@ -43,6 +60,45 @@ class AdsBloc extends ChangeNotifier {
           },
         ));
   }
+
+  // void showInterstitialAdAAdmob() {
+  //   print("entering showad");
+  //   try {
+  //     if (_admobAdLoaded) {
+  //       interstitialAdAdmob!.show();
+  //     } else {
+  //       print("add not loaded");
+  //     }
+  //   } catch (error) {
+  //     print(error);
+  //   }
+  // }
+
+  void createAdmobBannerAd() {
+    bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: Config().admobBannerAdId,
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            print('$ad loadedf with me');
+            bannerAd = ad as BannerAd?;
+            isbannerAdLoaded = true;
+            notifyListeners();
+          },
+          onAdFailedToLoad: (ad, error) {
+            print('BannerAd Failed to load: $error');
+            ad.dispose();
+            bannerAd = null;
+            isbannerAdLoaded = false;
+            notifyListeners();
+          },
+        ),
+        request: AdRequest());
+    bannerAd?.load();
+    print("bannerAd is: $bannerAd");
+  }
+
+  void showBannerAd() {}
 
   void showInterstitialAdAdmob() {
     if (interstitialAdAdmob != null) {
@@ -70,6 +126,12 @@ class AdsBloc extends ChangeNotifier {
       interstitialAdAdmob!.show();
       interstitialAdAdmob = null;
       notifyListeners();
+    }
+  }
+
+  Future loadAdmobBannerAd() async {
+    if (isbannerAdLoaded == false) {
+      createAdmobBannerAd();
     }
   }
 
@@ -101,32 +163,32 @@ class AdsBloc extends ChangeNotifier {
   //       ));
   // }
 
-  void showRewardAd() {
-    _rewardedAd!.show(onUserEarnedReward: (ad, rewardItem) {
-      // after user earned reward start downloading
-      rewardPoint = rewardPoint + rewardItem.amount as int;
+  // void showRewardAd() {
+  //   _rewardedAd!.show(onUserEarnedReward: (ad, rewardItem) {
+  //     // after user earned reward start downloading
+  //     rewardPoint = rewardPoint + rewardItem.amount as int;
 
-      notifyListeners();
-    });
-    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (RewardedAd ad) =>
-          print('$ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (RewardedAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-      },
-      onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-      },
-      onAdImpression: (RewardedAd ad) => print('$ad impression occurred.'),
-    );
-  }
+  //     notifyListeners();
+  //   });
+  //   _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+  //     onAdShowedFullScreenContent: (RewardedAd ad) =>
+  //         print('$ad onAdShowedFullScreenContent.'),
+  //     onAdDismissedFullScreenContent: (RewardedAd ad) {
+  //       print('$ad onAdDismissedFullScreenContent.');
+  //       ad.dispose();
+  //     },
+  //     onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+  //       print('$ad onAdFailedToShowFullScreenContent: $error');
+  //       ad.dispose();
+  //     },
+  //     onAdImpression: (RewardedAd ad) => print('$ad impression occurred.'),
+  //   );
+  // }
 
-  disposeAdmobRewardAd() {
-    _rewardedAd?.dispose();
-    notifyListeners();
-  }
+  // disposeAdmobRewardAd() {
+  //   _rewardedAd?.dispose();
+  //   notifyListeners();
+  // }
 
   // admob ads --------- end --------
 
@@ -173,5 +235,4 @@ class AdsBloc extends ChangeNotifier {
   // }
 
   //fb ads ----------- end ----------
-
 }

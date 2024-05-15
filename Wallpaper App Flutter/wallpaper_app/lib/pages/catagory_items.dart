@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:stoicwallpaper/utils/snacbar.dart';
 import '../models/config.dart';
 import '../pages/details.dart';
@@ -109,6 +110,7 @@ class _CatagoryItemState extends State<CatagoryItem> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      // bottomNavigationBar: AdWidget(ad: ),
       backgroundColor: Colors.white,
       key: scaffoldKey,
       appBar: AppBar(
