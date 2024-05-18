@@ -13,7 +13,7 @@ import 'package:dio/dio.dart';
 import 'package:external_path/external_path.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_file_safe/open_file_safe.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -64,7 +64,7 @@ class _DetailsPageState extends State<DetailsPage> {
   String progress = 'Set as Wallpaper or Download';
   bool downloading = false;
   int timerTime = 6;
-  RewardedAd? _rewardedAd;
+  // RewardedAd? _rewardedAd;
   late Stream<String> progressString;
   Icon dropIcon = const Icon(Icons.arrow_upward);
   Icon upIcon = const Icon(Icons.arrow_upward);
@@ -225,52 +225,52 @@ class _DetailsPageState extends State<DetailsPage> {
     });
   }
 
-  void loadRewardAd() {
-    RewardedAd.load(
-        adUnitId: 'ca-app-pub-8872829619482545/4287226579',
-        request: const AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-          onAdLoaded: (RewardedAd ad) {
-            print('$ad loaded.');
-            // Keep a reference to the ad so you can show it later.
-            _rewardedAd = ad;
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            print('RewardedAd failed to load: $error');
-          },
-        ));
-    Timer(Duration(seconds: timerTime), () {
-      debugPrint('Reward loaded');
-      loadRewardAd();
-      timerTime += 5;
-    });
-  }
+  // void loadRewardAd() {
+  //   RewardedAd.load(
+  //       adUnitId: 'ca-app-pub-8872829619482545/4287226579',
+  //       request: const AdRequest(),
+  //       rewardedAdLoadCallback: RewardedAdLoadCallback(
+  //         onAdLoaded: (RewardedAd ad) {
+  //           print('$ad loaded.');
+  //           // Keep a reference to the ad so you can show it later.
+  //           _rewardedAd = ad;
+  //         },
+  //         onAdFailedToLoad: (LoadAdError error) {
+  //           print('RewardedAd failed to load: $error');
+  //         },
+  //       ));
+  //   Timer(Duration(seconds: timerTime), () {
+  //     debugPrint('Reward loaded');
+  //     loadRewardAd();
+  //     timerTime += 5;
+  //   });
+  // }
 
-  showRewardAd(String tag) {
-    // final AdsBloc ad = Provider.of<AdsBloc>(context, listen: false);
-    _rewardedAd!.show(onUserEarnedReward: (ad, rewardItem) {
-      print('User earned reward');
-      if (tag == 'dl') {
-        handleStoragePermission();
-        debugPrint('Downloading');
-      } else {
-        openSetDialog();
-      }
-    });
-    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (RewardedAd ad) =>
-          print('$ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (RewardedAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-      },
-      onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-      },
-      onAdImpression: (RewardedAd ad) => print('$ad impression occurred.'),
-    );
-  }
+  // showRewardAd(String tag) {
+  //   // final AdsBloc ad = Provider.of<AdsBloc>(context, listen: false);
+  //   _rewardedAd!.show(onUserEarnedReward: (ad, rewardItem) {
+  //     print('User earned reward');
+  //     if (tag == 'dl') {
+  //       handleStoragePermission();
+  //       debugPrint('Downloading');
+  //     } else {
+  //       openSetDialog();
+  //     }
+  //   });
+  //   _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+  //     onAdShowedFullScreenContent: (RewardedAd ad) =>
+  //         print('$ad onAdShowedFullScreenContent.'),
+  //     onAdDismissedFullScreenContent: (RewardedAd ad) {
+  //       print('$ad onAdDismissedFullScreenContent.');
+  //       ad.dispose();
+  //     },
+  //     onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+  //       print('$ad onAdFailedToShowFullScreenContent: $error');
+  //       ad.dispose();
+  //     },
+  //     onAdImpression: (RewardedAd ad) => print('$ad impression occurred.'),
+  //   );
+  // }
 
   void openCompleteDialog() async {
     AwesomeDialog(
@@ -496,7 +496,7 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
     super.initState();
-    loadRewardAd();
+    // loadRewardAd();
     context.read<AdsBloc>().loadAdmobInterstitialAd();
   }
 
@@ -697,12 +697,12 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
                       ),
                       onTap: () {
-                        if (_rewardedAd != null) {
-                          showRewardAd('dl');
-                        } else {
+                        // if (_rewardedAd != null) {
+                        //   showRewardAd('dl');
+                        // } else {
                           handleStoragePermission();
                           debugPrint('Downloading');
-                        }
+                        // }
                       },
                     ),
                     const SizedBox(

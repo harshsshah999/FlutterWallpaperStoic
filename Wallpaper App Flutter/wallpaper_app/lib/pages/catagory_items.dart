@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/utils/snacbar.dart';
 import '../models/config.dart';
 import '../pages/details.dart';
@@ -22,26 +24,23 @@ class _CatagoryItemState extends State<CatagoryItem> {
   String? title;
   String? selectedCatagory;
   _CatagoryItemState(this.title, this.selectedCatagory);
-
-
-
+  BannerAd? bannerAd;
 
   @override
   void initState() {
     controller = ScrollController()..addListener(_scrollListener);
     _isLoading = true;
     _getData();
+    
     super.initState();
+    bannerAd =context.read<AdsBloc>().createAdmobBannerAd();
   }
-
 
   @override
   void dispose() {
-
     controller!.removeListener(_scrollListener);
     super.dispose();
   }
-
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   ScrollController? controller;
@@ -49,8 +48,6 @@ class _CatagoryItemState extends State<CatagoryItem> {
   late bool _isLoading;
   final List<DocumentSnapshot> _data = [];
   final scaffoldKey = GlobalKey<ScaffoldState>();
-
-
 
   Future<void> _getData() async {
     QuerySnapshot data;
@@ -88,12 +85,6 @@ class _CatagoryItemState extends State<CatagoryItem> {
     return;
   }
 
-
-
-
-
-
-
   void _scrollListener() {
     if (!_isLoading) {
       if (controller!.position.pixels == controller!.position.maxScrollExtent) {
@@ -103,14 +94,30 @@ class _CatagoryItemState extends State<CatagoryItem> {
     }
   }
 
+  //  Future<void> _loadAd() async {
+  //   // Get an AnchoredAdaptiveBannerAdSize before loading the ad.
+  //   final AnchoredAdaptiveBannerAdSize? size =
+  //       await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+  //           MediaQuery.of(context).size.width.truncate());
 
-
+  //   if (size == null) {
+  //     print('Unable to get height of anchored banner.');
+  //     return;
+  //   }
+  //  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      // bottomNavigationBar: AdWidget(ad: ),
+      bottomNavigationBar: bannerAd == null
+          ? Container()
+          : Container(
+              height: 50,
+              width: 320,
+              child: AdWidget(
+                ad: bannerAd!,
+              ),
+            ),
       backgroundColor: Colors.white,
       key: scaffoldKey,
       appBar: AppBar(
@@ -128,77 +135,78 @@ class _CatagoryItemState extends State<CatagoryItem> {
               controller: controller,
               itemCount: _data.length + 1,
               itemBuilder: (BuildContext context, int index) {
-
-              if(index < _data.length){
-                final DocumentSnapshot d = _data[index];
-                return InkWell(
-                child: Stack(
-                  children: <Widget>[
-                    Hero(
-                        tag: 'category$index',
-                        child: cachedImage(d['image url'])),
-                    Positioned(
-                      bottom: 30,
-                      left: 10,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            Config().hashTag,
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                if (index < _data.length) {
+                  final DocumentSnapshot d = _data[index];
+                  return InkWell(
+                    child: Stack(
+                      children: <Widget>[
+                        Hero(
+                            tag: 'category$index',
+                            child: cachedImage(d['image url'])),
+                        Positioned(
+                          bottom: 30,
+                          left: 10,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                Config().hashTag,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 14),
+                              ),
+                              Text(
+                                d['category'],
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 18),
+                              )
+                            ],
                           ),
-                          Text(
-                            d['category'],
-                            style: const TextStyle(color: Colors.white, fontSize: 18),
-                          )
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      right: 10,
-                      top: 20,
-                      child: Row(
-                        children: [
-                          Icon(Icons.favorite,
-                              color: Colors.white.withOpacity(0.5), size: 25),
-                          Text(
-                            d['loves'].toString(),
-                            style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600),
+                        ),
+                        Positioned(
+                          right: 10,
+                          top: 20,
+                          child: Row(
+                            children: [
+                              Icon(Icons.favorite,
+                                  color: Colors.white.withOpacity(0.5),
+                                  size: 25),
+                              Text(
+                                d['loves'].toString(),
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailsPage(
-                                tag: 'category$index',
-                                imageUrl: d['image url'],
-                                catagory: d['category'],
-                                timestamp: d['timestamp'],
-                              )));
-                },
-              );
-              }
-              return Center(
-                      child: Opacity(
-                        opacity: _isLoading ? 1.0 : 0.0,
-                        child: const SizedBox(
-                            width: 32.0,
-                            height: 32.0,
-                            child: CupertinoActivityIndicator()),
-                      ),
-                    );
-
-
-                },
-              staggeredTileBuilder: (int index) => StaggeredTile.count(2, index.isEven ? 4 : 3),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailsPage(
+                                    tag: 'category$index',
+                                    imageUrl: d['image url'],
+                                    catagory: d['category'],
+                                    timestamp: d['timestamp'],
+                                  )));
+                    },
+                  );
+                }
+                return Center(
+                  child: Opacity(
+                    opacity: _isLoading ? 1.0 : 0.0,
+                    child: const SizedBox(
+                        width: 32.0,
+                        height: 32.0,
+                        child: CupertinoActivityIndicator()),
+                  ),
+                );
+              },
+              staggeredTileBuilder: (int index) =>
+                  StaggeredTile.count(2, index.isEven ? 4 : 3),
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
               padding: const EdgeInsets.all(15),

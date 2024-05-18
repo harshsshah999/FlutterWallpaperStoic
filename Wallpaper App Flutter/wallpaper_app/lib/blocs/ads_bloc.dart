@@ -74,7 +74,7 @@ class AdsBloc extends ChangeNotifier {
   //   }
   // }
 
-  void createAdmobBannerAd() {
+  BannerAd? createAdmobBannerAd() {
     bannerAd = BannerAd(
         size: AdSize.banner,
         adUnitId: Config().admobBannerAdId,
@@ -92,10 +92,17 @@ class AdsBloc extends ChangeNotifier {
             isbannerAdLoaded = false;
             notifyListeners();
           },
+          onAdOpened: (ad) {
+            print("Ad Opened");
+          },
+          onAdClosed: (ad) {
+            print("Ad closed");
+          },
         ),
         request: AdRequest());
     bannerAd?.load();
     print("bannerAd is: $bannerAd");
+    return bannerAd!;
   }
 
   void showBannerAd() {}

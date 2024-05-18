@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/src/provider.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
 import 'package:stoicwallpaper/models/config.dart';
 import 'package:stoicwallpaper/pages/details.dart';
@@ -18,6 +20,9 @@ class FavouritePage extends StatefulWidget {
 }
 
 class _FavouritePageState extends State<FavouritePage> {
+
+  BannerAd? bannerAd;
+
   Future<List> _getData(List bookmarkedList) async {
     print('main list: ${bookmarkedList.length}]');
 
@@ -96,11 +101,27 @@ class _FavouritePageState extends State<FavouritePage> {
   }
 
   @override
+  void initState() {
+    bannerAd =context.read<AdsBloc>().createAdmobBannerAd();
+    super.initState();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     const String collectionName = 'users';
     const String snapText = 'loved items';
-
+    
     return Scaffold(
+      bottomNavigationBar: bannerAd == null
+          ? Container()
+          : Container(
+              height: 50,
+              width: 320,
+              child: AdWidget(
+                ad: bannerAd!,
+              ),
+            ),
       appBar: AppBar(title: const Text('Saved Items')),
       body: context.read<SignInBloc>().guestUser == true ||
               widget.userUID == null

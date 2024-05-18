@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
+import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/widgets/new_items.dart';
 import 'package:stoicwallpaper/widgets/popular_items.dart';
 
@@ -14,9 +17,12 @@ class _ExplorePageState extends State<ExplorePage>
   var scaffoldKey = GlobalKey<ScaffoldState>();
   TabController? tabController;
 
+  BannerAd? bannerAd;
+
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
+    bannerAd =context.read<AdsBloc>().createAdmobBannerAd();
     super.initState();
   }
 
@@ -24,6 +30,15 @@ class _ExplorePageState extends State<ExplorePage>
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
+      bottomNavigationBar: bannerAd == null
+          ? Container()
+          : Container(
+              height: 50,
+              width: 320,
+              child: AdWidget(
+                ad: bannerAd!,
+              ),
+            ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: Container(
