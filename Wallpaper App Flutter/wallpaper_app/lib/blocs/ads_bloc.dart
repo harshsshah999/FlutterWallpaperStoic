@@ -14,11 +14,11 @@ class AdsBloc extends ChangeNotifier {
   }
 
   //admob Ads -------Start--------
-  RewardedAd? _rewardedAd;
-  RewardedAd? get rewardedAd => _rewardedAd;
+  // RewardedAd? _rewardedAd;
+  // RewardedAd? get rewardedAd => _rewardedAd;
 
-  int rewardPoint = 0;
-  int getReward() => rewardPoint;
+  // int rewardPoint = 0;
+  // int getReward() => rewardPoint;
 
   bool _admobAdLoaded = false;
   bool get admobAdLoaded => _admobAdLoaded;

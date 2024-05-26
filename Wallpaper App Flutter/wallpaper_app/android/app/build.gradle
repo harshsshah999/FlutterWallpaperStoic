@@ -52,7 +52,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -80,7 +80,7 @@ flutter {
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'com.onesignal:OneSignal:[5.0.0, 5.99.99]'
+    // implementation 'com.onesignal:OneSignal:[5.0.0, 5.99.99]'
     implementation("androidx.multidex:multidex:2.0.1")
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
 }
