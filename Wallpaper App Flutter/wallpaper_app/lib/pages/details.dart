@@ -9,13 +9,14 @@ import 'dart:typed_data';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:external_path/external_path.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:flutter/material.dart';
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:open_file_safe/open_file_safe.dart';
+import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -214,15 +215,25 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   handleStoragePermission() async {
-    await Permission.storage.request().then((_) async {
-      if (await Permission.storage.status == PermissionStatus.granted) {
+    AndroidDeviceInfo build = await DeviceInfoPlugin().androidInfo;
+    if (build.version.sdkInt! >= 30) {
+      var re = await Permission.manageExternalStorage.request();
+      if (re.isGranted) {
+        print("Android 13 granted");
         await handleDownload();
-      } else if (await Permission.storage.status == PermissionStatus.denied) {
-      } else if (await Permission.storage.status ==
-          PermissionStatus.permanentlyDenied) {
+      } else {
+        print("Android 13 not granted");
+      }
+    } else {
+      var permission = await Permission.storage.request();
+      if (await Permission.storage.status == PermissionStatus.granted) {
+        print('next step');
+        await handleDownload();
+      } else {
+        print('none');
         askOpenSettingsDialog();
       }
-    });
+    }
   }
 
   // void loadRewardAd() {
@@ -274,30 +285,29 @@ class _DetailsPageState extends State<DetailsPage> {
 
   void openCompleteDialog() async {
     AwesomeDialog(
-            context: context,
-            dialogType: DialogType.SUCCES,
-            title: 'Complete',
-            animType: AnimType.SCALE,
-            padding: const EdgeInsets.all(30),
-            body: Center(
-              child: Container(
-                  alignment: Alignment.center,
-                  height: 80,
-                  child: Text(
-                    progress,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600),
-                  )),
-            ),
-            btnOkText: 'Ok',
-            dismissOnTouchOutside: false,
-            btnOkOnPress: () {
-              context
-                  .read<AdsBloc>()
-                  .showInterstitialAdAdmob(); //-------admob--------
-              //context.read<AdsBloc>().showFbAdd();                        //-------fb--------
-            })
-        .show();
+        context: context,
+        dialogType: DialogType.SUCCES,
+        title: 'Complete',
+        animType: AnimType.SCALE,
+        padding: const EdgeInsets.all(30),
+        body: Center(
+          child: Container(
+              alignment: Alignment.center,
+              height: 80,
+              child: Text(
+                progress,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              )),
+        ),
+        btnOkText: 'Ok',
+        dismissOnTouchOutside: false,
+        btnOkOnPress: () {
+          context
+              .read<AdsBloc>()
+              .showInterstitialAdAdmob(); //-------admob--------
+          //context.read<AdsBloc>().showFbAdd();                        //-------fb--------
+        }).show();
   }
 
   askOpenSettingsDialog() {
@@ -367,11 +377,18 @@ class _DetailsPageState extends State<DetailsPage> {
         setState(() {
           progress = "Downloading...";
         });
-
-        var status = await Permission.storage.status;
+        var status;
+        AndroidDeviceInfo build = await DeviceInfoPlugin().androidInfo;
+        if (build.version.sdkInt! >= 30) {
+          status = await Permission.manageExternalStorage.status;
+        } else {
+          status = await Permission.storage.status;
+        }
+        debugPrint("$status");
         if (status == PermissionStatus.granted) {
           var response = await Dio().get(imageUrl!,
               options: Options(responseType: ResponseType.bytes));
+
           // remove extension from file name
           var fileName = imageUrl!.split('/').last;
           var nameImg = fileName.split('.').first;
@@ -397,8 +414,9 @@ class _DetailsPageState extends State<DetailsPage> {
                 "Wallpaper Downloaded Successfully!", "Tap to open", file);
 
             setState(() {
-              progress = "Download Complete";
+              progress = "Download Complete!\nCheck Your Gallery";
             });
+            openCompleteDialog();
           } else if (ResultType.error == result) {
             setState(() {
               progress = "Download Failed";
@@ -417,40 +435,16 @@ class _DetailsPageState extends State<DetailsPage> {
             progress = "Permission Restricted";
           });
         }
-        // setState(() {
-        //   progress = "Downloading...";
-        // });
-        // // Saved with this method.
-        // print("printingpathcheck");
-        // print("print url ${imageUrl}");
-        // var imageId = await ImageDownloader.downloadImage(imageUrl!);
-
-        // if (imageId == null) {
-        //   print("printingpathnull");
-
-        //   return;
-
-        // }
-
-        // // Below is a method of obtaining saved image information.
-        // var fileName = await ImageDownloader.findName(imageId);
-        // var path2 = await ImageDownloader.findPath(imageId);
-        // print("printingpath ${path2}");
-        // print(path2);
-        // await displayNotification(
-        //     "Wallpaper Downloaded Successfully!", "Tap to open", path2!);
-        // var size = await ImageDownloader.findByteSize(imageId);
-        // var mimeType = await ImageDownloader.findMimeType(imageId);
       } catch (e) {
-        print(e);
+        debugPrint("$e");
       }
 
-      setState(() {
-        progress = 'Download Complete!\nCheck Your Gallery';
-      });
+      // setState(() {
+      //   progress = 'Download Complete!\nCheck Your Gallery';
+      // });
 
-      await Future.delayed(const Duration(seconds: 2));
-      openCompleteDialog();
+      // await Future.delayed(const Duration(seconds: 2));
+      // openCompleteDialog();
     } else {
       setState(() {
         progress = 'Check your internet connection!';
@@ -458,41 +452,6 @@ class _DetailsPageState extends State<DetailsPage> {
     }
   }
 
-  // Future handleDownload() async {
-  //   final ib = context.read<InternetBloc>();
-  //   await context.read<InternetBloc>().checkInternet();
-  //   if (ib.hasInternet == true) {
-  //     try {
-  //       var path = await (ExtStorage.getExternalStoragePublicDirectory(
-  //           ExtStorage.DIRECTORY_PICTURES));
-  //       await FlutterDownloader.enqueue(
-  //         url: imageUrl!,
-  //         savedDir: path!,
-  //         fileName: '${Config().appName}-$catagory$timestamp',
-  //         showNotification:
-  //             true, // show download progress in status bar (for Android)
-  //         openFileFromNotification:
-  //             true, // click on notification to open downloaded file (for Android)
-  //       );
-  //     } catch (e) {
-  //       setState(() {
-  //         downloading = false;
-  //         progress = 'Some Error Occured';
-  //       });
-  //     }
-
-  //     setState(() {
-  //       progress = 'Download Complete!\nCheck Your Status Bar';
-  //     });
-
-  //     await Future.delayed(const Duration(seconds: 2));
-  //     openCompleteDialog();
-  //   } else {
-  //     setState(() {
-  //       progress = 'Check your internet connection!';
-  //     });
-  //   }
-  // }
   @override
   void initState() {
     super.initState();
@@ -700,8 +659,8 @@ class _DetailsPageState extends State<DetailsPage> {
                         // if (_rewardedAd != null) {
                         //   showRewardAd('dl');
                         // } else {
-                          handleStoragePermission();
-                          debugPrint('Downloading');
+                        handleStoragePermission();
+                        debugPrint('Downloading');
                         // }
                       },
                     ),
