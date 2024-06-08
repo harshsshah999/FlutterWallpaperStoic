@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class UploadItem extends StatefulWidget {
-  UploadItem({Key key}) : super(key: key);
+  UploadItem({super.key});
 
   @override
   _UploadItemState createState() => _UploadItemState();
@@ -22,9 +22,9 @@ class _UploadItemState extends State<UploadItem> {
 
 
   
-  String date;
-  String timestamp;
-  int loves;
+  late String date;
+  late String timestamp;
+  late int loves;
   var categorySelection;
   bool uploadStarted = false;
 
@@ -37,8 +37,8 @@ class _UploadItemState extends State<UploadItem> {
     if(categorySelection == null){
       openDialog(context, 'Select Category First', '');
     }else{
-      if (formKey.currentState.validate()) {
-      formKey.currentState.save();
+      if (formKey.currentState!.validate()) {
+      formKey.currentState?.save();
       if (ab.userType == 'Tester') {
         openDialog(context, 'You are a Tester', 'Only Admin can upload, delete & modify contents');
       } else {
@@ -77,8 +77,8 @@ class _UploadItemState extends State<UploadItem> {
 
 
   Future saveToDatabase() async {
-    final DocumentReference ref = Firestore.instance.collection('contents').document(timestamp);
-    await ref.setData({
+    final DocumentReference ref = FirebaseFirestore.instance.collection('contents').doc(timestamp);
+    await ref.set({
       'image url': imageUrlCtrl.text,
       'loves': 0,
       'category': categorySelection,
@@ -100,8 +100,8 @@ class _UploadItemState extends State<UploadItem> {
 
 
   handlePreview() async{
-    if (formKey.currentState.validate()) {
-      formKey.currentState.save();
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
       await showContentPreview(context, imageUrlCtrl.text);
     }
   }
@@ -127,7 +127,7 @@ class _UploadItemState extends State<UploadItem> {
           borderRadius: BorderRadius.circular(0),
           boxShadow: <BoxShadow>[
             BoxShadow(
-                color: Colors.grey[300], blurRadius: 10, offset: Offset(3, 3))
+                color: Colors.grey.shade300, blurRadius: 10, offset: Offset(3, 3))
           ],
         ),
         child: Form(
@@ -153,7 +153,7 @@ class _UploadItemState extends State<UploadItem> {
                   decoration: inputDecoration('Enter Image Url', 'Image', imageUrlCtrl),
                   controller: imageUrlCtrl,
                   validator: (value) {
-                    if (value.isEmpty) return 'Value is empty';
+                    if (value!.isEmpty) return 'Value is empty';
                     return null;
                   },
                   
@@ -170,7 +170,7 @@ class _UploadItemState extends State<UploadItem> {
                       children: <Widget>[
                         
                        
-                        FlatButton.icon(
+                        TextButton.icon(
                           
                           icon: Icon(Icons.remove_red_eye, size: 25, color: Colors.blueAccent,),
                           label: Text('Preview', style: TextStyle(
@@ -191,7 +191,7 @@ class _UploadItemState extends State<UploadItem> {
                     height: 45,
                     child: uploadStarted == true
                       ? Center(child: Container(height: 30, width: 30,child: CircularProgressIndicator()),)
-                      : FlatButton(
+                      : TextButton(
                         child: Text(
                           'Upload Content',
                           style: TextStyle(
@@ -226,7 +226,7 @@ class _UploadItemState extends State<UploadItem> {
         padding: EdgeInsets.only(left: 15, right: 15),
         decoration: BoxDecoration(
             color: Colors.grey[200],
-            border: Border.all(color: Colors.grey[300]),
+            border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(30)),
         child: DropdownButtonFormField(
             itemHeight: 50,

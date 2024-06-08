@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DataInfoPage extends StatelessWidget {
-  const DataInfoPage({Key key}) : super(key: key);
+  const DataInfoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class DataInfoPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           StreamBuilder(
-            stream: Firestore.instance.collection('users').snapshots(),
+            stream: FirebaseFirestore.instance.collection('users').snapshots(),
             builder: (context, AsyncSnapshot snap) {
               if (!snap.hasData) return card('TOTAL USER', 0);
               return card('TOTAL USER', snap.data.documents.length);
@@ -24,7 +24,7 @@ class DataInfoPage extends StatelessWidget {
             width: 20,
           ),
           StreamBuilder(
-            stream: Firestore.instance.collection('contents').snapshots(),
+            stream: FirebaseFirestore.instance.collection('contents').snapshots(),
             builder: (context, AsyncSnapshot snap) {
               if (!snap.hasData) return card('TOTAL CONTENTS', 0);
               return card('TOTAL CONTENTS', snap.data.documents.length);
@@ -34,7 +34,7 @@ class DataInfoPage extends StatelessWidget {
             width: 20,
           ),
           StreamBuilder(
-            stream: Firestore.instance.collection('categories').snapshots(),
+            stream: FirebaseFirestore.instance.collection('categories').snapshots(),
             builder: (context, AsyncSnapshot snap) {
               if (!snap.hasData) return card('TOTAL CATEGORIES', 0);
               return card('TOTAL CATEGORIES', snap.data.documents.length);
@@ -55,7 +55,7 @@ class DataInfoPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(0),
         boxShadow: <BoxShadow>[
           BoxShadow(
-              color: Colors.grey[300], blurRadius: 10, offset: Offset(3, 3))
+              color: Colors.grey.shade300, blurRadius: 10, offset: Offset(3, 3))
         ],
       ),
       child: Column(

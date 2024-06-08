@@ -8,30 +8,23 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
 class EditContent extends StatefulWidget {
-  final String imageUrl,timestamp, category;
+  final String imageUrl, timestamp, category;
   final int loves;
 
   EditContent(
-      {Key key,
-      @required 
-      this.imageUrl,
-      
-      this.timestamp,
-      this.loves,
-      this.category})
-      : super(key: key);
+      {super.key,
+      required this.imageUrl,
+      required this.timestamp,
+      required this.loves,
+      required this.category});
 
   @override
   _EditContentState createState() => _EditContentState(
-      this.imageUrl,
-      this.timestamp,
-      this.loves,
-      this.category);
+      this.imageUrl, this.timestamp, this.loves, this.category);
 }
 
 class _EditContentState extends State<EditContent> {
-  _EditContentState(this.imageUrl,
-      this.timestamp, this.loves, this.category);
+  _EditContentState(this.imageUrl, this.timestamp, this.loves, this.category);
 
   String imageUrl;
   String timestamp;
@@ -43,58 +36,40 @@ class _EditContentState extends State<EditContent> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   bool updateStarted = false;
 
-
-
   void handleUpdate() async {
     final AdminBloc ab = Provider.of<AdminBloc>(context);
-    if (formKey.currentState.validate()) {
-      formKey.currentState.save();
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
       if (ab.userType == 'Tester') {
-        openDialog(context, 'You are a Tester', 'Only admin can edit/update items');
+        openDialog(
+            context, 'You are a Tester', 'Only admin can edit/update items');
       } else {
-        setState(()=> updateStarted = true);
+        setState(() => updateStarted = true);
         await updateDatabase();
-        setState(()=> updateStarted = false);
+        setState(() => updateStarted = false);
         openDialog(context, 'Updated Successfully', '');
       }
     }
   }
 
-
-
-
   void handlePreview() async {
-    if (formKey.currentState.validate()) {
-      formKey.currentState.save();
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
       await showContentPreview(context, imageUrl);
     }
   }
 
-
-
-
-
   Future updateDatabase() async {
-    final DocumentReference ref = Firestore.instance.collection('contents').document(timestamp);
-    await ref.updateData({
-      'image url': imageUrl,
-      'category': category
-    });
+    final DocumentReference ref =
+        FirebaseFirestore.instance.collection('contents').doc(timestamp);
+    await ref.update({'image url': imageUrl, 'category': category});
   }
-
-
-
 
   @override
   void initState() {
     super.initState();
     imageUrlCtrl.text = imageUrl;
   }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +90,13 @@ class _EditContentState extends State<EditContent> {
                   color: Colors.deepPurpleAccent,
                   borderRadius: BorderRadius.circular(25),
                 ),
-                child: FlatButton.icon(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25)),
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  )),
+                  // shape: RoundedRectangleBorder(
+                  //     borderRadius: BorderRadius.circular(25)),
                   icon: Icon(
                     LineIcons.eye,
                     color: Colors.white,
@@ -130,7 +109,7 @@ class _EditContentState extends State<EditContent> {
                         color: Colors.white,
                         fontSize: 16),
                   ),
-                  onPressed: (){
+                  onPressed: () {
                     handlePreview();
                   },
                 ),
@@ -154,7 +133,9 @@ class _EditContentState extends State<EditContent> {
           borderRadius: BorderRadius.circular(0),
           boxShadow: <BoxShadow>[
             BoxShadow(
-                color: Colors.grey[300], blurRadius: 10, offset: Offset(3, 3))
+                color: Colors.grey.shade300,
+                blurRadius: 10,
+                offset: Offset(3, 3))
           ],
         ),
         child: Form(
@@ -172,15 +153,15 @@ class _EditContentState extends State<EditContent> {
                   height: 40,
                 ),
                 categoryDropdown(),
-                
                 SizedBox(
                   height: 20,
                 ),
                 TextFormField(
-                  decoration: inputDecoration('Enter Image Url', 'Image', imageUrlCtrl),
+                  decoration:
+                      inputDecoration('Enter Image Url', 'Image', imageUrlCtrl),
                   controller: imageUrlCtrl,
                   validator: (value) {
-                    if (value.isEmpty) return 'Value is empty';
+                    if (value!.isEmpty) return 'Value is empty';
                     return null;
                   },
                   onChanged: (String value) {
@@ -189,27 +170,30 @@ class _EditContentState extends State<EditContent> {
                     });
                   },
                 ),
-                
-                
                 SizedBox(
                   height: 100,
                 ),
                 Container(
                     color: Colors.deepPurpleAccent,
                     height: 45,
-                    child: updateStarted == true 
-                    ? Center(child: Container(height: 35, width: 35,child: CircularProgressIndicator()),)
-                    :  FlatButton(
-                        child: Text(
-                          'Update Data',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        onPressed: () {
-                          handleUpdate();
-                        })),
+                    child: updateStarted == true
+                        ? Center(
+                            child: Container(
+                                height: 35,
+                                width: 35,
+                                child: CircularProgressIndicator()),
+                          )
+                        : TextButton(
+                            child: Text(
+                              'Update Data',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            onPressed: () {
+                              handleUpdate();
+                            })),
                 SizedBox(
                   height: 200,
                 ),
@@ -219,8 +203,6 @@ class _EditContentState extends State<EditContent> {
     );
   }
 
-
-
   Widget categoryDropdown() {
     final AdminBloc ab = Provider.of<AdminBloc>(context);
 
@@ -229,7 +211,7 @@ class _EditContentState extends State<EditContent> {
         padding: EdgeInsets.only(left: 15, right: 15),
         decoration: BoxDecoration(
             color: Colors.grey[200],
-            border: Border.all(color: Colors.grey[300]),
+            border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(30)),
         child: DropdownButtonFormField(
             itemHeight: 50,
@@ -241,12 +223,12 @@ class _EditContentState extends State<EditContent> {
             decoration: InputDecoration(border: InputBorder.none),
             onChanged: (value) {
               setState(() {
-                category = value;
+                category = value as String;
               });
             },
             onSaved: (value) {
               setState(() {
-                category = value;
+                category = value as String;
               });
             },
             value: category,

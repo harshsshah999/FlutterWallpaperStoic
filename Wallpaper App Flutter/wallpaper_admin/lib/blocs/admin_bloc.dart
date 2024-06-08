@@ -1,31 +1,20 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminBloc extends ChangeNotifier {
-  
-  
- 
-  String _adminPass;
+  String _adminPass = '';
   String _userType = 'Admin';
   bool _isSignedIn = false;
   bool _testing = false;
   List _categories = [];
   List _categoryNames = [];
 
-  
-  
-
   AdminBloc() {
     checkSignIn();
     getAdminPass();
     getCategories();
-    
   }
-
-
-  
 
   String get adminPass => _adminPass;
   String get userType => _userType;
@@ -34,43 +23,31 @@ class AdminBloc extends ChangeNotifier {
   List get categories => _categories;
   List get categoryNames => _categoryNames;
 
-
-
-  
-
   void getAdminPass() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('admin')
-        .document('user type')
+        .doc('user type')
         .get()
         .then((DocumentSnapshot snap) {
-      String _aPass = snap.data['admin password'];
-     _adminPass = _aPass;
+      String _aPass = snap.get('admin password') as String;
+//      String _aPass = snap.data(['admin password']);
+      _adminPass = _aPass;
       notifyListeners();
     });
   }
 
-  
-
-
-
-
-
-
-
-  
-
-
   Future deleteContent(timestamp) async {
-    await Firestore.instance.collection('contents').document(timestamp).delete();
-    
+    await FirebaseFirestore.instance
+        .collection('contents')
+        .doc(timestamp)
+        .delete();
   }
 
+  Future getCategories() async {
+    QuerySnapshot snap =
+        await FirebaseFirestore.instance.collection('categories').get();
+    var x = snap.docs;
 
-  Future getCategories ()async{
-    QuerySnapshot snap = await Firestore.instance.collection('categories').getDocuments();
-    var x = snap.documents;
-    
     _categories.clear();
     _categoryNames.clear();
 
@@ -81,23 +58,13 @@ class AdminBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  Future deleteCategory (timestamp) async{
-    await Firestore.instance.collection('categories').document(timestamp).delete();
+  Future deleteCategory(timestamp) async {
+    await FirebaseFirestore.instance
+        .collection('categories')
+        .doc(timestamp)
+        .delete();
     getCategories();
   }
-
-
-
-
-
-
-
-
-
-  
-
-  
 
   Future setSignIn() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
@@ -107,24 +74,15 @@ class AdminBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void checkSignIn() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _isSignedIn = sp.getBool('signed in') ?? false;
     notifyListeners();
   }
 
-
-
   Future setSignInForTesting() async {
-    
     _testing = true;
     _userType = 'Tester';
     notifyListeners();
-    
   }
-
-
-
-
 }

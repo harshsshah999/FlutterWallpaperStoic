@@ -6,7 +6,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
-  SignInPage({Key key}) : super(key: key);
+  SignInPage({super.key});
 
   @override
   _SignInPageState createState() => _SignInPageState();
@@ -17,13 +17,13 @@ class _SignInPageState extends State<SignInPage> {
 
   var passwordCtrl = TextEditingController();
   var formKey = GlobalKey<FormState>();
-  String password;
+  late String password;
 
 
   handleSignIn () async{
     final AdminBloc ab = Provider.of<AdminBloc>(context);
-    if(formKey.currentState.validate()){
-      formKey.currentState.validate();
+    if(formKey.currentState!.validate()){
+      formKey.currentState!.validate();
       if(password == Config().testerPassword){
         await ab.setSignInForTesting();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
@@ -55,7 +55,7 @@ class _SignInPageState extends State<SignInPage> {
             borderRadius: BorderRadius.circular(0),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                  color: Colors.grey[300], blurRadius: 10, offset: Offset(3, 3))
+                  color: Colors.grey.shade300, blurRadius: 10, offset: Offset(3, 3))
             ],
           ),
           child: Column(
@@ -91,13 +91,22 @@ class _SignInPageState extends State<SignInPage> {
                   )
                   
                 ),
-                validator: (String value){
+                validator: (String? value) {
                   String _adminPassword = ab.adminPass;
-                  if(value.length == 0) return "Password can't be empty";
-                  else if(value != _adminPassword && value != Config().testerPassword) return 'Wrong Password! Please try again.';
-                  
+                  if (value == null || value.isEmpty) {
+                    return "Password can't be empty";
+                  } else if (value != _adminPassword && value != Config().testerPassword) {
+                    return 'Wrong Password! Please try again.';
+                  }
                   return null;
                 },
+                // validator: (String value){
+                //   String _adminPassword = ab.adminPass;
+                //   if(value.length == 0) return "Password can't be empty";
+                //   else if(value != _adminPassword && value != Config().testerPassword) return 'Wrong Password! Please try again.';
+                  
+                //   return null;
+                // },
                 onChanged: (String value){
                   setState(() {
                     password = value;
@@ -114,19 +123,25 @@ class _SignInPageState extends State<SignInPage> {
             borderRadius: BorderRadius.circular(30),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.grey[400],
+                color: Colors.grey.shade400,
                 blurRadius: 10,
                 offset: Offset(2, 2)
               )
             ]
 
             ),
-            child: FlatButton.icon(
-              //padding: EdgeInsets.only(left: 30, right: 30),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30)
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.only(left: 30, right: 30),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                )
               ),
-              icon: Icon(LineIcons.arrow_right, color: Colors.white, size: 25,),
+              //padding: EdgeInsets.only(left: 30, right: 30),
+              // shape: RoundedRectangleBorder(
+              //   borderRadius: BorderRadius.circular(30)
+              // ),
+              icon: Icon(LineIcons.arrowRight, color: Colors.white, size: 25,),
               label: Text('Sign In', style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white, fontSize: 16),),
               onPressed: () => handleSignIn(), 
               ),

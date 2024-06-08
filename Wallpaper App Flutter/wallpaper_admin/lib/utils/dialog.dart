@@ -9,7 +9,6 @@ void openDialog(context, title, message) {
           elevation: 0,
           children: <Widget>[
             Text(title,
-                
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -18,7 +17,6 @@ void openDialog(context, title, message) {
               height: 10,
             ),
             Text(message,
-                
                 style: TextStyle(
                     color: Colors.grey[900],
                     fontSize: 16,
@@ -27,10 +25,15 @@ void openDialog(context, title, message) {
               height: 30,
             ),
             Center(
-              child: FlatButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25)),
-                color: Colors.deepPurpleAccent,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  )
+                ),
+                // shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(25)),
+                // color: Colors.deepPurpleAccent,
                 child: Text(
                   'Okay',
                   style: TextStyle(

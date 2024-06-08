@@ -1,22 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class UsersPage extends StatefulWidget {
-  const UsersPage({Key key}) : super(key: key);
+  const UsersPage({super.key});
 
   @override
   _UsersPageState createState() => _UsersPageState();
 }
 
 class _UsersPageState extends State<UsersPage> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  late ScrollController controller;
+  late DocumentSnapshot _lastVisible;
+  late bool _isLoading;
+  // List<DocumentSnapshot> _data = new List<DocumentSnapshot>();
+  List<DocumentSnapshot> _data = [];
 
-  final Firestore firestore = Firestore.instance;
-
-  ScrollController controller;
-  DocumentSnapshot _lastVisible;
-  bool _isLoading;
-  List<DocumentSnapshot> _data = new List<DocumentSnapshot>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -28,37 +29,42 @@ class _UsersPageState extends State<UsersPage> {
   }
 
   Future<Null> _getData() async {
-//    await new Future.delayed(new Duration(seconds: 5));
+    await new Future.delayed(new Duration(seconds: 5));
     QuerySnapshot data;
     if (_lastVisible == null)
       data = await firestore
           .collection('users')
           .orderBy('timestamp', descending: true)
           .limit(10)
-          .getDocuments();
+          .get();
     else
       data = await firestore
           .collection('users')
           .orderBy('timestamp', descending: true)
           .startAfter([_lastVisible['timestamp']])
           .limit(10)
-          .getDocuments();
+          .get();
 
-    if (data != null && data.documents.length > 0) {
-      _lastVisible = data.documents[data.documents.length - 1];
+    if (data != null && data.docs.length > 0) {
+      _lastVisible = data.docs[data.docs.length - 1];
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _data.addAll(data.documents);
+          _data.addAll(data.docs);
         });
       }
     } else {
       setState(() => _isLoading = false);
-      scaffoldKey.currentState?.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('No more posts!'),
         ),
       );
+      // scaffoldKey.currentState?.showSnackBar(
+      //   SnackBar(
+      //     content: Text('No more posts!'),
+      //   ),
+      // );
     }
     return null;
   }
@@ -92,7 +98,9 @@ class _UsersPageState extends State<UsersPage> {
           borderRadius: BorderRadius.circular(0),
           boxShadow: <BoxShadow>[
             BoxShadow(
-                color: Colors.grey[300], blurRadius: 10, offset: Offset(3, 3))
+                color: Colors.grey.shade300,
+                blurRadius: 10,
+                offset: Offset(3, 3))
           ],
         ),
         child: Column(
@@ -137,7 +145,7 @@ class _UsersPageState extends State<UsersPage> {
                 ),
                 onRefresh: () async {
                   _data.clear();
-                  _lastVisible = null;
+                  _lastVisible = null as DocumentSnapshot;
                   await _getData();
                 },
               ),
