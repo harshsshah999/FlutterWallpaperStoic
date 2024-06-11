@@ -1,44 +1,44 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BookmarkBloc extends ChangeNotifier {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<List> getData() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    String? uid = sp.getString('uid');
+  /// Retrieves data from Firestore based on a list of bookmarks.
+  Future<List<DocumentSnapshot>> getData(List bookmarkedList) async {
+    print('Main list length: ${bookmarkedList.length}');
 
-    final DocumentReference ref = firestore.collection('users').doc(uid);
-    DocumentSnapshot snap = await ref.get();
-    List d = snap['loved items'];
-    List filteredData = [];
-    //List sublist = [];
-    print('a');
+    /// List to store all retrieved documents.
+    final List<DocumentSnapshot> allDocs = [];
 
-    // if(d.isNotEmpty){
-    //   for (var i in d) {
+    /// Define the chunk size for retrieving data in parts.
+    final int chunkSize = 10;
 
-    //     await firestore.collection('contents').where('timestamp', isEqualTo: i).get().then((snap){
-    //       sublist.add(snap.docs);
-    //       print('filtered data: ${filteredData}');
-    //     });
-    // }
-    //   filteredData = sublist;
-    // }
+    if (bookmarkedList.length <= chunkSize) {
+      /// Handle case where the list size is less than or equal to chunk size.
+      final querySnapshot = await firestore
+          .collection('contents')
+          .where('timestamp', whereIn: bookmarkedList)
+          .get();
+      allDocs.addAll(querySnapshot.docs);
+    } else {
+      /// Handle case where the list size is greater than chunk size.
+      final chunks = List.generate(
+          (bookmarkedList.length / chunkSize).ceil(),
+          (i) => bookmarkedList.sublist(i * chunkSize,
+              min(i * chunkSize + chunkSize, bookmarkedList.length)));
 
-    if (d.isNotEmpty) {
-      await firestore
-        .collection('contents')
-        .where('timestamp', whereIn: d.take(10).toList())
-        .limit(10)
-        .get()
-        .then((QuerySnapshot snap) {
-          filteredData = snap.docs;
-      });
+      /// Use Future.wait to perform Firestore queries for all chunks concurrently.
+      await Future.wait(chunks.map((chunk) async {
+        final querySnapshot = await firestore
+            .collection('contents')
+            .where('timestamp', whereIn: chunk)
+            .get();
+        allDocs.addAll(querySnapshot.docs);
+      }));
     }
 
-    notifyListeners();
-    return filteredData;
+    return allDocs;
   }
 }

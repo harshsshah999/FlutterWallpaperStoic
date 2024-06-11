@@ -1,10 +1,7 @@
-
-
 class Config {
-  
   final String hashTag = '#Stoic';
   final String appName = 'Stoic';
-  
+
   final String packageName = 'com.cillyfox.stoicwallpaper';
   final String appVersion = '2.1.0';
 
@@ -20,10 +17,8 @@ class Config {
   final String admobInterstitialAdId = 'ca-app-pub-8872829619482545/4578034215';
   final String admobBannerAdId = 'ca-app-pub-8872829619482545/3858821249';
   final String admobRewardedAd = 'ca-app-pub-8872829619482545/4287226579';
-  final String rewardedInterstitial='ca-app-pub-8872829619482545/7268613133';
-
+  final String rewardedInterstitial = 'ca-app-pub-8872829619482545/7268613133';
 
   //-- facebook ads--
   final String facebookInterstitialAdId = '5878408****************';
-
 }

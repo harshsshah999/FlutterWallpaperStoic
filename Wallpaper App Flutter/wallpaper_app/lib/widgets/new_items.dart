@@ -7,6 +7,8 @@ import 'package:stoicwallpaper/pages/details.dart';
 import 'package:stoicwallpaper/utils/snacbar.dart';
 import 'package:stoicwallpaper/widgets/cached_image.dart';
 
+//This file is for the New Tab in the Explore section of the app
+
 class NewItems extends StatefulWidget {
   const NewItems({super.key, required this.scaffoldKey});
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -28,21 +30,25 @@ class _NewItemsState extends State<NewItems> with AutomaticKeepAliveClientMixin 
 
   @override
   void initState() {
+    // Initialize scroll controller and add listener for pagination
     controller = ScrollController()..addListener(_scrollListener);
     super.initState();
     _isLoading = true;
     _getData();
   }
 
+   // Fetch data from Firestore
   Future<void> _getData() async {
     QuerySnapshot data;
     if (_lastVisible == null) {
+      // Fetch the next batch of documents after the last visible documen
       data = await firestore
           .collection('contents')
           .orderBy('timestamp', descending: true)
           .limit(10)
           .get();
     } else {
+      // Fetch the next batch of documents after the last visible document
       data = await firestore
           .collection('contents')
           .orderBy('timestamp', descending: true)
@@ -73,7 +79,7 @@ class _NewItemsState extends State<NewItems> with AutomaticKeepAliveClientMixin 
   }
 
 
-
+  // Listener for scroll events to implement infinite scroll/pagination
   void _scrollListener() {
     if (!_isLoading) {
       if (controller!.position.pixels == controller!.position.maxScrollExtent) {
@@ -95,7 +101,7 @@ class _NewItemsState extends State<NewItems> with AutomaticKeepAliveClientMixin 
             crossAxisCount: 4,
             itemCount: _data.length + 1,
             itemBuilder: (BuildContext context, int index){ 
-            
+            // Displaying item for each index of list
             if(index < _data.length){
               final DocumentSnapshot d = _data[index];
               return InkWell(
@@ -147,13 +153,14 @@ class _NewItemsState extends State<NewItems> with AutomaticKeepAliveClientMixin 
                         builder: (context) => DetailsPage(
                               tag: 'new$index',
                               imageUrl: d['image url'],
-                              catagory: d['category'],
+                              category: d['category'],
                               timestamp: d['timestamp'],
                             )));
               },
             );
             }
 
+            // Loading indicator at the end of the list
             return Center(
                       child: Opacity(
                         opacity: _isLoading ? 1.0 : 0.0,

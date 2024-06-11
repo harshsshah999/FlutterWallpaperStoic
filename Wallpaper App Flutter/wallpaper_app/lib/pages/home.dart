@@ -23,7 +23,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
 import 'package:stoicwallpaper/main.dart';
@@ -304,6 +304,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void batterySaverPermission() async {
+    // await Permission.scheduleExactAlarm.request();
     var status = await Permission.ignoreBatteryOptimizations.status;
     bool? isBatteryOptimizationDisabled =
         await DisableBatteryOptimization.isBatteryOptimizationDisabled;
@@ -331,11 +332,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //final InAppPurchaseConnection _iap = InAppPurchaseConnection.instance; <<<------
+  final InAppPurchase _iap = InAppPurchase.instance; 
 
   void _buyProduct(ProductDetails prod) {
-    // final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);<<<------
-    //_iap.buyNonConsumable(purchaseParam: purchaseParam);
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+    _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   Future initAdmobAd() async {
@@ -635,7 +636,7 @@ class _HomePageState extends State<HomePage> {
     final db = context.watch<DataBloc>();
     final ib = context.watch<InternetBloc>();
     final sb = context.watch<SignInBloc>();
-    // final pm = Provider.of<ProviderModel>(context);
+    final pm = Provider.of<ProviderModel>(context);
 
     return ib.hasInternet == false
         ? const NoInternetPage()
@@ -852,7 +853,7 @@ class _HomePageState extends State<HomePage> {
                                                             tag: i['timestamp'],
                                                             imageUrl:
                                                                 i['image url'],
-                                                            catagory:
+                                                            category:
                                                                 i['category'],
                                                             timestamp: i[
                                                                 'timestamp'])));
@@ -944,12 +945,15 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () async {
                             // await changerAlert(_scaffoldKey);
                             // context.read<AdsBloc>().showInterstitialAdAdmob();
-                            print(context.read<SignInBloc>().uid);
-                            // for (var prod in pm.products) {
-                            //   debugPrint("prod.id: ${prod.id}");
-                            //   changerAlert(_scaffoldKey);
-                            // }
-                            changerAlert(_scaffoldKey);
+                            // print(context.read<SignInBloc>().uid);
+                            print("Enter Purchase");
+                            // pm.initialize();
+                            for (var prod in pm.products) {
+                              print("prod.id: ${prod.id}");
+                              if(pm.isPurchased){
+                              changerAlert(_scaffoldKey);}else{pm.initialize();}
+                            }
+                            // changerAlert(_scaffoldKey);
                           },
                         )
                       ],

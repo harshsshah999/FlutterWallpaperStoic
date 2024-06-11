@@ -189,7 +189,7 @@ class _CatagoryItemState extends State<CatagoryItem> {
                               builder: (context) => DetailsPage(
                                     tag: 'category$index',
                                     imageUrl: d['image url'],
-                                    catagory: d['category'],
+                                    category: d['category'],
                                     timestamp: d['timestamp'],
                                   )));
                     },

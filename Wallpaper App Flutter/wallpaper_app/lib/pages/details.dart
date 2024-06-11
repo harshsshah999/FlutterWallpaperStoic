@@ -38,27 +38,27 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 class DetailsPage extends StatefulWidget {
   final String? tag;
   final String? imageUrl;
-  final String? catagory;
+  final String? category;
   final String? timestamp;
 
   const DetailsPage(
       {super.key,
       required this.tag,
       this.imageUrl,
-      this.catagory,
+      this.category,
       this.timestamp});
 
   @override
   _DetailsPageState createState() =>
-      _DetailsPageState(tag, imageUrl, catagory, timestamp);
+      _DetailsPageState(tag, imageUrl, category, timestamp);
 }
 
 class _DetailsPageState extends State<DetailsPage> {
   String? tag;
   String? imageUrl;
-  String? catagory;
+  String? category;
   String? timestamp;
-  _DetailsPageState(this.tag, this.imageUrl, this.catagory, this.timestamp);
+  _DetailsPageState(this.tag, this.imageUrl, this.category, this.timestamp);
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -126,7 +126,7 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
-  //lock screen procedure
+  // lock screen procedure
   _setLockScreen() {
     Platform.isIOS
         ? setState(() {
@@ -217,7 +217,8 @@ class _DetailsPageState extends State<DetailsPage> {
   handleStoragePermission() async {
     AndroidDeviceInfo build = await DeviceInfoPlugin().androidInfo;
     if (build.version.sdkInt! >= 30) {
-      var re = await Permission.manageExternalStorage.request();
+      // var re = await Permission.manageExternalStorage.request();
+      var re = await Permission.photos.request();
       if (re.isGranted) {
         print("Android 13 granted");
         await handleDownload();
@@ -380,7 +381,7 @@ class _DetailsPageState extends State<DetailsPage> {
         var status;
         AndroidDeviceInfo build = await DeviceInfoPlugin().androidInfo;
         if (build.version.sdkInt! >= 30) {
-          status = await Permission.manageExternalStorage.status;
+          status = await Permission.photos.status;
         } else {
           status = await Permission.storage.status;
         }
@@ -524,7 +525,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                     Text(
-                      '$catagory Wallpaper',
+                      '$category Wallpaper',
                       style: const TextStyle(
                           color: Colors.black,
                           fontSize: 18,

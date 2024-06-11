@@ -14,7 +14,7 @@ class ProviderModel with ChangeNotifier {
     _isPurchased = value;
     notifyListeners();
   }
-
+  
   List _purchases = [];
   List get purchases => _purchases;
   set purchases(List value) {
@@ -31,7 +31,7 @@ class ProviderModel with ChangeNotifier {
 
   void initialize() async {
     available = await _iap.isAvailable();
-    debugPrint("available");
+    debugPrint("available,$available");
     if (available) {
       await _getProducts();
       await _getPastPurchases();
@@ -44,17 +44,18 @@ class ProviderModel with ChangeNotifier {
   }
 
   void verifyPurchase() {
-    PurchaseDetails purchase = hasPurchased(myProductID);
+    PurchaseDetails? purchase = hasPurchased(myProductID);
+    // print(purchase.toString());
 
-    if (purchase.status == PurchaseStatus.purchased) {
+    if(purchase!=null){if (purchase.status == PurchaseStatus.purchased) {
       if (purchase.pendingCompletePurchase) {
         _iap.completePurchase(purchase);
         isPurchased = true;
       }
-    }
+    }}
   }
 
-  PurchaseDetails hasPurchased(String productID) {
+  PurchaseDetails? hasPurchased(String productID) {
     return purchases.firstWhere((purchase) => purchase.productID == productID,
         orElse: () => null);
   }
@@ -63,15 +64,47 @@ class ProviderModel with ChangeNotifier {
     Set<String> ids = {myProductID};
     ProductDetailsResponse response = await _iap.queryProductDetails(ids);
     products = response.productDetails;
+    print(products.length);
   }
 
-  Future<void> _getPastPurchases() async {
-    // QueryPurchaseDetailsResponse response = await _iap.queryPastPurchases();
-    // for (PurchaseDetails purchase in response.pastPurchases) {
-    //   if (Platform.isIOS) {
-    //     _iap.completePurchase(purchase);
-    //   }
-    // }
-    // purchases = response.pastPurchases;
+  // Future<void> _getPastPurchases() async {
+  //   // final response = await _iap.queryPastPurchases();
+  //   // for (PurchaseDetails purchase in response.pastPurchases) {
+  //   //   if (Platform.isIOS) {
+  //   //     _iap.completePurchase(purchase);
+  //   //   }
+  //   // }
+  //   // purchases = response.pastPurchases;
+    
+  // }
+
+  Future<dynamic> _getPastPurchases() async {
+  try {
+    print("Incomming");
+    await _iap.restorePurchases(); // Initiate purchase restoration
+
+    // Listen for restored purchases on the purchase stream
+    
+    final streamSubscription = _iap.purchaseStream.listen((purchaseDetailsList) {
+      print(purchaseDetailsList);
+      final restoredPurchases = purchaseDetailsList
+          .where((purchase) => purchase.status == PurchaseStatus.restored);
+          // print("HI $restoredPurchases");
+
+      // Do something with the restored purchases (e.g., update state)
+      
+        purchases = restoredPurchases.toList();
+    });
+
+    // print(streamSubscription);
+
+    // Remember to cancel the stream subscription when finished
+    await streamSubscription.cancel();
+
+    return purchases; // This will be empty initially
+  } catch (error) {
+    print('Error restoring purchases: $error');
+    return []; // Return an empty list on error
   }
+}
 }

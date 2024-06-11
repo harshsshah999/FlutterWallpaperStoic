@@ -12,15 +12,10 @@ class CatagoryPage extends StatefulWidget {
 }
 
 class _CatagoryPageState extends State<CatagoryPage> {
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
-    final db = context.watch<DataBloc>();
-    double w = MediaQuery.of(context).size.width;
+    final db = context.watch<DataBloc>(); // Access the DataBloc using Provider
+    double w = MediaQuery.of(context).size.width; // Get the width of the screen
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -32,7 +27,7 @@ class _CatagoryPageState extends State<CatagoryPage> {
       ),
       body: ListView.separated(
         padding: const EdgeInsets.all(15),
-        itemCount: db.categories.length,
+        itemCount: db.categories.length, // Number of items in the ListView
         separatorBuilder: (BuildContext context, int index) {
           return const SizedBox(
             height: 10,
@@ -40,36 +35,34 @@ class _CatagoryPageState extends State<CatagoryPage> {
         },
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
-                  child: Container(
-                    height: 140,
-                    width: w,
-                    decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                            image: CachedNetworkImageProvider(
-                                db.categories[index]['thumbnail']),
-                            fit: BoxFit.cover)),
-                    child: Align(
-                      child: Text(db.categories[index]['name'],
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w600)),
-                    ),
-                  ),
-                  onTap: () {
-                    print("hi ");
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CatagoryItem(
-                                  title: db.categories[index]['name'],
-                                  selectedCatagory: db.categories[index]
-                                      ['name'],
-                                )));
-                  },
-                );
+            child: Container(
+              height: 140,
+              width: w,
+              decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: CachedNetworkImageProvider(db.categories[index]
+                          ['thumbnail']), // Category thumbnail
+                      fit: BoxFit.cover)),
+              child: Align(
+                child: Text(db.categories[index]['name'],
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CatagoryItem(
+                            title: db.categories[index]['name'], // Category title
+                            selectedCatagory: db.categories[index]['name'],
+                          )));
+            },
+          );
         },
       ),
     );

@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: "none"
 
-version: 2.3.7+43
+version: 2.3.8+44
 
 environment:
   sdk: ">=2.18.0"
@@ -47,7 +47,9 @@ dependencies:
   image_gallery_saver: ^2.0.3
   image_picker: ^1.0.5
   in_app_purchase: ^3.1.13
+  in_app_purchase_android: ^0.3.0+16
   intl: ^0.19.0
+  media_store_plus: ^0.1.1
   launch_review: ^3.0.1
   open_file: ^3.3.2
   permission_handler: ^10.1.0

@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,9 +16,6 @@ import './blocs/sign_in_bloc.dart';
 import './blocs/userdata_bloc.dart';
 import './pages/home.dart';
 import './pages/sign_in_page.dart';
-// import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-// import 'package:in_app_purchase/in_app_purchase.dart';
-// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 late Box box;
@@ -33,7 +28,9 @@ void main() async {
     callbackDispatcher, // The top level function, aka callbackDispatcher
     isInDebugMode: false
   );
+  
   // await AndroidAlarmManager.initialize();
+
   await Firebase.initializeApp(
       options: const FirebaseOptions(
           apiKey: 'AIzaSyDJjDinogigbt8XRSd_D6MrHgiBkGorRr8',
@@ -45,9 +42,9 @@ void main() async {
   await FlutterDownloader.initialize(debug: true);
   initializeSetting();
 
+  //Checking if Autowallpaper feature is set or not
   var prefs = await SharedPreferences.getInstance();
-  //InAppPurchaseConnection.enablePendingPurchases(); <<<------
-
+  
   if (prefs.getBool("isAlarmOn") == null) {
     prefs.setBool("isAlarmOn", false);
 
@@ -57,10 +54,6 @@ void main() async {
   }
 
   runApp(const MyApp());
-}
-
-void globalForegroundService() {
-  debugPrint("current datetime is ${DateTime.now()}");
 }
 
 void initializeSetting() async {
@@ -136,6 +129,7 @@ class MyApp1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sb = context.watch<SignInBloc>();
+    //checking if user is signed in or not
     return sb.isSignedIn == false && sb.guestUser == false
         ? const SignInPage()
         : const HomePage();

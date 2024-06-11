@@ -148,7 +148,7 @@ class _PopularItemsState extends State<PopularItems> with AutomaticKeepAliveClie
                         builder: (context) => DetailsPage(
                               tag: 'popular$index',
                               imageUrl: d['image url'],
-                              catagory: d['category'],
+                              category: d['category'],
                               timestamp: d['timestamp'],
                             )));
               },

@@ -865,7 +865,7 @@ packages:
     source: hosted
     version: "3.1.13"
   in_app_purchase_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: in_app_purchase_android
       sha256: "996da8020228658c71eddb30f2a2e723d87d5eef77d8007f9206969605e8f803"
@@ -992,6 +992,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.8.0"
+  media_store_plus:
+    dependency: "direct main"
+    description:
+      name: media_store_plus
+      sha256: a28e2ce969f480f1a4333d02cb83e8d90428c058c80f5531d9fbbcf9a6f59a19
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   meta:
     dependency: transitive
     description:

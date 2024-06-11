@@ -5,6 +5,8 @@ import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/widgets/new_items.dart';
 import 'package:stoicwallpaper/widgets/popular_items.dart';
 
+//Explore View Page
+
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
 
@@ -30,6 +32,7 @@ class _ExplorePageState extends State<ExplorePage>
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
+      // Showing Banner ad
       bottomNavigationBar: bannerAd == null
           ? Container()
           : Container(
@@ -72,9 +75,11 @@ class _ExplorePageState extends State<ExplorePage>
             child: TabBarView(
               controller: tabController,
               children: <Widget>[
+                //Popular Section Tab
                 PopularItems(
                   scaffoldKey: scaffoldKey,
                 ),
+                //New Section Tab
                 NewItems(
                   scaffoldKey: scaffoldKey,
                 )

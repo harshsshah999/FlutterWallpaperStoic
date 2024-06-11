@@ -26,15 +26,18 @@ class AdsBloc extends ChangeNotifier {
   bool isbannerAdLoaded = false;
   bool get bannerAdLoaded => isbannerAdLoaded;
 
-  BannerAd? bannerAd;
+  BannerAd? bannerAd; // Banner ad instance
 
-  InterstitialAd? interstitialAdAdmob;
+  InterstitialAd? interstitialAdAdmob; // Interstitial ad instance
 
+  // Method to create and load an AdMob interstitial ad
   void createAdmobInterstitialAd() {
     InterstitialAd.load(
-        adUnitId: Config().admobInterstitialAdId,
+        adUnitId: Config().admobInterstitialAdId, // Ad unit ID from config
         request: const AdRequest(),
+        //Defining what happens on different case of ad loading
         adLoadCallback: InterstitialAdLoadCallback(
+          //if ad Loaded successfully
           onAdLoaded: (InterstitialAd ad) {
             ad.fullScreenContentCallback = FullScreenContentCallback(
               onAdDismissedFullScreenContent: (ad) {
@@ -46,11 +49,12 @@ class AdsBloc extends ChangeNotifier {
                 loadAdmobInterstitialAd();
               },
             );
-            print('$ad loadedf with me');
+            print('$ad load');
             interstitialAdAdmob = ad;
             _admobAdLoaded = true;
             notifyListeners();
           },
+          //if ad failed to Load
           onAdFailedToLoad: (LoadAdError error) {
             print('InterstitialAd failed to load: $error.');
             interstitialAdAdmob = null;
@@ -61,43 +65,27 @@ class AdsBloc extends ChangeNotifier {
         ));
   }
 
-  // void showInterstitialAdAAdmob() {
-  //   print("entering showad");
-  //   try {
-  //     if (_admobAdLoaded) {
-  //       interstitialAdAdmob!.show();
-  //     } else {
-  //       print("add not loaded");
-  //     }
-  //   } catch (error) {
-  //     print(error);
-  //   }
-  // }
-
+  // Method to create and load an AdMob banner ad
   BannerAd? createAdmobBannerAd() {
     bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: Config().admobBannerAdId,
+        size: AdSize.banner, // Banner ad size
+        adUnitId: Config().admobBannerAdId, // Ad unit ID from config
         listener: BannerAdListener(
+          //if Banner ad loaded successfully
           onAdLoaded: (ad) {
-            print('$ad loadedf with me');
+            print('$ad loaded');
             bannerAd = ad as BannerAd?;
             isbannerAdLoaded = true;
-            notifyListeners();
+            notifyListeners(); // Notify listeners about the state change
           },
+          //if Banner ad failed to Load
           onAdFailedToLoad: (ad, error) {
             print('BannerAd Failed to load: $error');
             ad.dispose();
             bannerAd = null;
             isbannerAdLoaded = false;
             notifyListeners();
-          },
-          onAdOpened: (ad) {
-            print("Ad Opened");
-          },
-          onAdClosed: (ad) {
-            print("Ad closed");
-          },
+          }
         ),
         request: AdRequest());
     bannerAd?.load();
@@ -105,8 +93,7 @@ class AdsBloc extends ChangeNotifier {
     return bannerAd!;
   }
 
-  void showBannerAd() {}
-
+  // Method to display an AdMob interstitial ad
   void showInterstitialAdAdmob() {
     if (interstitialAdAdmob != null) {
       interstitialAdAdmob!.fullScreenContentCallback =
@@ -136,18 +123,21 @@ class AdsBloc extends ChangeNotifier {
     }
   }
 
+   // Method to load a banner ad if not already loaded
   Future loadAdmobBannerAd() async {
     if (isbannerAdLoaded == false) {
       createAdmobBannerAd();
     }
   }
-
+  
+  // Method to load an interstitial ad if not already loaded
   Future loadAdmobInterstitialAd() async {
     if (_admobAdLoaded == false) {
       createAdmobInterstitialAd();
     }
   }
 
+  // Method to dispose of the AdMob interstitial ad
   Future disposeAdmobInterstitialAd() async {
     interstitialAdAdmob?.dispose();
     notifyListeners();

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-void openSnacbar(scaffoldKey, snacMessage){
-    scaffoldKey.currentState.showSnackBar(
+void openSnacbar(GlobalKey<ScaffoldState> scaffoldKey, snacMessage){
+  if (scaffoldKey.currentState != null) {
+    ScaffoldMessenger.of(scaffoldKey.currentState!.context).showSnackBar(
       SnackBar(
     content: Container(
       alignment: Alignment.centerLeft,
@@ -19,13 +20,17 @@ void openSnacbar(scaffoldKey, snacMessage){
       onPressed: () {},
     ),
   )
-    );
+    );}else {
+    // Handle the case where scaffoldKey is null or has no state
+    print('Could not find ScaffoldState to show snackbar');
+  }
   
 }
 
 
 void openDownloadingSnacbar(scaffoldKey, snacMessage){
-    scaffoldKey.currentState.showSnackBar(
+    if (scaffoldKey.currentState != null) {
+    ScaffoldMessenger.of(scaffoldKey.currentState!.context).showSnackBar(
       SnackBar(
     content: Container(
       alignment: Alignment.centerLeft,
@@ -42,6 +47,9 @@ void openDownloadingSnacbar(scaffoldKey, snacMessage){
     ),
     
   )
-    );
+    );}else {
+    // Handle the case where scaffoldKey is null or has no state
+    print('Could not find ScaffoldState to show snackbar');
+  }
   
 }

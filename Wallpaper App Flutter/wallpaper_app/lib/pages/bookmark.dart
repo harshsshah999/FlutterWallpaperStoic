@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/src/provider.dart';
 import 'package:stoicwallpaper/blocs/ads_bloc.dart';
+import 'package:stoicwallpaper/blocs/bookmark_bloc.dart';
 import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
 import 'package:stoicwallpaper/models/config.dart';
 import 'package:stoicwallpaper/pages/details.dart';
@@ -23,83 +24,6 @@ class _FavouritePageState extends State<FavouritePage> {
 
   BannerAd? bannerAd;
 
-  Future<List> _getData(List bookmarkedList) async {
-    print('main list: ${bookmarkedList.length}]');
-
-    List d = [];
-    if (bookmarkedList.length <= 10) {
-      await FirebaseFirestore.instance
-          .collection('contents')
-          .where('timestamp', whereIn: bookmarkedList)
-          .get()
-          .then((QuerySnapshot snap) {
-        d.addAll(snap.docs);
-      });
-    } else if (bookmarkedList.length > 10) {
-      int size = 10;
-      var chunks = [];
-
-      for (var i = 0; i < bookmarkedList.length; i += size) {
-        var end = (i + size < bookmarkedList.length)
-            ? i + size
-            : bookmarkedList.length;
-        chunks.add(bookmarkedList.sublist(i, end));
-      }
-
-      await FirebaseFirestore.instance
-          .collection('contents')
-          .where('timestamp', whereIn: chunks[0])
-          .get()
-          .then((QuerySnapshot snap) {
-        d.addAll(snap.docs);
-      }).then((value) async {
-        await FirebaseFirestore.instance
-            .collection('contents')
-            .where('timestamp', whereIn: chunks[1])
-            .get()
-            .then((QuerySnapshot snap) {
-          d.addAll(snap.docs);
-        });
-      });
-    } else if (bookmarkedList.length > 20) {
-      int size = 10;
-      var chunks = [];
-
-      for (var i = 0; i < bookmarkedList.length; i += size) {
-        var end = (i + size < bookmarkedList.length)
-            ? i + size
-            : bookmarkedList.length;
-        chunks.add(bookmarkedList.sublist(i, end));
-      }
-
-      await FirebaseFirestore.instance
-          .collection('contents')
-          .where('timestamp', whereIn: chunks[0])
-          .get()
-          .then((QuerySnapshot snap) {
-        d.addAll(snap.docs);
-      }).then((value) async {
-        await FirebaseFirestore.instance
-            .collection('contents')
-            .where('timestamp', whereIn: chunks[1])
-            .get()
-            .then((QuerySnapshot snap) {
-          d.addAll(snap.docs);
-        });
-      }).then((value) async {
-        await FirebaseFirestore.instance
-            .collection('contents')
-            .where('timestamp', whereIn: chunks[2])
-            .get()
-            .then((QuerySnapshot snap) {
-          d.addAll(snap.docs);
-        });
-      });
-    }
-
-    return d;
-  }
-
   @override
   void initState() {
     bannerAd =context.read<AdsBloc>().createAdmobBannerAd();
@@ -113,6 +37,7 @@ class _FavouritePageState extends State<FavouritePage> {
     const String snapText = 'loved items';
     
     return Scaffold(
+      //Showing Banner Ad
       bottomNavigationBar: bannerAd == null
           ? Container()
           : Container(
@@ -123,6 +48,8 @@ class _FavouritePageState extends State<FavouritePage> {
               ),
             ),
       appBar: AppBar(title: const Text('Saved Items')),
+
+      //Show Saved wallpaper only when user is logged in otherwise show empty page
       body: context.read<SignInBloc>().guestUser == true ||
               widget.userUID == null
           ? const EmptyPage(
@@ -137,9 +64,9 @@ class _FavouritePageState extends State<FavouritePage> {
               builder: (BuildContext context, AsyncSnapshot snap) {
                 if (!snap.hasData) return const CircularProgressIndicator();
 
-                List bookamrkedList = snap.data[snapText];
+                List bookamrkedList = snap.data[snapText]; 
                 return FutureBuilder(
-                    future: _getData(bookamrkedList),
+                    future: context.read<BookmarkBloc>().getData(bookamrkedList), //Getting all the saved wallpapers from database
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -153,6 +80,7 @@ class _FavouritePageState extends State<FavouritePage> {
                           child: Text('Error'),
                         );
                       } else {
+                        //Show all the Saved Wallpaper when loaded successfully
                         return _buildList(snapshot);
                       }
                     });
@@ -161,10 +89,13 @@ class _FavouritePageState extends State<FavouritePage> {
     );
   }
 
+
+  //Widget method to show all the saved Wallpaper 
   Widget _buildList(snapshot) {
     return StaggeredGridView.countBuilder(
       crossAxisCount: 4,
       itemCount: snapshot.data.length,
+      //Using the data fetched from database to generate a girdview
       itemBuilder: (BuildContext context, int index) {
         List d = snapshot.data;
 
@@ -211,13 +142,14 @@ class _FavouritePageState extends State<FavouritePage> {
             ],
           ),
           onTap: () {
+            //Opening a particular Wallpapers details view
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => DetailsPage(
                           tag: 'bookmark$index',
                           imageUrl: d[index]['image url'],
-                          catagory: d[index]['category'],
+                          category: d[index]['category'],
                           timestamp: d[index]['timestamp'],
                         )));
           },
