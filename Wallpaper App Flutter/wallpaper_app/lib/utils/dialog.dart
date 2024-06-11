@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/src/provider.dart';
 import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
 import 'package:stoicwallpaper/models/config.dart';
 import 'package:stoicwallpaper/pages/sign_in_page.dart';
 import 'package:stoicwallpaper/utils/next_screen.dart';
 
+// Function to display a dialog with a title and message
 void openDialog(context, title, message) {
   showDialog(
       context: context,
@@ -28,6 +28,7 @@ void openDialog(context, title, message) {
       });
 }
 
+// Function to display user information in a dialog
 showUserInfo(context, name, email, imageUrl) {
   showDialog(
       context: context,
@@ -96,6 +97,7 @@ showUserInfo(context, name, email, imageUrl) {
       });
 }
 
+// Function to display guest user information in a dialog
 showGuestUserInfo(context) {
   showDialog(
       context: context,

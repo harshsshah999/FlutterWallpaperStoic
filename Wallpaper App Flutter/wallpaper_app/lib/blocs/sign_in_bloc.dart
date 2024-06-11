@@ -18,6 +18,7 @@ class SignInBloc extends ChangeNotifier {
   final GoogleSignIn _googlSignIn = GoogleSignIn();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  // User state variables
   bool _guestUser = false;
   bool get guestUser => _guestUser;
 
@@ -48,7 +49,7 @@ class SignInBloc extends ChangeNotifier {
 
 
   
-
+  // Method to sign in with Google
   Future signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await _googlSignIn.signIn();
     if (googleUser != null) {
@@ -81,6 +82,8 @@ class SignInBloc extends ChangeNotifier {
     }
   }
 
+
+  // Method to check if user exists in Firestore
   Future<bool> checkUserExists() async {
     
     DocumentSnapshot snap = await firestore.collection('users').doc(_uid).get();
@@ -94,7 +97,7 @@ class SignInBloc extends ChangeNotifier {
   }
 
 
-
+  // Method to save user data to Firestore
   Future saveToFirebase() async {
     final DocumentReference ref = firestore.collection('users').doc(uid);
     await ref.set({
@@ -107,12 +110,14 @@ class SignInBloc extends ChangeNotifier {
     });
   }
 
+  // Method to get the current timestamp
   Future getTimestamp() async {
     DateTime now = DateTime.now();
     String timestamp = DateFormat('yyyyMMddHHmmss').format(now);
     timestamp = timestamp;
   }
 
+  // Method to save user data to SharedPreferences
   Future saveDataToSP() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
@@ -122,6 +127,7 @@ class SignInBloc extends ChangeNotifier {
     await sharedPreferences.setString('uid', _uid!);
   }
 
+  // Method to get user data from SharedPreferences
   Future getUserDatafromSP() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     
@@ -134,7 +140,7 @@ class SignInBloc extends ChangeNotifier {
 
 
 
-
+   // Method to get user data from Firestore
   Future getUserDataFromFirebase(uid) async {
     await firestore
         .collection('users')
@@ -153,7 +159,7 @@ class SignInBloc extends ChangeNotifier {
 
 
 
-
+  // Method to set the sign-in status in SharedPreferences
   Future setSignIn() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     sp.setBool('signed in', true);
@@ -161,12 +167,14 @@ class SignInBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Method to check if the user is signed in from SharedPreferences
   void checkSignIn() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _isSignedIn = sp.getBool('signed in') ?? false;
     notifyListeners();
   }
 
+  // Method to sign out the user
   Future userSignout() async {
     await _firebaseAuth.signOut();
     await _googlSignIn.signOut();
@@ -176,6 +184,8 @@ class SignInBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  // Method to set the guest user status in SharedPreferences
   Future setGuestUser() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     await sp.setBool('guest user', true);
@@ -183,17 +193,20 @@ class SignInBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Method to check if the user is a guest from SharedPreferences
   void checkGuestUser() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     _guestUser = sp.getBool('guest user') ?? false;
     notifyListeners();
   }
 
+  // Method to clear all data from SharedPreferences
   Future clearAllData() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     sp.clear();
   }
 
+  // Method to sign out a guest user
   Future guestSignout() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     await sp.setBool('guest user', false);
@@ -201,7 +214,7 @@ class SignInBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-
+  // Method to get the total users count from Firestore
   Future<int> getTotalUsersCount () async {
     const String fieldName = 'count';
     final DocumentReference ref = firestore.collection('item_count').doc('users_count');
@@ -218,7 +231,7 @@ class SignInBloc extends ChangeNotifier {
       }
   }
 
-
+  // Method to increase the users count in Firestore
   Future increaseUserCount () async {
     await getTotalUsersCount()
     .then((int documentCount)async {

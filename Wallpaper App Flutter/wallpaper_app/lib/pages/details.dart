@@ -773,27 +773,6 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
-  // Widget _buildLoveIcon(uid) {
-  //   final sb = context.watch<SignInBloc>();
-  //   if (sb.guestUser == false) {
-  //     return StreamBuilder(
-  //       stream: firestore.collection('users').doc(uid).snapshots(),
-  //       builder: (context, AsyncSnapshot snap) {
-  //         if (!snap.hasData) return LoveIcon().greyIcon;
-  //         List d = snap.data['loved items'];
-
-  //         if (d.contains(timestamp)) {
-  //           return LoveIcon().pinkIcon;
-  //         } else {
-  //           return LoveIcon().greyIcon;
-  //         }
-  //       },
-  //     );
-  //   } else {
-  //     return LoveIcon().greyIcon;
-  //   }
-  // }
-
   _loveIconPressed() async {
     final sb = context.read<SignInBloc>();
     if (sb.guestUser == false) {

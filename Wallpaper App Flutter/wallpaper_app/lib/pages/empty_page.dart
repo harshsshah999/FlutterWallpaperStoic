@@ -5,6 +5,8 @@ class EmptyPage extends StatelessWidget {
   final icon;
   const EmptyPage({super.key, required this.title, required this.icon});
 
+  // This Displays an empty page with the required title in the centre
+
   @override
   Widget build(BuildContext context) {
     return Center(

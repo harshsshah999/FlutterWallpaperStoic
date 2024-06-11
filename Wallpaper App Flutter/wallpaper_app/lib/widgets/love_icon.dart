@@ -6,6 +6,7 @@ import 'package:stoicwallpaper/models/icon_data.dart';
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+//function to show icon is liked/bookmarked or not
 Widget buildLoveIcon(uid,BuildContext context,String timestamp) {
     final sb = context.watch<SignInBloc>();
     if (sb.guestUser == false) {
