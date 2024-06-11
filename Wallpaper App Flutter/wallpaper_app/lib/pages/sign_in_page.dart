@@ -1,9 +1,5 @@
-import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:open_settings/open_settings.dart';
-// import 'package:open_settings_plus/core/open_settings_plus.dart';
-// import 'package:optimization_battery/optimization_battery.dart';
 import 'package:provider/provider.dart';
 import '../blocs/internet_bloc.dart';
 import '../blocs/sign_in_bloc.dart';
@@ -23,7 +19,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  // Handle guest user login
   handleGuestUser() async {
     final sb = context.read<SignInBloc>();
     await sb.setGuestUser().then((_) {
@@ -36,17 +32,20 @@ class _SignInPageState extends State<SignInPage> {
     });
   }
 
+  //Method to hadle Google sign In
   Future handleGoogleSignIn() async {
     final sb = context.read<SignInBloc>();
     final ib = context.read<InternetBloc>();
-    await ib.checkInternet();
+    await ib.checkInternet(); // first check if internet is connected or not
     if (ib.hasInternet == false) {
       openSnacbar(_scaffoldKey, 'Check your internet connection!');
     } else {
+      //Try to sign in the user
       await sb.signInWithGoogle().then((_) {
         if (sb.hasError == true) {
           openSnacbar(_scaffoldKey, 'Something is wrong. Please try again.');
         } else {
+          // Check if user already exist in the database
           sb.checkUserExists().then((isUserExisted) async {
             if (isUserExisted) {
               await sb
@@ -58,6 +57,7 @@ class _SignInPageState extends State<SignInPage> {
                             handleAfterSignupGoogle();
                           })));
             } else {
+              //Create a new user and save to database
               sb.getTimestamp().then((value) => sb
                   .saveToFirebase()
                   .then((value) => sb.increaseUserCount())
@@ -74,6 +74,7 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
+  // Handle actions after successful Google signup
   handleAfterSignupGoogle() {
     Future.delayed(const Duration(milliseconds: 1000)).then((f) {
       if (widget.closeDialog == null || widget.closeDialog == false) {
@@ -113,6 +114,7 @@ class _SignInPageState extends State<SignInPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      // Display app splash icon
                       Image(
                         image: AssetImage(Config().splashIcon),
                         height: 80,
@@ -121,6 +123,7 @@ class _SignInPageState extends State<SignInPage> {
                       const SizedBox(
                         height: 40,
                       ),
+                      // Welcome message
                       Text(
                         'Welcome to ${Config().appName}!',
                         style: const TextStyle(
@@ -129,6 +132,7 @@ class _SignInPageState extends State<SignInPage> {
                       const SizedBox(
                         height: 8,
                       ),
+                      // App description
                       Text(
                         'Explore hundreds of free stoic wallpapers for your phone and set them as your Lockscreen or HomeScreen anytime you want.',
                         style: TextStyle(fontSize: 15, color: Colors.grey[600]),
@@ -141,6 +145,7 @@ class _SignInPageState extends State<SignInPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
+                        // Google Sign-In button
                         SizedBox(
                           height: 45,
                           width: MediaQuery.of(context).size.width * 0.70,
@@ -172,32 +177,9 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ],
                     )),
-                // ElevatedButton(
-                //     onPressed: batterySaverPermission,
-                //     child: Text("Battery Saver"))
               ],
             ),
           ),
         ));
-  }
-
-  void batterySaverPermission() async{
-    // AppSettings.openAppSettings(type: AppSettingsType.batteryOptimization);
-    // OpenSettings.openVoiceControllBatterySaverModeSetting();
-    // OptimizationBattery.openBatteryOptimizationSettings();
-    // OpenSettingsPlusAndroid().appSettings();
-    bool? isBatteryOptimizationDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
-    bool? isManBatteryOptimizationDisabled = await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
-    if(!isBatteryOptimizationDisabled!){
-      await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
-      
-    }
-    else if(!isManBatteryOptimizationDisabled!){
-      await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings("Your device has additional battery optimization", "Follow the steps and disable the optimizations to allow smooth functioning of this app");
-    }
-    // else{
-    //   // await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
-    //   await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings("Your device has additional battery optimization", "Follow the steps and disable the optimizations to allow smooth functioning of this app");
-    // }
   }
 }

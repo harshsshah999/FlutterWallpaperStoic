@@ -5,6 +5,8 @@ import '../blocs/internet_bloc.dart';
 class NoInternetPage extends StatelessWidget {
   const NoInternetPage({super.key});
 
+  //This Page is shown when the app does not has access to internet
+
   @override
   Widget build(BuildContext context) {
     final ib = context.watch<InternetBloc>();
@@ -35,7 +37,7 @@ class NoInternetPage extends StatelessWidget {
                 backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.blueAccent)
               ),
               onPressed: (){
-                ib.checkInternet();
+                ib.checkInternet(); //checking if internet is connected or not
               },
               child: const Text('Check Again', style: TextStyle(
                 color: Colors.white,

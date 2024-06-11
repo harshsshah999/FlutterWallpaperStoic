@@ -35,6 +35,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
           title: const Text('Custom Wallpaper'),
           backgroundColor: Colors.white,
         ),
+        // Check if page contents have loaded or not
         body: isLoading == true
             ? const Center(
                 child: CupertinoActivityIndicator(),
@@ -147,6 +148,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
               ));
   }
 
+  // Method to create textfield where the user can define about their requirement and specific need
   customTextField(controller, hint) {
     return Container(
       height: 200,
@@ -169,6 +171,7 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
     );
   }
 
+  //Selecting image and loading from the user's device
   getImage() {
     final pickedfile = picker.pickImage(source: ImageSource.gallery);
     pickedfile.then((value) {
@@ -178,8 +181,10 @@ class _RequestWallpaperState extends State<RequestWallpaper> {
     });
   }
 
+  //Method for uploading custom wallpaper request to the database
   saveDataToDB() async {
     try {
+      //Making sure that user gives discription about their request
       if (topicCtrl.text.isEmpty) {
         showDialog(
           context: context,

@@ -85,6 +85,8 @@ void initializeSetting() async {
   var initializeAndroid = const AndroidInitializationSettings('ic');
   var initializeSetting = InitializationSettings(android: initializeAndroid);
   await flutterLocalNotificationsPlugin.initialize(initializeSetting);
+  // flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+  //   AndroidFlutterLocalNotificationsPlugin>().requestNotificationsPermission();
 }
 
 @pragma('vm:entry-point')

@@ -20,6 +20,8 @@ import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:stoicwallpaper/utils/notification.dart';
+import 'package:stoicwallpaper/widgets/love_icon.dart';
 import 'package:wallpaper/wallpaper.dart';
 import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/blocs/sign_in_bloc.dart';
@@ -345,26 +347,14 @@ class _DetailsPageState extends State<DetailsPage> {
     var initializeSetting = InitializationSettings(android: initializeAndroid);
     await flutterLocalNotificationsPlugin.initialize(initializeSetting,
         onDidReceiveNotificationResponse:
-            selectNotification as void Function(NotificationResponse?));
+            // selectNotification as void Function(NotificationResponse?));
+            (NotificationResponse? response) {
+        if (response != null) {
+          selectNotification(response); // Call only if response is not null
+        }
+      });
   }
 
-  Future<void> displayNotification(
-      String title, String body, String imagePath) async {
-    flutterLocalNotificationsPlugin.show(
-        0,
-        title,
-        body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails('channel id', 'channel name',
-              priority: Priority.max),
-        ),
-        payload: imagePath);
-  }
-
-  Future selectNotification(NotificationResponse payload) async {
-    debugPrint('notification payload: ${payload.toString()}');
-    OpenFile.open(payload.toString());
-  }
 
   Future handleDownload() async {
     initializeSetting();
@@ -412,7 +402,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
           if (result['isSuccess'] == true) {
             await displayNotification(
-                "Wallpaper Downloaded Successfully!", "Tap to open", file);
+                "Wallpaper Downloaded Successfully!", "Tap to open", file,flutterLocalNotificationsPlugin);
 
             setState(() {
               progress = "Download Complete!\nCheck Your Gallery";
@@ -754,7 +744,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 width: 40,
                 decoration: const BoxDecoration(
                     color: Colors.white, shape: BoxShape.circle),
-                child: _buildLoveIcon(sb.uid)),
+                child: buildLoveIcon(sb.uid,context,timestamp!)),
             onTap: () {
               _loveIconPressed();
             },
@@ -783,26 +773,26 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
-  Widget _buildLoveIcon(uid) {
-    final sb = context.watch<SignInBloc>();
-    if (sb.guestUser == false) {
-      return StreamBuilder(
-        stream: firestore.collection('users').doc(uid).snapshots(),
-        builder: (context, AsyncSnapshot snap) {
-          if (!snap.hasData) return LoveIcon().greyIcon;
-          List d = snap.data['loved items'];
+  // Widget _buildLoveIcon(uid) {
+  //   final sb = context.watch<SignInBloc>();
+  //   if (sb.guestUser == false) {
+  //     return StreamBuilder(
+  //       stream: firestore.collection('users').doc(uid).snapshots(),
+  //       builder: (context, AsyncSnapshot snap) {
+  //         if (!snap.hasData) return LoveIcon().greyIcon;
+  //         List d = snap.data['loved items'];
 
-          if (d.contains(timestamp)) {
-            return LoveIcon().pinkIcon;
-          } else {
-            return LoveIcon().greyIcon;
-          }
-        },
-      );
-    } else {
-      return LoveIcon().greyIcon;
-    }
-  }
+  //         if (d.contains(timestamp)) {
+  //           return LoveIcon().pinkIcon;
+  //         } else {
+  //           return LoveIcon().greyIcon;
+  //         }
+  //       },
+  //     );
+  //   } else {
+  //     return LoveIcon().greyIcon;
+  //   }
+  // }
 
   _loveIconPressed() async {
     final sb = context.read<SignInBloc>();

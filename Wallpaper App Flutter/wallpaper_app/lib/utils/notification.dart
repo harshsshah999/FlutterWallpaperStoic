@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_file/open_file.dart';
-import 'package:stoicwallpaper/pages/details.dart';
 
 Future<void> displayNotification(
-      String title, String body, String imagePath) async {
+      String title, String body, String imagePath,FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+        print('Kal Ana');
     flutterLocalNotificationsPlugin.show(
         0,
         title,

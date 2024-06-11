@@ -49,6 +49,7 @@ class _CatagoryItemState extends State<CatagoryItem> {
   final List<DocumentSnapshot> _data = [];
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  //Method to fetch category items from the database
   Future<void> _getData() async {
     QuerySnapshot data;
     if (_lastVisible == null) {
@@ -69,8 +70,6 @@ class _CatagoryItemState extends State<CatagoryItem> {
     }
 
     if (data.docs.isNotEmpty) {
-      print("----------Len---------");
-      print(data.docs.length);
       _lastVisible = data.docs[data.docs.length - 1];
       if (mounted) {
         setState(() {
@@ -85,6 +84,7 @@ class _CatagoryItemState extends State<CatagoryItem> {
     return;
   }
 
+  // Scroll listener to fetch more data when user scrolls to the bottom
   void _scrollListener() {
     if (!_isLoading) {
       if (controller!.position.pixels == controller!.position.maxScrollExtent) {
@@ -93,18 +93,6 @@ class _CatagoryItemState extends State<CatagoryItem> {
       }
     }
   }
-
-  //  Future<void> _loadAd() async {
-  //   // Get an AnchoredAdaptiveBannerAdSize before loading the ad.
-  //   final AnchoredAdaptiveBannerAdSize? size =
-  //       await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-  //           MediaQuery.of(context).size.width.truncate());
-
-  //   if (size == null) {
-  //     print('Unable to get height of anchored banner.');
-  //     return;
-  //   }
-  //  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +130,7 @@ class _CatagoryItemState extends State<CatagoryItem> {
                       children: <Widget>[
                         Hero(
                             tag: 'category$index',
-                            child: cachedImage(d['image url'])),
+                            child: cachedImage(d['image url'])), //showing the cached network image
                         Positioned(
                           bottom: 30,
                           left: 10,
@@ -183,6 +171,7 @@ class _CatagoryItemState extends State<CatagoryItem> {
                       ],
                     ),
                     onTap: () {
+                      // Navigate to DetailsPage on item tap
                       Navigator.push(
                           context,
                           MaterialPageRoute(

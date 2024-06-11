@@ -5,6 +5,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:stoicwallpaper/blocs/ads_bloc.dart';
 import 'package:stoicwallpaper/models/providermodel.dart';
@@ -20,6 +21,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 late Box box;
 
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+
+
  
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +33,7 @@ void main() async {
     callbackDispatcher, // The top level function, aka callbackDispatcher
     isInDebugMode: false
   );
-  
+
   // await AndroidAlarmManager.initialize();
 
   await Firebase.initializeApp(
@@ -60,6 +65,8 @@ void initializeSetting() async {
   var initializeAndroid = const AndroidInitializationSettings('ic');
   var initializeSetting = InitializationSettings(android: initializeAndroid);
   await flutterLocalNotificationsPlugin.initialize(initializeSetting);
+  
+    // Permission.notification.request();
 }
 
 class MyApp extends StatelessWidget {
