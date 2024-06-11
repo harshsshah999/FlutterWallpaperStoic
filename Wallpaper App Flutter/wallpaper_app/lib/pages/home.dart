@@ -89,6 +89,8 @@ void initializeSetting() async {
   //   AndroidFlutterLocalNotificationsPlugin>().requestNotificationsPermission();
 }
 
+
+//Callback Dispatcher for Workmanager -> Autowallpaper Feature
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
@@ -108,12 +110,15 @@ Future<void> displayNotification(String title, String body) async {
               priority: Priority.high)));
 }
 
+
+//Method for setting wallpaper -> For autowallpaper feature
 checkInternetConnected() async {
   print("Entering the wallpaper change code.");
   bool internetConnected = true;
   // initializeSetting();
   await Firebase.initializeApp();
   try {
+    // Check internet connectivity
     final result = await InternetAddress.lookup("google.com");
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
       print('connected');
@@ -122,27 +127,42 @@ checkInternetConnected() async {
   } on SocketException catch (_) {
     print('not connected');
     internetConnected = false;
+
+
+    // Display a notification if there is no internet connection
     await displayNotification(
         "No internet connection!", "Could not change wallpaper");
   }
+
+  // Initialize Hive and open a box to store data
   await Hive.initFlutter();
   box = await Hive.openBox('box');
   _wallpapers = box.get("_wallpapers") as String?;
   debugPrint("hello $_wallpapers");
+
+  //Checking if autowallpaper feature will work with random wallpapers 
   if (_wallpapers.toString() == "Random" && internetConnected) {
     debugPrint("random block");
+
+    // Retrieve all documents from the content collection
     await contentRef.get().then((QuerySnapshot querySnapshot) async {
       for (var documentSnapshot in querySnapshot.docs) {
         DocList.add(documentSnapshot.id);
       }
+
+      // Select a random document from the list
       Random random = Random();
       int num = random.nextInt(DocList.length);
       debugPrint(DocList.elementAt(num));
+
+      // Get the image URL from the randomly selected document
       await contentRef.doc(DocList.elementAt(num)).get().then((snapshot) async {
         URL = snapshot.data()!['image url'].toString();
         debugPrint("${URL!} : ${DateTime.now()}");
         int? location;
         _locationToSet = box.get("_location") as String?;
+
+        // Determine the wallpaper location setting
         if (_locationToSet == 'Home') {
           location = WallpaperManager.HOME_SCREEN;
         } else if (_locationToSet == 'Lock') {
@@ -150,24 +170,35 @@ checkInternetConnected() async {
         } else if (_locationToSet == 'Both') {
           location = WallpaperManager.BOTH_SCREEN;
         }
+
+        // Retrieve the image file from cache and set it as wallpaper
         var file =
             await testing_cache.DefaultCacheManager().getSingleFile(URL!);
         WallpaperManager.setWallpaperFromFile(file.path, location!);
       });
     });
-  } else if (_wallpapers.toString() == "Saved" && internetConnected) {
+  } 
+
+   // If wallpaper setting is "Saved" and internet is connected
+  else if (_wallpapers.toString() == "Saved" && internetConnected) {
     debugPrint("saved block");
     User firebaseUser = _firebaseAuth.currentUser!;
     var uid = firebaseUser.uid;
     DocumentSnapshot documentSnapshot = await userRef.doc(uid).get();
+
+    // Retrieve the list of saved items for the user
     var savedList = (documentSnapshot.data() as dynamic)['loved items'];
     if (savedList.length == 0) {
+      // If no saved items, switch to random wallpaper
       _wallpapers = "Random";
       checkInternetConnected();
     } else if (internetConnected) {
       debugPrint("default block");
+      // Select a random item from the saved list
       Random random = Random();
       int num = random.nextInt(savedList.length);
+
+      // Get the image URL from the randomly selected saved item
       await contentRef
           .doc(savedList.elementAt(num))
           .get()
@@ -177,6 +208,8 @@ checkInternetConnected() async {
         debugPrint("${URL!} : ${DateTime.now()}");
         int? location;
         _locationToSet = box.get("_location") as String?;
+
+        // Determine the wallpaper location setting
         if (_locationToSet == 'Home') {
           location = WallpaperManager.HOME_SCREEN;
         } else if (_locationToSet == 'Lock') {
@@ -184,6 +217,8 @@ checkInternetConnected() async {
         } else if (_locationToSet == 'Both') {
           location = WallpaperManager.BOTH_SCREEN;
         }
+
+        // Retrieve the image file from cache and set it as wallpaper
         var file =
             await testing_cache.DefaultCacheManager().getSingleFile(URL!);
         WallpaperManager.setWallpaperFromFile(file.path, location!);
@@ -193,6 +228,8 @@ checkInternetConnected() async {
   }
 }
 
+
+//Registering/Starting autowallpaper feature
 void setPeriodicWallpaperChange(bool isSet, var scaffoldKey) async {
   debugPrint("HIYA");
   // await AndroidAlarmManager.initialize();
@@ -305,6 +342,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
+  //Checking for all permission required to set autowallpaper and starting it
   void batterySaverPermission() async {
     // await Permission.scheduleExactAlarm.request();
     var status = await Permission.ignoreBatteryOptimizations.status;
@@ -350,6 +389,8 @@ class _HomePageState extends State<HomePage> {
     print("Exiting admob");
   }
 
+
+  //Autowallpaper Feature Dialog Box
   Future<void> OpenAlert(var prod) async {
     return showDialog(
         context: context,
@@ -375,14 +416,18 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> changerAlert(var scaffoldKey) async {
     var prefs = await SharedPreferences.getInstance();
+    // Get the currently signed-in Firebase user
     User? firebaseUser = _firebaseAuth.currentUser;
+    // Check if user is not logged in
     if (firebaseUser == null) {
       openSnacbar(scaffoldKey, "Please login to use this feature");
     } else {
       if (prefs.getBool("isAlarmOn") == null) {
         prefs.setBool("isAlarmOn", false);
       }
+      // Check if auto wallpaper changer is currently on
       if (prefs.getBool("isAlarmOn") ?? false) {
+        // Show dialog to confirm turning off the auto wallpaper changer
         return showDialog(
           context: context,
           barrierDismissible: false,
@@ -416,6 +461,7 @@ class _HomePageState extends State<HomePage> {
           },
         );
       } else {
+        // Show dialog to confirm turning on the auto wallpaper changer
         return showDialog(
           context: context,
           barrierDismissible: false,
@@ -424,6 +470,7 @@ class _HomePageState extends State<HomePage> {
                 title: const Text("Auto Wallpaper Changer"),
                 content: Wrap(children: [
                   const Text("Turn on auto wallpaper changer?"),
+                  // Dropdowns for selecting duration, location, and wallpaper settings
                   durationDropdown(),
                   locationDropdown(),
                   wallpaperDropdown(),
@@ -495,6 +542,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+ // Dropdown to select the location where to register autowallpaper e.g. -> HOME_SCREEN
   Widget locationDropdown() {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
@@ -534,6 +582,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  //Method for dropdown to select wallpaper from saved list or random => Autowallpaper
   Widget wallpaperDropdown() {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
@@ -945,17 +994,14 @@ class _HomePageState extends State<HomePage> {
                           icon: Icon(FontAwesomeIcons.arrowRotateLeft,
                               color: Colors.grey[600], size: 20),
                           onPressed: () async {
-                            // await changerAlert(_scaffoldKey);
-                            // context.read<AdsBloc>().showInterstitialAdAdmob();
-                            // print(context.read<SignInBloc>().uid);
-                            print("Enter Purchase");
-                            // pm.initialize();
-                            for (var prod in pm.products) {
-                              print("prod.id: ${prod.id}");
-                              if(pm.isPurchased){
-                              changerAlert(_scaffoldKey);}else{pm.initialize();}
-                            }
-                            // changerAlert(_scaffoldKey);
+                            // print("Enter Purchase");
+                            // // pm.initialize();
+                            // for (var prod in pm.products) {
+                            //   print("prod.id: ${prod.id}");
+                            //   if(pm.isPurchased){
+                            //   changerAlert(_scaffoldKey);}else{pm.initialize();}
+                            // }
+                            changerAlert(_scaffoldKey);
                           },
                         )
                       ],
